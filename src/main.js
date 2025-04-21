@@ -1,24 +1,19 @@
-const { app, Tray, Menu, nativeImage } = require('electron')
+import { app, Tray, Menu, nativeImage } from 'electron'
 
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
+}
 
-app.whenReady().then(() => {
-  const tray = new Tray(nativeImage.createEmpty())
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Reset Timer', type: 'normal', click: resetTimer },
-    { role: 'quit' }
-  ])
-  tray.setContextMenu(contextMenu)
+const DURATION = 5;
 
-  let secondsLeft = 5
+(async () => {
+  let secondsLeft = null
   let timer = null
 
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
-  }
-
-  function startTimer() {
+  const startTimer = () => {
+    secondsLeft = DURATION
     tray.setTitle(formatTime(secondsLeft))
     timer = setInterval(() => {
       secondsLeft -= 1
@@ -31,11 +26,18 @@ app.whenReady().then(() => {
     }, 1000)
   }
 
-  function resetTimer() {
+  const resetTimer = () => {
     clearInterval(timer)
-    secondsLeft = 5
     startTimer()
   }
 
+  await app.whenReady()
+  const tray = new Tray(nativeImage.createEmpty())
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Reset Timer', type: 'normal', click: resetTimer },
+    { role: 'quit' }
+  ])
+  tray.setContextMenu(contextMenu)
+
   startTimer()
-})
+})()

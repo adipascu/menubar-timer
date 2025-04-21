@@ -12,6 +12,7 @@
     ]
   },
   "main": "src/main.js",
+  "type": "module",
   "license": "MIT",
   "dependencies": {
     "electron": "^35.2.0"
