@@ -8,6 +8,7 @@ const formatTime = (seconds) => {
 }
 
 const DURATION = 5;
+app.setName('Timer App');
 
 (async () => {
   let secondsLeft = null
