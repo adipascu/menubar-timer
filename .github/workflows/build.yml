@@ -1,0 +1,38 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Use Node.js version from package.json
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: "./package.json"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Build Electron app
+        run: pnpm run build:mac
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build
+          path: dist/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2.2.2
+        with:
+          tag_name: latest
+          files: dist/*.dmg
+          draft: false
+          make_latest: true
