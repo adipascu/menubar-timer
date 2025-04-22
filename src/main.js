@@ -1,4 +1,4 @@
-import { app, Tray, Menu, nativeImage } from 'electron'
+import { app, Tray, Menu, nativeImage, } from 'electron'
 import ansiStyles from 'ansi-styles';
 
 const formatTime = (seconds) => {
@@ -7,13 +7,10 @@ const formatTime = (seconds) => {
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
 }
 
-const DURATION = 5;
 app.setName('Timer App');
 
 (async () => {
-  let secondsLeft = null
-  let timer = null
-  let flashInterval = null
+  let interval = null
 
   const flashMenuBar = () => {
     let isGreen = true;
@@ -27,35 +24,38 @@ app.setName('Timer App');
     }, 500);
   };
 
-  const startTimer = () => {
-    secondsLeft = DURATION;
-    tray.setTitle(formatTime(secondsLeft));
-    timer = setInterval(() => {
-      secondsLeft -= 1;
-      if (secondsLeft <= 0) {
-        clearInterval(timer);
-        tray.setTitle("Time's up!");
-        flashInterval = flashMenuBar();
-      } else {
-        tray.setTitle(formatTime(secondsLeft));
-      }
-    }, 1000);
-  };
+  const resetTimer = (duration) => {
+    clearInterval(interval);
 
-  const resetTimer = () => {
-    clearInterval(timer);
-    clearInterval(flashInterval);
-    tray.setTitle("Timer Reset");
-    startTimer();
-  }
+    const endTime = Date.now() + duration * 1000;
+
+    const updateTimer = () => {
+      const currentTime = Date.now();
+      const timeLeft = Math.max(0, Math.round((endTime - currentTime) / 1000));
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        tray.setTitle("Time's up!");
+        interval = flashMenuBar();
+      } else {
+        tray.setTitle(formatTime(timeLeft));
+      }
+    };
+
+    updateTimer();
+    interval = setInterval(updateTimer, 1000);
+  };
 
   await app.whenReady()
   const tray = new Tray(nativeImage.createEmpty())
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Reset Timer', type: 'normal', click: resetTimer },
+    { label: '5 minutes', click: () => resetTimer(5 * 60) },
+    { label: '10 minutes', click: () => resetTimer(10 * 60) },
+    { label: '15 minutes', click: () => resetTimer(15 * 60) },
+    { label: '20 minutes', click: () => resetTimer(20 * 60) },
     { role: 'quit' }
-  ])
+  ]);
   tray.setContextMenu(contextMenu)
 
-  startTimer()
+  resetTimer(5);
 })()
