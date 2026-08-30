@@ -80,10 +80,18 @@ const lowBatteryCard = (reading) => ({
   ].join('\n'),
 })
 
-export const createPowerWatch = (onAlert) => {
+export const createPowerWatch = (onAlert, onSustainedLoad = () => {}) => {
   const watts = []
   let lastAlertAt = 0
   let timer = null
+  let underLoad = false
+
+  const reportLoad = (active) => {
+    if (active === underLoad) return
+    underLoad = active
+    log(`sustained load on battery ${active ? 'started' : 'ended'}`)
+    onSustainedLoad(active)
+  }
 
   const check = async () => {
     const reading = await readPower().catch((error) => {
@@ -94,15 +102,17 @@ export const createPowerWatch = (onAlert) => {
     if (!reading) return
     if (!reading.onBattery) {
       watts.length = 0
+      reportLoad(false)
       return
     }
 
     watts.push(reading.watts)
     if (watts.length > WINDOW_SAMPLES) watts.shift()
 
-    if (Date.now() - lastAlertAt < ALERT_GAP_MS) return
-
     const sustained = watts.length === WINDOW_SAMPLES ? median(watts) : 0
+    reportLoad(sustained >= HEAVY_LOAD_WATTS)
+
+    if (Date.now() - lastAlertAt < ALERT_GAP_MS) return
     const card = sustained >= HEAVY_LOAD_WATTS
       ? heavyLoadCard(sustained, reading)
       : reading.percent < LOW_BATTERY_PERCENT

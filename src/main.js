@@ -8,8 +8,19 @@ import * as loginItem from './login-item.js'
 import * as singleInstance from './single-instance.js'
 
 const IDLE_STATUS = '⏱'
-const DURATIONS = [5, 10, 15, 20]
-const DEFAULT_DURATION = 20
+const DURATIONS = [
+  { minutes: 5, hint: 'drifting off constantly' },
+  { minutes: 10, hint: 'hard to get started' },
+  { minutes: 15, hint: 'everyday check-in' },
+  { minutes: 20, hint: 'settled into it' },
+  { minutes: 25, hint: 'a full pomodoro' },
+  { minutes: 45, hint: 'deep in something' },
+  { minutes: 60, hint: 'long anchor' },
+  { minutes: 90, hint: 'one full focus cycle' },
+]
+const DEFAULT_DURATION = 15
+const FIREBALL = '🔥'
+const FLASH_MS = 500
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
@@ -25,10 +36,28 @@ app.on('window-all-closed', () => {});
   let state = 'idle'
   let status = IDLE_STATUS
   let sessionMinutes = DEFAULT_DURATION
+  let loadFlash = null
+  let flameLit = false
 
   const renderTitle = () => {
     const label = task.get()
-    tray.setTitle(label ? `${label} · ${status}` : status)
+    const flame = flameLit ? `${FIREBALL} ` : ''
+    tray.setTitle(`${flame}${label ? `${label} · ${status}` : status}`)
+  }
+
+  const setSustainedLoad = (active) => {
+    clearInterval(loadFlash)
+    loadFlash = null
+    flameLit = false
+
+    if (active) {
+      loadFlash = setInterval(() => {
+        flameLit = !flameLit
+        renderTitle()
+      }, FLASH_MS)
+    }
+
+    renderTitle()
   }
 
   const setStatus = (next) => {
@@ -103,8 +132,10 @@ app.on('window-all-closed', () => {});
       { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
       { type: 'separator' },
       { label: 'Flow mode', type: 'checkbox', checked: state !== 'idle', click: toggleFlowMode },
-      ...DURATIONS.map((minutes) => ({
-        label: `${minutes} minutes`,
+      ...DURATIONS.map(({ minutes, hint }) => ({
+        label: `${minutes} min · ${hint}`,
+        type: 'radio',
+        checked: minutes === sessionMinutes,
         click: () => startSession(minutes),
       })),
       { type: 'separator' },
@@ -142,7 +173,7 @@ app.on('window-all-closed', () => {});
     renderMenu()
   })
   const coach = createCoach(() => state)
-  const powerWatch = createPowerWatch((card) => coach.alert(card))
+  const powerWatch = createPowerWatch((card) => coach.alert(card), setSustainedLoad)
 
   const tray = new Tray(nativeImage.createEmpty())
   renderTitle()
