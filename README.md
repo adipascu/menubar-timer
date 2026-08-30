@@ -57,3 +57,35 @@ Start at login defaults to off. The app offers it once on first run, and it is s
 The fullscreen card needs Accessibility access in System Settings, Privacy & Security. Everything else works without it, and the log says so when the check is refused.
 
 Logs rotate at 1 MB to `~/Library/Logs/TimerBar.log`.
+
+---
+
+## How this was built
+
+Every prompt in the session that produced this app, verbatim and in order, typos included.
+
+1. donwload free resources on how to build a saas, and make random important information randomly pop into my coputer via pop ups, similar like clippy, every random idk how long time, when I am active at the computer, and don't have the timer turned on, see menubar timer, actually make this a menubar timer feature, have a stop timer button, and that enables these random popups about how to build a saas, a new claude skill is being built, wait for it to appear, it's the how to publish as a prod app skill invoke it for this project menu bar thimg. Also make it autostart same way like the other app that is built via this productionize app skill, you can talk tha tsession and ask for details, its a sibling session that is active now
+
+2. also make the menu bar clock have a field where I can input what I am working on, it will always show that text, next ot the time
+
+3. also make it ahve two modes of operation, can be toggled, one of them is when I am seeking flow in an active task, meaning I have the popup and the timer also gets triggered, or when off. Basically when on it needs to count down, flash like now when 0, and requires a label for tha tthing I am working on, in this mode it will not shop popups with tips, when timer is off, then it shows the tip popups, it should also show popups with tips when it ran out of time and is staying in a flashing state
+
+4. Also make it show a popup when the timer is off, and the re is a fullscreen window hiding the bar that contains the timer
+
+5. Also render the popups in a way that they are oerlayed on everything, meaning that even whole I switch woindows and am active with the computer this popup will be there untill I dissmiss it by pressing ok, also add a button on it titled something else, make this other button to open a claude code cli session where the initial prompt is the tip, and I can ask followup questions the tip shown, when either button is clicked, the thing dissapears
+
+6. once every week, have the popup instead of showing the usual stuff, have a special one that when acted upon will invoce claude code cli in a way that it will learn things from past weeks or since this was ran claude code sessions, all sessions from disk with relevant dates or last activity, learn what I am doing overall and then adapt the tips to my current situation to drive me to better undertand how to make money with saas, just take me from where I am to where I want to be, this cli code session will aslo ask me questions about my goals, and anything else needed to have better tooltips for me to learn to reach goals and whatever else we talk about in this session, make sure it asks where i struggle as well and take my situation into consideration, make it gather as much context about me as needed to have efficient relevant popups, make sure this is scheduled, once more than 7 days pass, this will be the only popup type shown
+
+7. also add an mcp server that can send notifications to my mobile on command, I think that will be useful later on
+
+   *Two multiple-choice answers followed here, choosing the notification channel and where the server should live. Not counted as prompts.*
+
+8. the tooltips seem to dissapear by themselves very quickly, make sure they work proper
+
+9. use the [ublish app skill that is actively authored, idk if done, wait for the skill to exist first, when it exists, use it to publish the app on my website etc
+
+10. *An unrelated one-line clipboard request about a third party's order. Withheld here rather than published, since it concerns someone who did not agree to appear in this repo. It is counted as a prompt.*
+
+10 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
+
+Redactions: prompt 10 is withheld for the reason given above. Nothing in prompts 1 to 9 needed masking.
