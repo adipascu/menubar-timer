@@ -1,0 +1,180 @@
+import { app, BrowserWindow, ipcMain, powerMonitor, screen, shell } from 'electron'
+import { execFile } from 'node:child_process'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { createCalibration } from './calibration.js'
+import { menuBarIsCovered } from './fullscreen.js'
+import { log } from './log.js'
+
+const here = dirname(fileURLToPath(import.meta.url))
+const tips = JSON.parse(readFileSync(join(here, 'tips.json'), 'utf8'))
+
+const MIN_GAP_MS = 4 * 60 * 1000
+const MAX_GAP_MS = 12 * 60 * 1000
+const RETRY_GAP_MS = 60 * 1000
+const ACTIVE_WITHIN_SECONDS = 60
+const POPUP_WIDTH = 380
+const POPUP_MARGIN = 12
+
+const HIDDEN_TIMER_NUDGE = {
+  kind: 'nudge',
+  title: 'The timer is off',
+  body: 'A fullscreen window is covering the menu bar, so the timer is out of sight. Start a flow session when you want to focus on something.',
+}
+
+const randomGap = () => MIN_GAP_MS + Math.floor(Math.random() * (MAX_GAP_MS - MIN_GAP_MS))
+
+const shuffled = (items) => {
+  const copy = [...items]
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy
+}
+
+const createTipQueue = (personalTips) => {
+  let queue = []
+  return () => {
+    if (queue.length === 0) queue = [...shuffled(tips), ...shuffled(personalTips())]
+    return queue.pop()
+  }
+}
+
+const userIsAtTheComputer = () => powerMonitor.getSystemIdleState(ACTIVE_WITHIN_SECONDS) === 'active'
+
+const discussionPrompt = (tip) => [
+  `"${tip.title}" — ${tip.source}${tip.url ? `, ${tip.url}` : ''}`,
+  '',
+  tip.body,
+  '',
+  'That tip just popped up while I was working. Help me think it through and work out what it means for the SaaS I am building. Ask me what I am building before you give advice.',
+].join('\n')
+
+const openClaudeSession = (tip) => {
+  const promptFile = join(app.getPath('temp'), `saas-tip-${Date.now()}.txt`)
+  writeFileSync(promptFile, tip.prompt ?? discussionPrompt(tip))
+
+  const command = `cd ~ && claude "$(cat ${JSON.stringify(promptFile)})"`
+  execFile('osascript', [
+    '-e', `tell application "Terminal" to do script ${JSON.stringify(command)}`,
+    '-e', 'tell application "Terminal" to activate',
+  ], { timeout: 10000 }, (error) => {
+    if (error) log(`could not open a Claude Code session: ${error.message.trim()}`)
+    else log(`opened a Claude Code session for "${tip.title}"`)
+  })
+}
+
+export const createCoach = (getState) => {
+  const calibration = createCalibration()
+  const nextTip = createTipQueue(calibration.personalTips)
+  let timer = null
+  let popup = null
+  let showing = null
+
+  const tipsAreAllowed = () => getState() !== 'running'
+  const timerIsOff = () => getState() === 'idle'
+
+  const closePopup = () => {
+    if (popup && !popup.isDestroyed()) popup.close()
+    popup = null
+    showing = null
+  }
+
+  const placeBottomRight = (window) => {
+    const { workArea } = screen.getPrimaryDisplay()
+    const [width, height] = window.getSize()
+    window.setPosition(
+      workArea.x + workArea.width - width - POPUP_MARGIN,
+      workArea.y + workArea.height - height - POPUP_MARGIN,
+    )
+  }
+
+  const show = (tip) => {
+    showing = tip
+    popup = new BrowserWindow({
+      width: POPUP_WIDTH,
+      height: 200,
+      show: false,
+      frame: false,
+      transparent: true,
+      resizable: false,
+      movable: false,
+      focusable: false,
+      skipTaskbar: true,
+      alwaysOnTop: true,
+      hasShadow: false,
+      webPreferences: { preload: join(here, 'popup-preload.cjs') },
+    })
+
+    popup.setAlwaysOnTop(true, 'screen-saver')
+    popup.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+    popup.on('closed', () => {
+      popup = null
+      showing = null
+    })
+
+    popup.webContents.on('did-finish-load', () => popup.webContents.send('tip', tip))
+    popup.loadFile(join(here, 'popup.html'))
+  }
+
+  const dueNow = async () => {
+    if (calibration.isDue()) return calibration.popup()
+    if (timerIsOff() && (await menuBarIsCovered())) return HIDDEN_TIMER_NUDGE
+    return nextTip()
+  }
+
+  const tick = async () => {
+    if (!(tipsAreAllowed() && userIsAtTheComputer() && popup === null)) {
+      schedule(RETRY_GAP_MS)
+      return
+    }
+
+    const tip = await dueNow()
+    if (tipsAreAllowed() && popup === null) {
+      show(tip)
+      log(`showed ${tip.kind ?? 'tip'}: ${tip.title}`)
+    }
+    schedule(randomGap())
+  }
+
+  const schedule = (delay) => {
+    clearTimeout(timer)
+    timer = setTimeout(tick, delay)
+  }
+
+  ipcMain.on('coach:height', (event, height) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (!window || window.isDestroyed()) return
+    window.setContentSize(POPUP_WIDTH, Math.round(height))
+    placeBottomRight(window)
+    window.showInactive()
+  })
+
+  ipcMain.on('coach:dismiss', () => closePopup())
+
+  ipcMain.on('coach:discuss', () => {
+    const tip = showing
+    closePopup()
+    if (tip) openClaudeSession(tip)
+  })
+
+  ipcMain.on('coach:open-source', (_event, url) => {
+    shell.openExternal(url)
+    closePopup()
+  })
+
+  return {
+    start: () => schedule(randomGap()),
+    refresh: () => {
+      if (tipsAreAllowed()) schedule(randomGap())
+      else closePopup()
+    },
+    stop: () => {
+      clearTimeout(timer)
+      timer = null
+      closePopup()
+    },
+  }
+}

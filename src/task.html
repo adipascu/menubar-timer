@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>What are you working on?</title>
+    <style>
+      :root {
+        --card: #fffdf3;
+        --border: #d8cfae;
+        --ink: #1c1a14;
+        --muted: #6f6852;
+        --accent: #b8860b;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --card: #23211c;
+          --border: #4a4536;
+          --ink: #f2eee0;
+          --muted: #a9a189;
+          --accent: #e3b341;
+          --shadow: rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+        font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+        color: var(--ink);
+      }
+
+      #card {
+        margin: 10px;
+        padding: 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 12px 30px var(--shadow);
+      }
+
+      label {
+        display: block;
+        font-weight: 650;
+        margin-bottom: 8px;
+      }
+
+      input {
+        width: 100%;
+        font: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        background: transparent;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      footer {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #hint {
+        flex: 1;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      button {
+        font: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+        padding: 4px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: transparent;
+      }
+
+      button:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--card);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="card">
+      <label for="label">What are you working on?</label>
+      <input id="label" type="text" maxlength="40" placeholder="Shipping the billing page" />
+      <footer>
+        <span id="hint">Shown in the menu bar next to the time.</span>
+        <button id="clear">Clear</button>
+        <button id="save">Save</button>
+      </footer>
+    </div>
+
+    <script>
+      const field = document.getElementById('label')
+
+      window.task.onLabel((label) => {
+        field.value = label
+        field.focus()
+        field.select()
+      })
+
+      const save = () => window.task.save(field.value)
+
+      document.getElementById('save').addEventListener('click', save)
+      document.getElementById('clear').addEventListener('click', () => window.task.save(''))
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') save()
+        if (event.key === 'Escape') window.task.cancel()
+      })
+    </script>
+  </body>
+</html>
