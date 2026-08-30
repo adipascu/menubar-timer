@@ -1,9 +1,11 @@
 import { app, Tray, Menu, nativeImage, } from 'electron'
 import ansiStyles from 'ansi-styles';
 import { createCoach } from './coach.js'
+import { createPowerWatch } from './power.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
+import * as singleInstance from './single-instance.js'
 
 const IDLE_STATUS = '⏱'
 const DURATIONS = [5, 10, 15, 20]
@@ -132,6 +134,7 @@ app.on('window-all-closed', () => {});
     return
   }
 
+  singleInstance.claim()
   app.dock?.hide()
 
   const task = createTaskField(() => {
@@ -139,11 +142,13 @@ app.on('window-all-closed', () => {});
     renderMenu()
   })
   const coach = createCoach(() => state)
+  const powerWatch = createPowerWatch((card) => coach.alert(card))
 
   const tray = new Tray(nativeImage.createEmpty())
   renderTitle()
   renderMenu()
   coach.start()
+  powerWatch.start()
   log(`ready, start at login ${loginItem.isEnabled()}`)
   await loginItem.offerOnFirstRun()
   renderMenu()
