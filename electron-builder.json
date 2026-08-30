@@ -2,12 +2,16 @@
   "appId": "be.pascu.timerbar",
   "productName": "TimerBar",
   "executableName": "TimerBar",
-  "files": ["src/**/*", "package.json"],
+  "files": [
+    "src/**/*",
+    "package.json"
+  ],
   "mac": {
     "category": "public.app-category.productivity",
     "target": "dmg",
     "extendInfo": {
       "LSUIElement": true
     }
-  }
+  },
+  "afterPack": "./scripts/after-pack.cjs"
 }

@@ -8,6 +8,10 @@ const FLAGS = ['--enable-login-item', '--disable-login-item', '--status']
 export const isEnabled = () => app.getLoginItemSettings().openAtLogin
 
 export const setEnabled = (enabled) => {
+  if (!app.isPackaged) {
+    log(`refused to set start at login from a source run, which would register ${app.getPath('exe')}`)
+    return
+  }
   app.setLoginItemSettings({ openAtLogin: enabled, openAsHidden: true })
   log(`start at login set to ${enabled}, system reports ${isEnabled()}`)
 }
