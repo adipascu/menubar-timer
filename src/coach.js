@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, powerMonitor, screen, shell } from 'electron'
 import { execFile } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCalibration } from './calibration.js'
@@ -16,6 +16,7 @@ const RETRY_GAP_MS = 60 * 1000
 const ACTIVE_WITHIN_SECONDS = 60
 const POPUP_WIDTH = 380
 const POPUP_MARGIN = 12
+const SCRATCH_DIR = '/tmp'
 
 const HIDDEN_TIMER_NUDGE = {
   kind: 'nudge',
@@ -44,6 +45,26 @@ const createTipQueue = (personalTips) => {
 
 const userIsAtTheComputer = () => powerMonitor.getSystemIdleState(ACTIVE_WITHIN_SECONDS) === 'active'
 
+const sourcePathFile = () => join(app.getPath('userData'), 'source-path')
+
+const rememberSourcePath = () => {
+  if (!app.isPackaged) writeFileSync(sourcePathFile(), app.getAppPath())
+}
+
+const sourcePath = () => {
+  if (!app.isPackaged) return app.getAppPath()
+  const file = sourcePathFile()
+  return existsSync(file) ? readFileSync(file, 'utf8').trim() : null
+}
+
+const ownSourceNote = () => {
+  const source = sourcePath()
+  return [
+    'The popup came from TimerBar, a menu bar coach I built myself and keep changing, so if this turns into a change worth making to the coach we can go and make it.',
+    source ? ` Its source is at ${source}.` : '',
+  ].join('')
+}
+
 const discussionPrompt = (tip) => [
   `"${tip.title}" — ${tip.source}${tip.url ? `, ${tip.url}` : ''}`,
   '',
@@ -54,9 +75,9 @@ const discussionPrompt = (tip) => [
 
 const openClaudeSession = (tip) => {
   const promptFile = join(app.getPath('temp'), `saas-tip-${Date.now()}.txt`)
-  writeFileSync(promptFile, tip.prompt ?? discussionPrompt(tip))
+  writeFileSync(promptFile, `${tip.prompt ?? discussionPrompt(tip)}\n\n${ownSourceNote()}`)
 
-  const command = `cd ~ && claude "$(cat ${JSON.stringify(promptFile)})"`
+  const command = `cd ${SCRATCH_DIR} && claude "$(cat ${JSON.stringify(promptFile)})"`
   execFile('osascript', [
     '-e', `tell application "Terminal" to do script ${JSON.stringify(command)}`,
     '-e', 'tell application "Terminal" to activate',
@@ -67,6 +88,7 @@ const openClaudeSession = (tip) => {
 }
 
 export const createCoach = (getState) => {
+  rememberSourcePath()
   const calibration = createCalibration()
   const nextTip = createTipQueue(calibration.personalTips)
   let timer = null
@@ -167,6 +189,10 @@ export const createCoach = (getState) => {
 
   return {
     start: () => schedule(randomGap()),
+    alert: (card) => {
+      closePopup()
+      show(card)
+    },
     refresh: () => {
       if (tipsAreAllowed()) schedule(randomGap())
       else closePopup()
