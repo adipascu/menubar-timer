@@ -6,6 +6,8 @@ A macOS menu bar timer with two modes and a coach that only talks when you are n
 
 **Flow mode off.** A Clippy-style card slides into the corner every four to twelve minutes with one idea about building a SaaS, drawn from 110 tips distilled from free sources. It sits above every window and every space until you press OK, so it survives switching apps. The second button opens a Claude Code session seeded with that tip so you can argue with it.
 
+That session starts in `/tmp`, and its prompt names TimerBar's own checkout, so an argument about a tip can turn into a change to the coach. A packaged build learns that checkout path from the first run out of the source tree, because the bundle only knows its own location inside `/Applications`.
+
 Once a week the usual tip is replaced by a tune-up card. Acting on it opens a Claude Code session that reads your recent session transcripts, works out what you have actually been building, interviews you about your goals and where you are stuck, and rewrites the tip pool around your situation. Until you run it, it is the only card you get.
 
 ## Where the tips come from
@@ -86,6 +88,34 @@ Every prompt in the session that produced this app, verbatim and in order, typos
 
 10. *An unrelated one-line clipboard request about a third party's order. Withheld here rather than published, since it concerns someone who did not agree to appear in this repo. It is counted as a prompt.*
 
-10 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
+11. phone pluggied in
 
-Redactions: prompt 10 is withheld for the reason given above. Nothing in prompts 1 to 9 needed masking.
+12. 3Mmake the menu bar timer show low battery popups all the time when abttery is either draining quickly like today , or even better maybe when sustained cpu load is high and we are on battery, also make it show generally when battery is low under 40 percent. make these show often every few minutes in all states of the timer, when its off, on or even timed out, make it work with both low battery and sustained high power consumption (better use power comsumption, total consumption, gpu, cpu led etc better than battery percentage.
+
+13. High power consumption means sustained higher than just normal desktop operation, meaning more than just browseing the web or doing light coding for some time idk, use best practices so I plug it in.
+
+14. Under light load I don't care much
+
+15. Make sure it also has the same prompt button where we can promt claude to adjust this feature etc
+
+16. again, like the other apps this skill make, make sure this auto starts same config
+
+17. backlog to consolidate these into a superapp for adhd or second life management, put this under business ideas in notion tasks
+
+18. see the second life task
+
+19. btw I stil don't see that label thing I asked about
+
+20. done?
+
+21. remove any old apps, make sure latest is running
+
+22. publish everything and have last version installed
+
+23. *A one-line reply confirming the withheld prompt 10 had been dealt with. Withheld for the same reason as prompt 10, and counted.*
+
+23 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
+
+Redactions: prompts 10 and 23 are withheld as unrelated to this project and concerning a third party's private affairs. Nothing else needed masking.
+
+Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar.
