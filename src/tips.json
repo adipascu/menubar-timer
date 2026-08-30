@@ -1,0 +1,662 @@
+[
+ {
+  "title": "Underdo your competition",
+  "body": "Conventional wisdom says that to beat your competitors you need to one-up them. If they have four features, you need five (or 15, or 25). If they’re spending x, you need to spend xx. If they have 20, you need 30.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/02.1-build-less"
+ },
+ {
+  "title": "Build software for yourself",
+  "body": "A great way to build software is to start out by solving your own problems. You’ll be the target audience and you’ll know what’s important and what’s not. That gives you a great head start on delivering a breakout product.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/02.2-whats-your-problem"
+ },
+ {
+  "title": "Outside money is plan B",
+  "body": "The first priority of many startups is acquiring funding from investors. But remember, if you turn to outsiders for funding, you’ll have to answer to them too. Expectations are raised. Investors want their money back — and quickly.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/02.3-fund-yourself"
+ },
+ {
+  "title": "Launch on time and on budget",
+  "body": "Here’s an easy way to launch on time and on budget: keep them fixed. Never throw more time or money at a problem, just scale back the scope. There’s a myth that goes like this: we can launch on time, on budget, and on scope.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/02.4-fix-time-and-budget-flex-scope"
+ },
+ {
+  "title": "Pick a fight",
+  "body": "Sometimes the best way to know what your app should be is to know what it shouldn’t be. Figure out your app’s enemy and you’ll shine a light on where you need to go.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/02.5-have-an-enemy"
+ },
+ {
+  "title": "Your passion — or lack of — will shine through",
+  "body": "The less your app is a chore to build, the better it will be. Keep it small and managable so you can actually enjoy the process. If your app doesn’t excite you, something’s wrong. If you’re only working on it in order to cash out, it will show.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/02.6-it-shouldnt-be-a-chore"
+ },
+ {
+  "title": "The leaner you are, the easier it is to change",
+  "body": "The more massive an object, the more energy is required to change its direction. It’s as true in the business world as it is in the physical world. When it comes to web technology, change must be easy and cheap.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/03.1-less-mass"
+ },
+ {
+  "title": "Stay flexible by reducing obstacles to change",
+  "body": "Change is your best friend. The more expensive it is to make a change, the less likely you’ll make it. And if your competitors can change faster than you, you’re at a huge disadvantage. If change gets too expensive, you’re dead.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/03.2-lower-your-cost-of-change"
+ },
+ {
+  "title": "Use a team of three for version 1.0",
+  "body": "For the first version of your app, start with only three people. That’s the magic number that will give you enough manpower yet allow you to stay streamlined and agile.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/03.3-the-three-musketeers"
+ },
+ {
+  "title": "Let limitations guide you to creative solutions",
+  "body": "There’s never enough to go around. Not enough time. Not enough money. Not enough people. That’s a good thing. Instead of freaking out about these constraints, embrace them. Let them guide you. Constraints drive innovation and force focus.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/03.4-embrace-constraints"
+ },
+ {
+  "title": "Differentiate yourself from bigger companies by being personal and friendly",
+  "body": "A lot of small companies make the mistake of trying to act big. It’s as if they perceive their size as a weakness that needs to be covered up. Too bad. Being small can actually be a huge advantage, especially when it comes to communication.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/03.5-be-yourself"
+ },
+ {
+  "title": "Explicitly define the one-point vision for your app",
+  "body": "What does your app stand for? What’s it really all about? Before you start designing or coding anything you need to know the purpose of your product — the vision. Think big. Why does it exist? What makes it different than other similar products?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/04.1-whats-the-big-idea"
+ },
+ {
+  "title": "Work from large to small",
+  "body": "We’re crazy about details. The space between objects The perfect type leading The perfect color The perfect words Four lines of code instead of seven 90% vs 89% 760px vs 750px $39/month vs. $49/month Success and satisfaction are in the details.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/04.2-ignore-details-early-on"
+ },
+ {
+  "title": "Don’t waste time on problems you don’t have yet",
+  "body": "Do you really need to worry about scaling to 100,000 users today if it will take you two years to get there? Do you really have to hire eight programmers if you only need three today?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/04.3-its-a-problem-when-its-a-problem"
+ },
+ {
+  "title": "Find the core market for your application and focus solely on them",
+  "body": "The customer is not always right. The truth is you have to sort out who’s right and who’s wrong for your app. The good news is that the internet makes finding the right people easier than ever.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/04.4-hire-the-right-customers"
+ },
+ {
+  "title": "You don’t have a scaling problem yet",
+  "body": "“Will my app scale when millions of people start using it?” Ya know what? Wait until that actually happens. If you’ve got a huge number of people overloading your system then huzzah! That’s one swell problem to have.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/04.5-scale-later"
+ },
+ {
+  "title": "Your app should take sides",
+  "body": "Some people argue software should be agnostic. They say it’s arrogant for developers to limit features or ignore feature requests. They say software should always be as flexible as possible. We think that’s bullshit. The best software has a vision.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/04.6-make-opinionated-software"
+ },
+ {
+  "title": "Build half a product, not a half-ass product",
+  "body": "Beware of the “everything but the kitchen sink” approach to web app development. Throw in every decent idea that comes along and you’ll just wind up with a half-assed version of your product. What you really want to do is build half a product that kicks ass.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.1-half-not-half-assed"
+ },
+ {
+  "title": "Essentials only",
+  "body": "Our favorite answer to the “why didn’t you do this or why didn’t you do that?” question is always: “Because it just doesn’t matter.” That statement embodies what makes a product great. Figuring out what matters and leaving out the rest.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.2-it-just-doesnt-matter"
+ },
+ {
+  "title": "Make features work hard to be implemented",
+  "body": "The secret to building half a product instead of a half-ass product is saying no. Each time you say yes to a feature, you’re adopting a child. You have to take your baby through a whole chain of events (e.g. design, implementation, testing, etc.).",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.3-start-with-no"
+ },
+ {
+  "title": "Expose the price of new features",
+  "body": "Even if a feature makes it past the “no” stage, you still need to expose its hidden costs. For example, be on the lookout for feature loops (i.e. features that lead to more features). We’ve had requests to add a meetings tab to Basecamp.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.4-hidden-costs"
+ },
+ {
+  "title": "Build something you can manage",
+  "body": "If you launch an affiliate program do you have the systems in place to handle the accounting and payouts? Maybe you should just let people earn credit against their membership fees instead of writing, signing, and mailing a check each month.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.5-can-you-handle-it"
+ },
+ {
+  "title": "Build software for general concepts and encourage people to create their own solutions",
+  "body": "Don’t force conventions on people. Instead make your software general so everyone can find their own solution. Give people just enough to solve their own problems their own way. And then get out of the way.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.6-human-solutions"
+ },
+ {
+  "title": "Let your customers remind you what’s important",
+  "body": "Customers want everything under the sun. They’ll avalanche you with feature requests. Just check out our product forums; The feature request category always trumps the others by a wide margin.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.7-forget-feature-requests"
+ },
+ {
+  "title": "Ask people what they don’t want",
+  "body": "Most software surveys and research questions are centered around what people want in a product.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/05.8-hold-the-mayo"
+ },
+ {
+  "title": "Get something real up and running quickly",
+  "body": "Running software is the best way to build momentum, rally your team, and flush out ideas that don’t work. It should be your number one priority from day one.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.1-race-to-running-software"
+ },
+ {
+  "title": "Work in iterations",
+  "body": "Don’t expect to get it right the first time. Let the app grow and speak to you. Let it morph and evolve. With web-based software there’s no need to ship perfection. Design screens, use them, analyze them, and then start over again.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.2-rinse-and-repeat"
+ },
+ {
+  "title": "Go from brainstorm to sketches to HTML to coding",
+  "body": "Here’s the process we use to Get Real: Brainstorm Come up with ideas. What is this product going to do? For Basecamp, we looked at our own needs. We wanted to post project updates. We wanted clients to participate. We knew that projects had milestones.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.3-from-idea-to-implementation"
+ },
+ {
+  "title": "Decide the little details so your customers don’t have to",
+  "body": "You’re faced with a tough decision: how many messages do we include on each page? Your first inclination may be to say, “Let’s just make it a preference where people can choose 25, 50, or 100.” That’s the easy way out though. Just make a decision.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.4-avoid-preferences"
+ },
+ {
+  "title": "Decisions are temporary so make the call and move on",
+  "body": "Done. Start to think of it as a magical word. When you get to done it means something’s been accomplished. A decision has been made and you can move on. Done means you’re building momentum. But wait, what if you screw up and make the wrong call? It’s ok.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.5-done"
+ },
+ {
+  "title": "Test your app via real world usage",
+  "body": "There’s no substitute for real people using your app in real ways. Get real data. Get real feedback. Then improve based on that info. Formal usability testing is too stiff. Lab settings don’t reflect reality.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.6-test-in-the-wild"
+ },
+ {
+  "title": "Break it down",
+  "body": "Estimates that stretch into weeks or months are fantasies. The truth is you just don’t know what’s going to happen that far in advance. So shrink your time. Keep breaking down timeframes into smaller chunks.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/06.7-shrink-your-time"
+ },
+ {
+  "title": "Don’t split into silos",
+  "body": "Too many companies separate design, development, copywriting, support, and marketing into different silos.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/07.1-unity"
+ },
+ {
+  "title": "People need uninterrupted time to get things done",
+  "body": "Basecamp is spread out over four cities and eight time zones. From Provo, Utah to Copenhagen, Denmark, the five of us are eight hours apart. One positive side effect of this eight hour difference is alone time.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/07.2-alone-time"
+ },
+ {
+  "title": "Don’t have meetings",
+  "body": "Do you really need a meeting? Meetings usually arise when a concept isn’t clear enough. Instead of resorting to a meeting, try to simplify the concept so you can discuss it quickly via email or im or Campfire. The goal is to avoid meetings.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/07.3-meetings-are-toxic"
+ },
+ {
+  "title": "Release something today",
+  "body": "The most important thing in software development is motivation. Motivation is local — if you aren’t motivated by what you are working on right now, then chances are it won’t be as good as it should be. In fact, it’s probably going to suck.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/07.4-seek-and-celebrate-small-victories"
+ },
+ {
+  "title": "Add slow to go fast",
+  "body": "There’s no need to get big early — or later. Even if you have access to 100 of the very best people, it’s still a bad idea to try and hire them all at once. There’s no way that you can immediately assimilate that many people into a coherent culture.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/08.1-hire-less-and-hire-later"
+ },
+ {
+  "title": "Work with prospective employees on a test-basis first",
+  "body": "It’s one thing to look at a portfolio, résumé, code example, or previous work. It’s another thing to actually work with someone.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/08.2-kick-the-tires"
+ },
+ {
+  "title": "Judge potential tech hires on open source contributions",
+  "body": "The typical method of hiring for technical positions — based on degrees, résumés, etc. — is silly in a lot of ways. Does it really matter where someone’s degree is from or their GPA? Can you really trust a résumé or a reference?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/08.3-actions-not-words"
+ },
+ {
+  "title": "Go for quick learning generalists over ingrained specialists",
+  "body": "We’ll never hire someone who’s an information architect. It’s just too overly specific. With a small team like ours, it doesn’t make sense to hire people with such a narrowly defined skill-set. Small teams need people who can wear different hats.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/08.4-get-well-rounded-individuals"
+ },
+ {
+  "title": "Go for happy and average over frustrated and great",
+  "body": "Enthusiasm. It’s one attribute you just can’t fake. When it comes time to hire, don’t think you need a guru or a tech-celebrity. Often, they’re just primadonnas anyway. A happy yet average employee is better than a disgruntled expert.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/08.5-you-cant-fake-enthusiasm"
+ },
+ {
+  "title": "Hire good writers",
+  "body": "If you are trying to decide between a few people to fill a position, always hire the better writer. It doesn’t matter if that person is a designer, programmer, marketer, salesperson, or whatever, the writing skills will pay off.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/08.6-wordsmiths"
+ },
+ {
+  "title": "Design the interface before you start programming",
+  "body": "Too many apps start with a program-first mentality. That’s a bad idea. Programming is the heaviest component of building an app, meaning it’s the most expensive and hardest to change. Instead, start by designing first. Design is relatively light.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.1-interface-first"
+ },
+ {
+  "title": "Start from the core of the page and build outward",
+  "body": "Epicenter design focuses on the true essence of the page — the epicenter — and then builds outward. This means that, at the start, you ignore the extremities: the navigation/tabs, footer, colors, sidebar, logo, etc.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.2-epicenter-design"
+ },
+ {
+  "title": "Design for regular, blank, and error states",
+  "body": "For each screen, you need to consider three possible states: Regular The screen people see when everything’s working fine and your app is flush with data. Blank The screen people see when using the app for the first time, before data is entered.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.3-three-state-solution"
+ },
+ {
+  "title": "Set expectations with a thoughtful first-run experience",
+  "body": "Ignoring the blank slate stage is one of the biggest mistakes you can make. The blank slate is your app’s first impression and you never get a second…well, you know. The problem is that when designing a UI, it’s usually flush with data.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.4-the-blank-slate"
+ },
+ {
+  "title": "Design for when things go wrong",
+  "body": "Let’s admit it: Things will go wrong online. No matter how carefully you design your app, no matter how much testing you do, customers will still encounter problems. So how do you handle these inevitable breakdowns? With defensive design.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.5-get-defensive"
+ },
+ {
+  "title": "What makes sense here may not make sense there",
+  "body": "Should actions be buttons or links? It depends on the action. Should a calendar view be in list-form or grid-form? It depends where it’s being shown and how long the time period is. Does every global navigation link need to be on every page?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.6-context-over-consistency"
+ },
+ {
+  "title": "Every letter matters",
+  "body": "Copywriting is interface design. Great interfaces are written. If you think every pixel, every icon, every typeface matters, then you also need to believe every letter matters.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.7-copywriting-is-interface-design"
+ },
+ {
+  "title": "Incorporate admin functions into the public interface",
+  "body": "Admin screens — the screens used to manage preferences, people, etc. — have a tendency to look like crap. That’s because the majority of development time is spent on the public-facing interface instead.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/09.8-one-interface"
+ },
+ {
+  "title": "Keep your code as simple as possible",
+  "body": "You’d think that twice as much code would make your software only twice as complex. But actually, each time you increase the amount of code, your software grows exponentially more complicated .",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/10.1-less-software"
+ },
+ {
+  "title": "Choose tools that keep your team excited and motivated",
+  "body": "A happy programmer is a productive programmer. That’s why we optimize for happiness and you should too. Don’t just pick tools and practices based on industry standards or performance metrics.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/10.2-optimize-for-happiness"
+ },
+ {
+  "title": "Listen when your code pushes back",
+  "body": "Listen to your code. It will offer suggestions. It will push back. It will tell you where the pitfalls reside. It will suggest new ways to do things. It will help you stick to a model of less software.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/10.3-code-speaks"
+ },
+ {
+  "title": "Pay off your code and design “bills”",
+  "body": "We usually think of debt in terms of money but it comes in other forms too. You can easily build up code and design debt. Hack together some bad code that’s functional but still a bit hairy and you’re building up debt.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/10.4-manage-debt"
+ },
+ {
+  "title": "Get data out into the world via RSS, APIs, etc.",
+  "body": "Don’t try to lock-in your customers. Let them get their information when they want it and how they want it. To do that, you’ve got to give up the idea of sealing in data. Instead, let it run wild. Give people access to their information via RSS feeds.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/10.5-open-doors"
+ },
+ {
+  "title": "Don’t write a functional specifications document",
+  "body": "These blueprint docs usually wind up having almost nothing to do with the finished product. Here’s why: Functional specs are fantasies They don’t reflect reality.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/11.1-theres-nothing-functional-about-afunctional-spec"
+ },
+ {
+  "title": "Eliminate unnecessary paperwork",
+  "body": "Avoiding functional specs is a good start but don’t stop there; Prevent excess paperwork everywhere. Unless a document is actually going to morph into something real, don’t produce it. Build, don’t write.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/11.2-dont-do-dead-documents"
+ },
+ {
+  "title": "Write stories, not details",
+  "body": "If you do find yourself requiring words to explain a new feature or concept, write a brief story about it. Don’t get into the technical or design details, just tell a quick story. Do it in a human way, like you would in normal conversation.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/11.3-tell-me-a-quick-story"
+ },
+ {
+  "title": "Insert actual text instead of lorem ipsum",
+  "body": "Lorem ipsum dolor is a trusted friend of designers. Dummy text helps people get what the design will look like once it’s fleshed out. But dummy text can be dangerous too. Lorem ipsum changes the way copy is viewed.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/11.4-use-real-words"
+ },
+ {
+  "title": "What is your product’s personality type?",
+  "body": "Think of your product as a person. What type of person do you want it to be? Polite? Stern? Forgiving? Strict? Funny? Deadpan? Serious? Loose? Do you want to come off as paranoid or trusting? As a know-it-all? Or modest and likable?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/11.5-personify-your-product"
+ },
+ {
+  "title": "Give something away for free",
+  "body": "It’s a noisy world out there. In order to get people to notice you amid the din, give something away for free. Smart companies know giving away freebies is a great way to lure in customers. Look at Apple.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/12.1-free-samples"
+ },
+ {
+  "title": "Make signup and cancellation a painless process",
+  "body": "Make it as easy as possible to get in — and get out — of your app. If I’m a customer that wants to use your app, it should be a painless, no-brainer process. Provide a big, clear, signup button that pops and put it on each page of your marketing site.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/12.2-easy-on-easy-off"
+ },
+ {
+  "title": "Avoid long-term contracts, sign-up fees, etc.",
+  "body": "No one likes long term contracts, early termination fees, or one time set-up fees. So avoid them. Our products bill on a month to-month basis. There’s no contract to sign and you can cancel at any time without penalty. And there are never any set-up fees.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/12.3-silly-rabbit-tricks-are-for-kids"
+ },
+ {
+  "title": "Soften the blow of bad news with advance notice and grandfather clauses",
+  "body": "Need to deliver bad news like a price increase? Make it as painless as possible by giving folks plenty of advance notice. Also, consider a grandfather period that exempts existing customers for a certain period of time.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/12.4-a-softer-bullet"
+ },
+ {
+  "title": "Go from teaser to preview to launch",
+  "body": "If an app launches in a forest and there’s no one there to use it, does it make a noise? The point here is that if you launch your app without any pre-hype, people aren’t going to know about it.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.1-hollywood-launch"
+ },
+ {
+  "title": "Go from teaser to preview to launch",
+  "body": "The best promotional tool is a great product. Word will get out if you’ve got an app that people find really useful. Still, you need an ace promotional site too. What should you include on this site? Some ideas: Overview : Explain your app and its benefits.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.2-a-powerful-promo-site"
+ },
+ {
+  "title": "Blogging can be more effective than advertising (and it’s a hell of a lot cheaper)",
+  "body": "Advertising is expensive. And evaluating the effectiveness of various types of advertising can wind up being even more expensive than the advertising itself.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.3-ride-the-blog-wave"
+ },
+ {
+  "title": "Get advance buzz and signups going ASAP",
+  "body": "We’ve already touched on it but it bears repeating: Get some sort of site up and start collecting emails as soon as possible. Pick your domain name and put up a logo and maybe a sentence or two that describes, or at least hints at, what your app will do.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.4-solicit-early"
+ },
+ {
+  "title": "Share your knowledge with the world",
+  "body": "When a teacher appears as a contestant on Jeopardy, Alex Trebek often comments that it’s a “noble profession.” He’s right. There’s definitely something wonderful and rewarding about sharing your knowledge with others.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.5-promote-through-education"
+ },
+ {
+  "title": "They’re hungry for it so serve it up",
+  "body": "New or interesting features are a great way to generate buzz for your application. Special interest groups love to chew up “feature food” and spit it back out to the community. Alright, that’s kind of an unpleasant analogy but you get the point.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.6-feature-food"
+ },
+ {
+  "title": "Study your logs to track buzz",
+  "body": "You need to know who’s talking about you. Check your logs and find out where the buzz is coming from. Who’s linking to you? Who’s bitching about you? Which blogs listed at Technorati, Blogdex, Feedster, Del.icio.us, and Daypop are hot on your trail?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.7-track-your-logs"
+ },
+ {
+  "title": "Promote upgrade opportunities inside the app",
+  "body": "Everyone knows to pitch at the marketing site. But the sell shouldn’t stop there. If you have a tiered pricing plan (or a free version of your app), don’t forget to call out upgrade opportunities from within the product.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.8-inline-upsell"
+ },
+ {
+  "title": "Give your app a name that’s easy to remember",
+  "body": "A big mistake a lot of people make is thinking their app’s name needs to be ultradescriptive. Don’t worry about picking a name that vividly describes your tool’s purpose; That usually just leads to a generic, forgettable name.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/13.9-name-hook"
+ },
+ {
+  "title": "Tear down the walls between support and development",
+  "body": "In the restaurant business, there’s a world of difference between those working in the kitchen and those out front who deal with customers. It’s important for both sides to understand and empathize with the other.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/14.1-feel-the-pain"
+ },
+ {
+  "title": "Use inline help and FAQs so your product doesn’t require a manual or training",
+  "body": "You don’t need a manual to use Yahoo or Google or Amazon. So why can’t you build a product that doesn’t require a manual? Strive to build a tool that requires zero training. How do you do this?",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/14.2-zero-training"
+ },
+ {
+  "title": "Quick turnaround time on support queries should be a top priority",
+  "body": "Customers light up when you answer their questions quickly. They’re so used to canned responses that show up days later (if at all) that you can really differentiate yourself from competitors by offering a thoughtful response right away.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/14.3-answer-quick"
+ },
+ {
+  "title": "Be willing to say no to your customers",
+  "body": "When it comes to feature requests, the customer is not always right. If we added every single thing our customers requested, no one would want our products.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/14.4-tough-love"
+ },
+ {
+  "title": "Use forums or chat to let customers help each other",
+  "body": "Forums and web-based group chat are a great way to let customers ask questions and help one another out. By eliminating the middleman — that’s you — you provide an open stream of communication and save yourself time in the process.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/14.5-in-fine-forum"
+ },
+ {
+  "title": "Get bad news out there and out of the way",
+  "body": "If something goes wrong, tell people. Even if they never saw it in the first place. For example, Basecamp was down once for a few hours in the middle of the night.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/14.6-publicize-your-screwups"
+ },
+ {
+  "title": "Issue a major update 30 days after launch",
+  "body": "A quick update shows momentum. It shows you’re listening. It shows you’ve got more tricks up your sleeve. It gives you a second wave of buzz. It reaffirms initial good feelings. It gives you something to talk about and others to blog about.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.1-one-month-tuneup"
+ },
+ {
+  "title": "Show your product is alive by keeping an ongoing product development blog post-launch",
+  "body": "Don’t stop blogging once you launch. Show your product is a living creature by keeping a dedicated blog that you update frequently (at least once a week, more often if you can).",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.2-keep-the-posts-coming"
+ },
+ {
+  "title": "Don’t use “beta” as a scapegoat",
+  "body": "These days it feels like everything is in beta stage forever. That’s a cop out. An interminable beta stage tells customers you’re not really committed to rolling out a finished product.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.3-better-not-beta"
+ },
+ {
+  "title": "Prioritize your bugs (and even ignore some of them)",
+  "body": "Just because you discover a bug in your product, doesn’t mean it’s time to panic. All software has bugs — it’s just a fact of life. You don’t have to fix each bug instantly. Most bugs are annoying, not destroying. Annoyances can be tabled for a bit.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.4-all-bugs-are-not-created-equal"
+ },
+ {
+  "title": "Wait until knee-jerk reactions to changes die down before taking action",
+  "body": "When you rock the boat, there will be waves. After you introduce a new feature, change a policy, or remove something, knee-jerk reactions, often negative, will pour in. Resist the urge to panic or rapidly change things in response.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.5-ride-out-the-storm"
+ },
+ {
+  "title": "Subscribe to news feeds about your competitors",
+  "body": "Subscribe to news feeds about both your product and your competitors (it’s always wise to know the ways of one’s enemy). Use services like PubSub, Technorati, Feedster, and others to stay up to date (for keywords, use company names and product names).",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.6-keep-up-with-the-joneses"
+ },
+ {
+  "title": "More mature doesn’t have to mean more complicated",
+  "body": "As things progress, don’t be afraid to resist bloat. The temptation will be to scale up. But it doesn’t have to be that way. Just because something gets older and more mature, doesn’t mean it needs to get more complicated.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.7-beware-the-bloat-monster"
+ },
+ {
+  "title": "Be open to new paths and changes in direction",
+  "body": "Part of the beauty of a web app is its fluidity. You don’t wrap it up in a box, ship it, and then wait years for the next release. You can tweak and change as you go along. Be open to the fact that your original idea may not be your best one. Look at Flickr.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/15.8-go-with-the-flow"
+ },
+ {
+  "title": "Done!",
+  "body": "Alright, you made it! Hopefully you’re psyched to start Getting Real with your app. There really has never been a better time to make great software with minimal resources. With the right idea, passion, time, and skill, the sky’s the limit.",
+  "source": "Getting Real, 37signals",
+  "url": "https://basecamp.com/gettingreal/16.1-start-your-engines"
+ },
+ {
+  "title": "Do things that don't scale",
+  "body": "Startups take off because the founders make them take off. The most common unscalable thing founders have to do at the start is recruit users manually, one at a time.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/ds.html"
+ },
+ {
+  "title": "Recruit your first users by hand",
+  "body": "You can't wait for users to come to you. You have to go out and get them. Stripe's founders would ask people who agreed to try it if they could set it up on their laptop right then, instead of emailing a signup link.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/ds.html"
+ },
+ {
+  "title": "A handful of delighted users beats a crowd of lukewarm ones",
+  "body": "It's better to have 100 people who love you than a million who sort of like you. Make a few users really happy and word spreads from there.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/ds.html"
+ },
+ {
+  "title": "Deliver insanely great customer service early",
+  "body": "Your first users should feel that signing up with you was the best choice they ever made. Over-serving them teaches you what the product actually needs to be.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/ds.html"
+ },
+ {
+  "title": "Start with a narrow market and expand",
+  "body": "Almost all startups are fragile initially. The way to succeed is to start with a market so small it seems barely worth having, then grow out of it.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/ds.html"
+ },
+ {
+  "title": "Notice problems, don't brainstorm ideas",
+  "body": "The very best startup ideas are things the founders themselves want, that they can build, and that few others realize are worth doing. Live in the future and build what's missing.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/startupideas.html"
+ },
+ {
+  "title": "Well is more important than many",
+  "body": "It's better to make a small number of users really love you than a large number merely like you. Almost all good startup ideas are of the type that make a few people intensely happy first.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/startupideas.html"
+ },
+ {
+  "title": "Beware ideas that only sound plausible",
+  "body": "Sitting down to think of startup ideas produces plausible-sounding ideas nobody wants. Real ideas come from noticing something broken in your own life.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/startupideas.html"
+ },
+ {
+  "title": "A startup is a company designed to grow fast",
+  "body": "Growth is the single metric that matters. Pick a growth rate you can hit each week and let it drive every decision about what to work on.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/growth.html"
+ },
+ {
+  "title": "Measure growth weekly, not monthly",
+  "body": "A good growth rate during YC is 5-7% a week. If you're doing 10% a week you're doing exceptionally well. Measuring weekly keeps you honest and keeps the feedback loop tight.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/growth.html"
+ },
+ {
+  "title": "Pick one number and optimize it",
+  "body": "Focus on one metric that captures the value you deliver, usually revenue or active users. Optimizing a single number turns a vague quest into a solvable problem.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/growth.html"
+ },
+ {
+  "title": "Do the schleps nobody else will",
+  "body": "The most valuable startup ideas are guarded by tedious, unglamorous work. Schlep blindness hides good ideas from founders who unconsciously filter out anything that looks like a grind.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/schlep.html"
+ },
+ {
+  "title": "Wealth is what people want, not money",
+  "body": "You make wealth by making something people want. Money is just a way of moving wealth around, so measure yourself by the thing you made, not the round you raised.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/wealth.html"
+ },
+ {
+  "title": "Be relentlessly resourceful",
+  "body": "The single best predictor of a founder's success is relentless resourcefulness: pushing through obstacles rather than being deflected by them.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/relres.html"
+ },
+ {
+  "title": "Don't spend money before you have to",
+  "body": "The most common way startups die is running out of money, and the most common way to run out of money is hiring too fast. Stay cheap and stay alive.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/startupmistakes.html"
+ },
+ {
+  "title": "Launch before you feel ready",
+  "body": "Not launching is a classic startup mistake. Until you launch you're only guessing what users want, and every week of guessing is a week wasted.",
+  "source": "Paul Graham",
+  "url": "https://paulgraham.com/startupmistakes.html"
+ },
+ {
+  "title": "Start from an open-source SaaS boilerplate",
+  "body": "Open SaaS is a free, open-source React and Node starter with auth, Stripe payments, an admin dashboard and deployment docs. Skipping the auth and billing plumbing saves weeks.",
+  "source": "Open SaaS",
+  "url": "https://opensaas.sh/"
+ },
+ {
+  "title": "Own your code, avoid vendor lock-in",
+  "body": "A boilerplate you can deploy anywhere beats a platform you can't leave. Check the licence and the deploy story before you build your business on top of it.",
+  "source": "Open SaaS",
+  "url": "https://github.com/wasp-lang/open-saas"
+ },
+ {
+  "title": "Keep the first year's infrastructure on free tiers",
+  "body": "Between free CI minutes, generous database free tiers and a cheap VPS, a pre-revenue SaaS should cost close to nothing to run. Spend the savings on getting users instead.",
+  "source": "SaaS Starter Stack",
+  "url": "https://github.com/timb-103/saas-starter-stack"
+ },
+ {
+  "title": "Bootstrap it as a side project first",
+  "body": "Founders who kept the day job until the product had paying users had a much easier time than those who went all in on day one. Give yourself a runway you don't have to raise.",
+  "source": "SaaS Starter Stack",
+  "url": "https://github.com/timb-103/saas-starter-stack"
+ },
+ {
+  "title": "Charge from the first day you can",
+  "body": "Free users tell you what they like. Paying users tell you what they need. Get the payment flow live early even if the price is wrong.",
+  "source": "SaaS Starter Stack",
+  "url": "https://github.com/timb-103/saas-starter-stack"
+ },
+ {
+  "title": "$500 MRR is the first real milestone",
+  "body": "The founders worth learning from are the ones who got past a few hundred a month, not the ones with a launch post. Aim for the first small recurring number and the rest compounds.",
+  "source": "SaaS Starter Stack",
+  "url": "https://github.com/timb-103/saas-starter-stack"
+ }
+]
