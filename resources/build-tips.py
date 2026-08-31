@@ -2,6 +2,7 @@
 import json
 import os
 import re
+from collections import Counter
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEXT = os.path.join(REPO, "resources", "text")
@@ -39,10 +40,69 @@ def getting_real_tips():
         if not body:
             continue
         tips.append({
+            "topic": "saas",
             "title": entry["tagline"],
             "body": body,
             "source": "Getting Real, 37signals",
             "url": f"https://basecamp.com/gettingreal/{entry['slug']}",
+        })
+    return tips
+
+
+WIKIPEDIA_FRAMING = {
+    "flow-psychology": ("psychology", "Flow is a state you can set up on purpose"),
+    "zeigarnik-effect": ("psychology", "An unfinished task keeps talking to you"),
+    "spacing-effect": ("psychology", "Spread the practice out, don't cram it"),
+    "testing-effect": ("psychology", "Retrieving beats rereading"),
+    "implementation-intention": ("psychology", "Turn the intention into an if-then plan"),
+    "yerkes-dodson-law": ("psychology", "Some pressure sharpens you, more of it ruins you"),
+    "cognitive-load": ("psychology", "Working memory is the bottleneck"),
+    "attention-restoration-theory": ("psychology", "Directed attention runs down and nature refills it"),
+    "attentional-control": ("psychology", "Concentration is a choice about what to ignore"),
+    "human-multitasking": ("psychology", "Splitting attention costs more than it looks"),
+    "procrastination": ("psychology", "Procrastination is avoidance, not laziness"),
+    "habit": ("psychology", "Repetition moves behaviour below conscious effort"),
+    "self-determination-theory": ("psychology", "Motivation needs autonomy, competence and relatedness"),
+    "self-efficacy": ("psychology", "Believing you can act changes whether you do"),
+    "goal-setting": ("psychology", "A goal is a plan, not a wish"),
+    "decision-fatigue": ("psychology", "Decisions get worse the longer you keep making them"),
+    "planning-fallacy": ("psychology", "You will underestimate how long this takes"),
+    "sunk-cost": ("psychology", "What you already spent is gone either way"),
+    "dunning-kruger-effect": ("psychology", "The less you know, the surer you feel"),
+    "incubation-psychology": ("psychology", "Stepping away is part of the work"),
+    "learned-helplessness": ("psychology", "Repeated futility teaches you to stop trying"),
+    "perfectionism-psychology": ("psychology", "Perfectionism comes with a critic attached"),
+    "rumination-psychology": ("psychology", "Chewing on it is not the same as solving it"),
+    "mindfulness": ("psychology", "Attention to the present interrupts the spiral"),
+    "circadian-rhythm": ("psychology", "Your body runs on a 24-hour clock"),
+    "sleep-hygiene": ("psychology", "Sleep responds to habits and surroundings"),
+    "behavioral-activation": ("psychiatry", "Doing the thing lifts the mood, not the reverse"),
+    "cognitive-restructuring": ("psychiatry", "Distorted thoughts can be caught and disputed"),
+    "cognitive-behavioral-therapy": ("psychiatry", "CBT trains thoughts and behaviour together"),
+    "occupational-burnout": ("psychiatry", "Burnout is a diagnosis about the workplace"),
+    "attention-deficit-hyperactivity-disorder": ("psychiatry", "ADHD is a neurodevelopmental condition"),
+    "major-depressive-disorder": ("psychiatry", "Depression is measured in weeks, not moods"),
+    "anxiety-disorder": ("psychiatry", "Anxiety becomes a disorder when it takes over function"),
+    "bipolar-disorder": ("psychiatry", "Bipolar disorder runs in episodes"),
+    "insomnia": ("psychiatry", "Insomnia is a condition, not a character flaw"),
+    "sleep-deprivation": ("psychiatry", "Short sleep is a health condition"),
+    "psychiatry": ("psychiatry", "Psychiatry is a medical specialty"),
+    "psychoeducation": ("psychiatry", "Understanding the condition is part of treating it"),
+    "mental-health": ("psychiatry", "Mental health is more than the absence of illness"),
+}
+
+
+def wikipedia_tips():
+    index = json.load(open(os.path.join(TEXT, "wikipedia-index.json")))
+    tips = []
+    for entry in index:
+        topic, title = WIKIPEDIA_FRAMING[entry["slug"]]
+        tips.append({
+            "topic": topic,
+            "title": title,
+            "body": trim_to_sentences(entry["extract"]),
+            "source": f"{entry['title']}, Wikipedia",
+            "url": entry["url"],
         })
     return tips
 
@@ -120,12 +180,67 @@ STACK = [
 ]
 
 
+NIH = [
+    ("Two weeks is the line",
+     "Seek professional help for severe or distressing symptoms that have lasted two weeks or more: trouble sleeping, appetite or weight changes, trouble concentrating, losing interest in things you enjoy, or not being able to finish your usual tasks.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/caring-for-your-mental-health"),
+    ("Stress and anxiety are not the same thing",
+     "Stress is a response to an external cause and it goes away once the situation resolves. Anxiety is internal, persists even with no immediate threat, and interferes with how you live. The difference is what tells you when to get help.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/publications/stress"),
+    ("Three signals that stress has gone too far",
+     "You may be at risk for an anxiety disorder if the symptoms of your stress interfere with everyday life, make you avoid doing things, or seem to be always present.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/publications/stress"),
+    ("Start with a doctor, not a diagnosis",
+     "Talk to a primary care provider first. They can rule out a physical cause, because trouble concentrating or a change in mood is sometimes a medical condition, and refer you to a psychologist, psychiatrist or clinical social worker.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/caring-for-your-mental-health"),
+    ("Talk therapy has a method",
+     "Psychotherapy helps you identify and change troubling emotions, thoughts and behaviours. Cognitive behavioural therapy makes you aware of automatic thinking that is inaccurate or harmful, then has you question it and see how it drives what you do.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/psychotherapies"),
+    ("Therapy and medication are both first-line",
+     "Psychotherapy and medication are the two main treatments for anxiety, and many people benefit from a combination of the two. Which one fits is a decision to make with a professional, not alone.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/publications/stress"),
+    ("Everyone is distracted sometimes, ADHD is different",
+     "It is common to show inattention, restlessness and impulsivity now and then. In ADHD the behaviours are frequent, show up across school, work, home and relationships at once, and interfere with daily life.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/attention-deficit-hyperactivity-disorder-adhd"),
+    ("ADHD rarely travels alone",
+     "ADHD often co-occurs with sleep problems, anxiety or depression, which makes all of them harder to diagnose and treat. NIH-supported research points at sleep as a target for early intervention.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/attention-deficit-hyperactivity-disorder-adhd"),
+    ("Decide what waits, then say no",
+     "Set goals and priorities: decide what must get done now and what can wait, and learn to say no to new tasks when you are taking on too much. At the end of the day, count what you did finish.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/caring-for-your-mental-health"),
+    ("Self-care is an input, not a reward",
+     "Thirty minutes of walking, regular meals and water, a sleep schedule with less screen light before bed, and one relaxing activity you actually enjoy. Small acts add up, and they support treatment rather than replace it.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/topics/caring-for-your-mental-health"),
+    ("Name the unhelpful thought, then argue with it",
+     "Identify and challenge your negative and unhelpful thoughts. That single move is the engine of cognitive behavioural therapy, and it works outside a therapist's office too.",
+     "National Institute of Mental Health",
+     "https://www.nimh.nih.gov/health/publications/stress"),
+    ("Nobody trains themselves to need less sleep",
+     "A common myth is that people can learn to get by on little sleep with no negative effects. Sleep deficiency makes learning, focusing and reacting harder, and it is linked to depression, heart disease and injury.",
+     "National Heart, Lung, and Blood Institute",
+     "https://www.nhlbi.nih.gov/health/sleep-deprivation"),
+]
+
+
 def main():
     tips = getting_real_tips()
-    tips += [{"title": t, "body": b, "source": "Paul Graham", "url": u} for t, b, u in PAUL_GRAHAM]
-    tips += [{"title": t, "body": b, "source": s, "url": u} for t, b, s, u in STACK]
+    tips += [{"topic": "saas", "title": t, "body": b, "source": "Paul Graham", "url": u} for t, b, u in PAUL_GRAHAM]
+    tips += [{"topic": "saas", "title": t, "body": b, "source": s, "url": u} for t, b, s, u in STACK]
+    tips += wikipedia_tips()
+    tips += [{"topic": "psychiatry", "title": t, "body": b, "source": s, "url": u} for t, b, s, u in NIH]
     json.dump(tips, open(OUT, "w"), indent=1, ensure_ascii=False)
-    print(f"{len(tips)} tips -> {OUT}")
+    counts = Counter(tip["topic"] for tip in tips)
+    print(f"{len(tips)} tips ({', '.join(f'{n} {topic}' for topic, n in counts.most_common())}) -> {OUT}")
 
 
 if __name__ == "__main__":

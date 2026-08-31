@@ -35,10 +35,21 @@ const shuffled = (items) => {
   return copy
 }
 
+const spreadAcrossTopics = (items) => {
+  const topics = [...new Set(items.map((item) => item.topic))]
+  return topics
+    .flatMap((topic) => {
+      const group = shuffled(items.filter((item) => item.topic === topic))
+      return group.map((tip, index) => ({ tip, at: (index + 0.5) / group.length }))
+    })
+    .sort((a, b) => a.at - b.at)
+    .map((entry) => entry.tip)
+}
+
 const createTipQueue = (personalTips) => {
   let queue = []
   return () => {
-    if (queue.length === 0) queue = [...shuffled(tips), ...shuffled(personalTips())]
+    if (queue.length === 0) queue = [...spreadAcrossTopics(tips).reverse(), ...shuffled(personalTips())]
     return queue.pop()
   }
 }
@@ -65,12 +76,18 @@ const ownSourceNote = () => {
   ].join('')
 }
 
+const DISCUSSION_BY_TOPIC = {
+  saas: 'That tip just popped up while I was working. Help me think it through and work out what it means for the SaaS I am building. Ask me what I am building before you give advice.',
+  psychology: 'That popped up while I was working. Help me think it through and work out what it means for how I actually work: my attention, my motivation, my habits. Ask me how the work has been going lately before you give advice, and stay with what the research behind it supports rather than the pop version.',
+  psychiatry: 'That popped up while I was working. Help me understand what it actually says and what it means for looking after my head while I build things. Ask about my situation before you answer, keep to what the source supports, do not diagnose me, and say plainly when something belongs with a doctor rather than with you.',
+}
+
 const discussionPrompt = (tip) => [
   `"${tip.title}" — ${tip.source}${tip.url ? `, ${tip.url}` : ''}`,
   '',
   tip.body,
   '',
-  'That tip just popped up while I was working. Help me think it through and work out what it means for the SaaS I am building. Ask me what I am building before you give advice.',
+  DISCUSSION_BY_TOPIC[tip.topic],
 ].join('\n')
 
 const openClaudeSession = (tip) => {

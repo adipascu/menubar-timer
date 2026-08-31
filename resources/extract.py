@@ -28,6 +28,21 @@ def extract_essays():
             open(os.path.join(TEXT, name + ".txt"), "w").write(to_text(handle.read()))
 
 
+def extract_wikipedia():
+    index = []
+    for path in sorted(glob.glob(os.path.join(RAW, "wikipedia", "*.json"))):
+        with open(path, encoding="utf-8") as handle:
+            page = json.load(handle)
+        index.append({
+            "slug": os.path.basename(path)[:-5],
+            "title": page["titles"]["normalized"],
+            "extract": page["extract"],
+            "url": page["content_urls"]["desktop"]["page"],
+        })
+    json.dump(index, open(os.path.join(TEXT, "wikipedia-index.json"), "w"), indent=1, ensure_ascii=False)
+    return len(index)
+
+
 def extract_getting_real():
     os.makedirs(os.path.join(TEXT, "gettingreal"), exist_ok=True)
     index = []
@@ -50,4 +65,4 @@ def extract_getting_real():
 if __name__ == "__main__":
     os.makedirs(TEXT, exist_ok=True)
     extract_essays()
-    print(f"{extract_getting_real()} Getting Real chapters extracted")
+    print(f"{extract_getting_real()} Getting Real chapters and {extract_wikipedia()} Wikipedia summaries extracted")

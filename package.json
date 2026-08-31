@@ -25,5 +25,5 @@
     "electron": "^35.2.0",
     "electron-builder": "^26.0.12"
   },
-  "description": "A macOS menu bar timer with a flow mode and Clippy-style SaaS coaching popups"
+  "description": "A macOS menu bar timer with a flow mode and Clippy-style coaching popups on SaaS, psychology and psychiatry"
 }

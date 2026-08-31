@@ -4,24 +4,30 @@ A macOS menu bar timer with two modes and a coach that only talks when you are n
 
 **Flow mode on.** You give the session a label, it counts down next to that label in the menu bar, and it flashes when you hit zero. No tips interrupt you while the clock is running.
 
-**Flow mode off.** A Clippy-style card slides into the corner every four to twelve minutes with one idea about building a SaaS, drawn from 110 tips distilled from free sources. It sits above every window and every space until you press OK, so it survives switching apps. The second button opens a Claude Code session seeded with that tip so you can argue with it.
+**Flow mode off.** A Clippy-style card slides into the corner every four to twelve minutes with one idea, drawn from 161 tips distilled from free sources. It sits above every window and every space until you press OK, so it survives switching apps. The second button opens a Claude Code session seeded with that tip so you can argue with it.
+
+The tips cover three subjects: building a SaaS, the psychology of attention, motivation and habit, and the psychiatry around working with your own head. Cards are drawn so the three stay mixed, roughly one card in three away from SaaS, rather than letting the largest pool crowd out the rest. Each subject seeds a different conversation when you press the second button, and the psychiatry one is told to stay inside its source, avoid diagnosing, and name when something belongs with a doctor.
 
 That session starts in `/tmp`, and its prompt names TimerBar's own checkout, so an argument about a tip can turn into a change to the coach. A packaged build learns that checkout path from the first run out of the source tree, because the bundle only knows its own location inside `/Applications`.
 
-Once a week the usual tip is replaced by a tune-up card. Acting on it opens a Claude Code session that reads your recent session transcripts, works out what you have actually been building, interviews you about your goals and where you are stuck, and rewrites the tip pool around your situation. Until you run it, it is the only card you get.
+Once a week the usual tip is replaced by a tune-up card. Acting on it opens a Claude Code session that reads your recent session transcripts, works out what you have actually been building, interviews you about your goals and where you are stuck and how your attention, sleep and stress have been, and rewrites the tip pool around your situation. Until you run it, it is the only card you get.
 
 ## Where the tips come from
 
 All free, all downloaded and distilled in `resources/`:
 
-| Source | Tips |
-| --- | --- |
-| [Getting Real](https://basecamp.com/gettingreal), 37signals, all 91 chapters | 88 |
-| [Paul Graham essays](https://paulgraham.com/articles.html) | 16 |
-| [SaaS Starter Stack](https://github.com/timb-103/saas-starter-stack) | 4 |
-| [Open SaaS](https://opensaas.sh/) | 2 |
+| Source | Subject | Tips |
+| --- | --- | --- |
+| [Getting Real](https://basecamp.com/gettingreal), 37signals, all 91 chapters | SaaS | 88 |
+| [Paul Graham essays](https://paulgraham.com/articles.html) | SaaS | 16 |
+| [SaaS Starter Stack](https://github.com/timb-103/saas-starter-stack) | SaaS | 4 |
+| [Open SaaS](https://opensaas.sh/) | SaaS | 2 |
+| [Wikipedia](https://en.wikipedia.org/) article summaries, 39 concepts | Psychology, psychiatry | 39 |
+| [NIMH](https://www.nimh.nih.gov/) and [NHLBI](https://www.nhlbi.nih.gov/), public domain | Psychiatry | 12 |
 
 The corpus itself is not redistributed here. Regenerate it with `python3 resources/fetch.py && python3 resources/extract.py && python3 resources/build-tips.py`, which downloads the sources, strips them to text and rebuilds `src/tips.json`. Every tip keeps its source and a link back, so the provenance is checkable rather than invented.
+
+Wikipedia arrives through the REST summary API, one lead paragraph per concept, which is already the shape of a card. NIMH and NHLBI pages are US government work in the public domain and say so on the page, which is why the health tips can quote them closely and only need the citation. The card titles are the one editorial layer: they frame the idea, the body underneath is the source. None of it is medical advice, and the cards that touch clinical ground point at getting a professional rather than substituting for one.
 
 ## The problem it solves
 
@@ -114,8 +120,10 @@ Every prompt in the session that produced this app, verbatim and in order, typos
 
 23. *A one-line reply confirming the withheld prompt 10 had been dealt with. Withheld for the same reason as prompt 10, and counted.*
 
-23 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
+24. resume the session where we worked on menubar timer, make it also show tooltips about psichology and psychiatry, make sure to commit and publish the new changes
+
+24 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
 
 Redactions: prompts 10 and 23 are withheld as unrelated to this project and concerning a third party's private affairs. Nothing else needed masking.
 
-Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar.
+Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar. Prompt 24 widened the coach past SaaS into psychology and psychiatry, which meant a second and third corpus, a topic on every tip, a draw order that keeps the three mixed, and a different conversation behind the second button for each.

@@ -141,7 +141,7 @@ app.on('window-all-closed', () => {});
       { type: 'separator' },
       { label: 'Stop timer', enabled: state !== 'idle', click: stopTimer },
       {
-        label: state === 'running' ? 'SaaS tips: paused during flow' : 'SaaS tips: on',
+        label: state === 'running' ? 'Tips: paused during flow' : 'Tips: on',
         enabled: false,
       },
       { type: 'separator' },
