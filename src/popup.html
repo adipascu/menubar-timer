@@ -216,6 +216,7 @@
         <p id="body"></p>
         <footer>
           <a id="source" href="#"></a>
+          <button id="snooze"></button>
           <button id="discuss">Talk it through</button>
           <button id="dismiss" class="primary">OK</button>
         </footer>
@@ -228,6 +229,7 @@
       const title = document.getElementById('title')
       const body = document.getElementById('body')
       const source = document.getElementById('source')
+      const snooze = document.getElementById('snooze')
       const discuss = document.getElementById('discuss')
 
       const BEACON_STYLE = { display: 'block', visibility: 'visible', opacity: '1' }
@@ -256,6 +258,8 @@
         source.textContent = tip.source ?? ''
         source.href = tip.url ?? '#'
         source.hidden = !tip.url
+        snooze.textContent = tip.snoozeLabel ?? ''
+        snooze.hidden = !tip.snoozeLabel
         discuss.hidden = tip.kind === 'nudge'
         requestAnimationFrame(() => {
           window.coach.reportHeight(card.offsetHeight + 20)
@@ -267,6 +271,7 @@
         window.coach.openSource(source.href)
       })
 
+      snooze.addEventListener('click', () => window.coach.snooze())
       discuss.addEventListener('click', () => window.coach.discuss())
       document.getElementById('dismiss').addEventListener('click', () => window.coach.dismiss())
     </script>

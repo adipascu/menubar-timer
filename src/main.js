@@ -1,7 +1,7 @@
 import { app, Tray, Menu, nativeImage, } from 'electron'
 import ansiStyles from 'ansi-styles';
 import { createCoach } from './coach.js'
-import { createPowerWatch } from './power.js'
+import { createPowerWatch, SNOOZE_MINUTES } from './power.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
@@ -38,6 +38,7 @@ app.on('window-all-closed', () => {});
   let sessionMinutes = DEFAULT_DURATION
   let loadFlash = null
   let flameLit = false
+  let overheating = false
 
   const renderTitle = () => {
     const label = task.get()
@@ -49,6 +50,7 @@ app.on('window-all-closed', () => {});
     clearInterval(loadFlash)
     loadFlash = null
     flameLit = false
+    overheating = active
 
     if (active) {
       loadFlash = setInterval(() => {
@@ -58,7 +60,10 @@ app.on('window-all-closed', () => {});
     }
 
     renderTitle()
+    renderMenu()
   }
+
+  const snoozeOverheat = () => powerWatch.snooze()
 
   const setStatus = (next) => {
     status = next
@@ -141,6 +146,11 @@ app.on('window-all-closed', () => {});
       { type: 'separator' },
       { label: 'Stop timer', enabled: state !== 'idle', click: stopTimer },
       {
+        label: `Snooze overheat ${SNOOZE_MINUTES} min`,
+        enabled: overheating,
+        click: snoozeOverheat,
+      },
+      {
         label: state === 'running' ? 'Tips: paused during flow' : 'Tips: on',
         enabled: false,
       },
@@ -172,7 +182,7 @@ app.on('window-all-closed', () => {});
     renderTitle()
     renderMenu()
   })
-  const coach = createCoach(() => state)
+  const coach = createCoach(() => state, snoozeOverheat)
   const powerWatch = createPowerWatch((card) => coach.alert(card), setSustainedLoad)
 
   const tray = new Tray(nativeImage.createEmpty())
