@@ -122,8 +122,28 @@ Every prompt in the session that produced this app, verbatim and in order, typos
 
 24. resume the session where we worked on menubar timer, make it also show tooltips about psichology and psychiatry, make sure to commit and publish the new changes
 
-24 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
+25. on the menu bar timer app, make the poipup contain a permanent flashing element that I can't hide, make the flash frequency sufficiently high , more than 1hz for sure, make it trigger somebody with adhd by visual stimulus
+
+26. also add an ability to snooze the overheat by 10m when on battery
+
+27. Make sure to reinstall and restar the app
+
+28. ok, now what is causing our system load?
+
+29. what about now?
+
+30. I want my mac to have some location specific warnings when going low battery, it should beep and say low battery only when either at HSBXL, or home. It can determine location easily based on wifi. Brainstorm solutions
+
+31. what was this session about?
+
+32. we folded this into the menu bar project, get up to date with whats there, and then update it to also have the current wifi marked as a place where a charger is available and should alert
+
+33. get up to date by browsing other claude sessions on the topic first
+
+34. See what the other sessions did , make sure to commit everything over multiple commits
+
+34 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
 
 Redactions: prompts 10 and 23 are withheld as unrelated to this project and concerning a third party's private affairs. Nothing else needed masking.
 
-Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar. Prompt 24 widened the coach past SaaS into psychology and psychiatry, which meant a second and third corpus, a topic on every tip, a draw order that keeps the three mixed, and a different conversation behind the second button for each.
+Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar. Prompt 24 widened the coach past SaaS into psychology and psychiatry, which meant a second and third corpus, a topic on every tip, a draw order that keeps the three mixed, and a different conversation behind the second button for each. Prompts 25 to 29 added the beacon and the overheat snooze, then chased a system load question that turned out to be partly this app leaking its own popups. Prompt 30 was a standalone brainstorm a week before the rest, and prompts 31 to 34 folded it in as charger places: the power alerts now only fire on networks marked as having a charger within reach, markable from the menu, with the place list kept out of the repo in the app's user data.
