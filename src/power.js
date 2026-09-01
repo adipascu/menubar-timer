@@ -84,9 +84,10 @@ const lowBatteryCard = (reading) => ({
   ].join('\n'),
 })
 
-export const createPowerWatch = (onAlert, onSustainedLoad = () => {}) => {
+export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNearby = () => true) => {
   const watts = []
   let lastAlertAt = 0
+  let lastSuppressedLogAt = 0
   let timer = null
   let underLoad = false
   let snoozedUntil = 0
@@ -129,6 +130,14 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}) => {
         : null
 
     if (!card) return
+
+    if (!chargerNearby()) {
+      if (Date.now() - lastSuppressedLogAt >= ALERT_GAP_MS) {
+        lastSuppressedLogAt = Date.now()
+        log(`power alert suppressed, no charger at this place: ${card.title}`)
+      }
+      return
+    }
 
     lastAlertAt = Date.now()
     log(`power alert: ${card.title} (median ${sustained.toFixed(1)} W over ${watts.length} samples)`)

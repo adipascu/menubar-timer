@@ -1,5 +1,6 @@
 import { app, Tray, Menu, nativeImage, } from 'electron'
 import ansiStyles from 'ansi-styles';
+import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createPowerWatch, SNOOZE_MINUTES } from './power.js'
 import { createTaskField } from './task.js'
@@ -151,6 +152,18 @@ app.on('window-all-closed', () => {});
         click: snoozeOverheat,
       },
       {
+        label: chargerPlaces.networkLabel()
+          ? `Charger available at ${chargerPlaces.networkLabel()}`
+          : 'Charger available here',
+        type: 'checkbox',
+        checked: chargerPlaces.isMarked(),
+        enabled: chargerPlaces.networkLabel() !== null,
+        click: () => {
+          chargerPlaces.toggleHere()
+          renderMenu()
+        },
+      },
+      {
         label: state === 'running' ? 'Tips: paused during flow' : 'Tips: on',
         enabled: false,
       },
@@ -183,12 +196,14 @@ app.on('window-all-closed', () => {});
     renderMenu()
   })
   const coach = createCoach(() => state, snoozeOverheat)
-  const powerWatch = createPowerWatch((card) => coach.alert(card), setSustainedLoad)
+  const chargerPlaces = createChargerPlaces(() => renderMenu())
+  const powerWatch = createPowerWatch((card) => coach.alert(card), setSustainedLoad, chargerPlaces.shouldAlert)
 
   const tray = new Tray(nativeImage.createEmpty())
   renderTitle()
   renderMenu()
   coach.start()
+  chargerPlaces.start()
   powerWatch.start()
   log(`ready, start at login ${loginItem.isEnabled()}`)
   await loginItem.offerOnFirstRun()
