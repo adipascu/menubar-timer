@@ -59,6 +59,61 @@
         }
       }
 
+      #beacon {
+        grid-column: 1 / -1;
+        position: relative;
+        height: 14px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #ff1f0f;
+        animation: beacon-flash 400ms steps(2, jump-none) infinite;
+      }
+
+      #beacon::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(100deg, transparent 12%, rgba(255, 255, 255, 0.95) 50%, transparent 88%);
+        animation: beacon-sweep 760ms linear infinite;
+      }
+
+      #beacon::after {
+        content: "";
+        position: absolute;
+        inset: 3px 4px 3px auto;
+        width: 8px;
+        border-radius: 50%;
+        background: #ffffff;
+        animation: beacon-blink 400ms steps(2, jump-none) infinite;
+      }
+
+      @keyframes beacon-flash {
+        from {
+          background-color: #ff1f0f;
+        }
+        to {
+          background-color: #1636ff;
+        }
+      }
+
+      @keyframes beacon-sweep {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(100%);
+        }
+      }
+
+      @keyframes beacon-blink {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0.04;
+        }
+      }
+
       #clip {
         width: 34px;
         height: 44px;
@@ -145,6 +200,7 @@
   </head>
   <body>
     <div id="card">
+      <div id="beacon" aria-hidden="true"></div>
       <svg id="clip" viewBox="0 0 34 44" fill="none" aria-hidden="true">
         <path
           d="M24 13v18a8 8 0 0 1-16 0V11a5 5 0 0 1 10 0v18a2.5 2.5 0 0 1-5 0V14"
@@ -167,10 +223,32 @@
     </div>
 
     <script>
+      const card = document.getElementById('card')
+      const beacon = document.getElementById('beacon')
       const title = document.getElementById('title')
       const body = document.getElementById('body')
       const source = document.getElementById('source')
       const discuss = document.getElementById('discuss')
+
+      const BEACON_STYLE = { display: 'block', visibility: 'visible', opacity: '1' }
+
+      const keepBeaconVisible = () => {
+        if (!beacon.isConnected) (card.isConnected ? card : document.body).prepend(beacon)
+        beacon.hidden = false
+        for (const [property, value] of Object.entries(BEACON_STYLE)) {
+          if (beacon.style.getPropertyValue(property) !== value) {
+            beacon.style.setProperty(property, value, 'important')
+          }
+        }
+      }
+
+      keepBeaconVisible()
+      new MutationObserver(keepBeaconVisible).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      })
+      setInterval(keepBeaconVisible, 200)
 
       window.coach.onTip((tip) => {
         title.textContent = tip.title
@@ -180,7 +258,7 @@
         source.hidden = !tip.url
         discuss.hidden = tip.kind === 'nudge'
         requestAnimationFrame(() => {
-          window.coach.reportHeight(document.getElementById('card').offsetHeight + 20)
+          window.coach.reportHeight(card.offsetHeight + 20)
         })
       })
 
