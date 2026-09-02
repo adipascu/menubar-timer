@@ -169,6 +169,7 @@ app.on('window-all-closed', () => {});
         label: state === 'running' ? 'Tips: paused until the timer ends' : 'Tips: on',
         enabled: false,
       },
+      { label: 'Quiz me…', click: () => coach.quiz() },
       { type: 'separator' },
       {
         label: 'Start at login',
