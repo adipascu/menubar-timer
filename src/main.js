@@ -25,6 +25,7 @@ const DURATIONS = [
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
 const FLASH_MS = 500
+const FIGURE_SPACE = '\u2007'
 
 const transparentImageSizedLike = (image) => {
   const { width, height } = image.getSize()
@@ -40,6 +41,8 @@ const formatTime = (seconds) => {
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
 }
 
+const formatWatts = (watts) => `${watts.toFixed(1).padStart(4, FIGURE_SPACE)} W`
+
 app.setName('Timer App');
 app.on('window-all-closed', () => {});
 
@@ -48,28 +51,33 @@ app.on('window-all-closed', () => {});
   let state = 'idle'
   let status = IDLE_STATUS
   let sessionMinutes = null
+  let drawWatts = null
   let loadFlash = null
   let flameLit = false
 
   const renderTitle = () => {
-    const label = task.get()
-    tray.setTitle(label ? `${label} · ${status}` : status, { fontType: 'monospacedDigit' })
+    const readout = drawWatts === null ? null : formatWatts(drawWatts)
+    const parts = [readout, task.get(), status].filter(Boolean)
+    tray.setTitle(parts.join(' · '), { fontType: 'monospacedDigit' })
   }
 
   const renderFlame = () => tray.setImage(flameLit ? FLAME : FLAME_SLOT)
 
-  const setSustainedLoad = (active) => {
-    clearInterval(loadFlash)
-    loadFlash = null
-    flameLit = false
+  const setPowerDraw = (watts, overLimit) => {
+    drawWatts = watts
+    renderTitle()
 
-    if (active) {
-      loadFlash = setInterval(() => {
+    if (overLimit) {
+      loadFlash ??= setInterval(() => {
         flameLit = !flameLit
         renderFlame()
       }, FLASH_MS)
+      return
     }
 
+    clearInterval(loadFlash)
+    loadFlash = null
+    flameLit = watts !== null
     renderFlame()
   }
 
@@ -200,7 +208,7 @@ app.on('window-all-closed', () => {});
   })
   const coach = createCoach(() => state)
   const chargerPlaces = createChargerPlaces(() => renderMenu())
-  const powerWatch = createPowerWatch((card) => coach.alert(card), setSustainedLoad, chargerPlaces.shouldAlert)
+  const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
 
   const tray = new Tray(FLAME_SLOT)
   renderTitle()

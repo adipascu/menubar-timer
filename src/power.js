@@ -78,18 +78,19 @@ const lowBatteryCard = (reading) => ({
   ].join('\n'),
 })
 
-export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNearby = () => true) => {
+export const createPowerWatch = (onAlert, onDraw = () => {}, chargerNearby = () => true) => {
   const watts = []
   let lastAlertAt = 0
   let lastSuppressedLogAt = 0
   let timer = null
-  let underLoad = false
+  let wasOverLimit = false
 
-  const reportLoad = (active) => {
-    if (active === underLoad) return
-    underLoad = active
-    log(`sustained load on battery ${active ? 'started' : 'ended'}`)
-    onSustainedLoad(active)
+  const report = (sustained, overLimit) => {
+    if (overLimit !== wasOverLimit) {
+      wasOverLimit = overLimit
+      log(`draw over ${HEAVY_LOAD_WATTS} W on battery ${overLimit ? 'started' : 'ended'}`)
+    }
+    onDraw(sustained, overLimit)
   }
 
   const check = async () => {
@@ -101,16 +102,17 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
     if (!reading) return
     if (!reading.onBattery) {
       watts.length = 0
-      reportLoad(false)
+      report(null, false)
       return
     }
 
     watts.push(reading.watts)
     if (watts.length > WINDOW_SAMPLES) watts.shift()
 
-    const sustained = watts.length === WINDOW_SAMPLES ? Math.round(median(watts) * 10) / 10 : 0
-    const overheating = sustained > HEAVY_LOAD_WATTS
-    reportLoad(overheating)
+    const sustained = Math.round(median(watts) * 10) / 10
+    const overLimit = sustained > HEAVY_LOAD_WATTS
+    const overheating = overLimit && watts.length === WINDOW_SAMPLES
+    report(sustained, overLimit)
 
     if (Date.now() - lastAlertAt < ALERT_GAP_MS) return
     const card = overheating
