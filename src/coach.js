@@ -22,7 +22,7 @@ const SCRATCH_DIR = '/tmp'
 const HIDDEN_TIMER_NUDGE = {
   kind: 'nudge',
   title: 'The timer is off',
-  body: 'A fullscreen window is covering the menu bar, so the timer is out of sight. Start a flow session when you want to focus on something.',
+  body: 'A fullscreen window is covering the menu bar, so the timer is out of sight. Pick a timer length from the menu when you want to focus on something.',
 }
 
 const randomGap = () => MIN_GAP_MS + Math.floor(Math.random() * (MAX_GAP_MS - MIN_GAP_MS))
