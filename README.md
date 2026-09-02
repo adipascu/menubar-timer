@@ -165,8 +165,22 @@ Every prompt in the session that produced this app, verbatim and in order, typos
 
 42. make sure to reinstall latest app version
 
-42 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
+43. On the popup, I want a nicer animation, make it something more hacker like
+
+44. The one that is meant to grab attention for somebody with ADHD
+
+45. /mr-new and /mr-polish with a new animation, add a preview gif into the MR description
+
+46. Before that actually make a few animations in a claude artifact and let's pick the best one
+
+47. Don't use A, only use Spectrum when music is playing relatively loud, use the rest randomly.
+
+    /mr-new /mr-polish and merge it in, when done reinstall the app to have latest update.
+
+48. also in this MR, make the animation dissapear when the popup is hovered, so I can read the tooltip in peace
+
+48 prompts. 2 multiple-choice answers. 0 lines of code written or edited by a human.
 
 Redactions: prompts 10 and 23 are withheld as unrelated to this project and concerning a third party's private affairs. Nothing else needed masking.
 
-Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar. Prompt 24 widened the coach past SaaS into psychology and psychiatry, which meant a second and third corpus, a topic on every tip, a draw order that keeps the three mixed, and a different conversation behind the second button for each. Prompts 25 to 29 added the beacon and the overheat snooze, then chased a system load question that turned out to be partly this app leaking its own popups. Prompt 30 was a standalone brainstorm a week before the rest, and prompts 31 to 34 folded it in as charger places: the power alerts now only fire on networks marked as having a charger within reach, markable from the menu, with the place list kept out of the repo in the app's user data. Prompts 35 to 39 took the snooze back out, leaving the power card with OK and the discussion button, and the threshold question turned up that the amperage parse had been rounding every reading to a multiple of about 24 W, so the alert was tripping at half the intended draw. The reading is exact now and the threshold is derived from the battery's design capacity: it fires once the sustained current would drain a full battery in under four hours, about 25 W on a 16 inch M5 Pro. Prompts 40 to 42 stopped the menu bar reflowing: the flame became a fixed-size image slot, the countdown digits went tabular, and the result was merged and reinstalled.
+Prompts 1 to 10 produced the app as published. Prompts 11 to 23 added the power alerts, single instance enforcement, the ad-hoc signing identity fix, and cleaned up two stale builds that had been shadowing the real one in the menu bar. Prompt 24 widened the coach past SaaS into psychology and psychiatry, which meant a second and third corpus, a topic on every tip, a draw order that keeps the three mixed, and a different conversation behind the second button for each. Prompts 25 to 29 added the beacon and the overheat snooze, then chased a system load question that turned out to be partly this app leaking its own popups. Prompt 30 was a standalone brainstorm a week before the rest, and prompts 31 to 34 folded it in as charger places: the power alerts now only fire on networks marked as having a charger within reach, markable from the menu, with the place list kept out of the repo in the app's user data. Prompts 35 to 39 took the snooze back out, leaving the power card with OK and the discussion button, and the threshold question turned up that the amperage parse had been rounding every reading to a multiple of about 24 W, so the alert was tripping at half the intended draw. The reading is exact now and the threshold is derived from the battery's design capacity: it fires once the sustained current would drain a full battery in under four hours, about 25 W on a 16 inch M5 Pro. Prompts 40 to 42 stopped the menu bar reflowing: the flame became a fixed-size image slot, the countdown digits went tabular, and the result was merged and reinstalled. Prompts 43 to 48 replaced the beacon: an artifact lined up five candidate animations at the popup's real size, three of them now play at random, the spectrum analyser is held back for when music is loud, and the strip goes dark while the card is hovered.
