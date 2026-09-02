@@ -34,6 +34,9 @@ export const createTaskField = (onChange) => {
 
   return {
     get: () => label,
+    cancelPending: () => {
+      if (onLabelled) close()
+    },
     prompt: (onSaved) => {
       onLabelled = onSaved ?? null
       if (window) {

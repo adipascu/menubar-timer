@@ -2,9 +2,11 @@
 
 A macOS menu bar timer with two modes and a coach that only talks when you are not working.
 
-**Flow mode on.** You give the session a label, it counts down next to that label in the menu bar, and it flashes when you hit zero. No tips interrupt you while the clock is running.
+In the menu they are one radio group, Freebasing at the top and the eight timer lengths under it, so exactly one is checked at a time. Picking Freebasing stops the timer, running or flashing, and picking a length starts one, which is also how you restart the one already running.
 
-**Flow mode off.** A Clippy-style card slides into the corner every four to twelve minutes with one idea, drawn from 161 tips distilled from free sources. It sits above every window and every space until you press OK, so it survives switching apps. The second button opens a Claude Code session seeded with that tip so you can argue with it.
+**Timer running.** Pick a length from the menu, five minutes to ninety. You give the session a label, it counts down next to that label in the menu bar, and it flashes when you hit zero. No tips interrupt you while the clock is running.
+
+**Freebasing.** No timer and no goal you are held to, just the coach's cards and whatever the wandering ADHD brain lands on next. It is a mode you pick on purpose rather than the absence of the other one, because creativity tends to come out of that chaos. A Clippy-style card slides into the corner every four to twelve minutes with one idea, drawn from 161 tips distilled from free sources. It sits above every window and every space until you press OK, so it survives switching apps. The second button opens a Claude Code session seeded with that tip so you can argue with it.
 
 Each card carries a beacon along its top edge, there to catch an attention that drifts. It is a small canvas animation in phosphor green, picked at random from Matrix rain, a decode marquee and a port scan log, or a spectrum analyser when something is playing audio at half volume or louder, or at any level through an output that reports no volume of its own. The three random ones invert the whole strip 2.5 times a second and the analyser slams every bar to the top at the same rate. Hover the card and the beacon goes dark so the tip can be read in peace.
 

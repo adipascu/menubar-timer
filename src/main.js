@@ -23,7 +23,7 @@ const DURATIONS = [
   { minutes: 60, hint: 'long anchor' },
   { minutes: 90, hint: 'one full focus cycle' },
 ]
-const DEFAULT_DURATION = 15
+const FREEBASING = 'Freebasing · no timer, chaos welcome'
 const FLASH_MS = 500
 
 const transparentImageSizedLike = (image) => {
@@ -47,7 +47,7 @@ app.on('window-all-closed', () => {});
   let interval = null
   let state = 'idle'
   let status = IDLE_STATUS
-  let sessionMinutes = DEFAULT_DURATION
+  let sessionMinutes = null
   let loadFlash = null
   let flameLit = false
 
@@ -97,10 +97,11 @@ app.on('window-all-closed', () => {});
     renderMenu()
   }
 
-  const resetTimer = (duration) => {
+  const resetTimer = (minutes) => {
     clearInterval(interval);
+    sessionMinutes = minutes
 
-    const endTime = Date.now() + duration * 1000;
+    const endTime = Date.now() + minutes * 60 * 1000;
 
     const updateTimer = () => {
       const currentTime = Date.now();
@@ -122,21 +123,21 @@ app.on('window-all-closed', () => {});
   };
 
   const startSession = (minutes) => {
-    sessionMinutes = minutes
-    if (task.get()) resetTimer(minutes * 60)
-    else task.prompt(() => resetTimer(minutes * 60))
+    if (task.get()) {
+      resetTimer(minutes)
+      return
+    }
+    task.prompt(() => resetTimer(minutes))
+    renderMenu()
   }
 
   const stopTimer = () => {
+    task.cancelPending()
+    if (state === 'idle') return
     clearInterval(interval)
     interval = null
     setStatus(IDLE_STATUS)
     setState('idle')
-  }
-
-  const toggleFlowMode = () => {
-    if (state === 'idle') startSession(sessionMinutes)
-    else stopTimer()
   }
 
   const renderMenu = () => {
@@ -144,15 +145,14 @@ app.on('window-all-closed', () => {});
     tray.setContextMenu(Menu.buildFromTemplate([
       { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
       { type: 'separator' },
-      { label: 'Flow mode', type: 'checkbox', checked: state !== 'idle', click: toggleFlowMode },
+      { label: FREEBASING, type: 'radio', checked: state === 'idle', click: stopTimer },
       ...DURATIONS.map(({ minutes, hint }) => ({
         label: `${minutes} min · ${hint}`,
         type: 'radio',
-        checked: minutes === sessionMinutes,
+        checked: state !== 'idle' && minutes === sessionMinutes,
         click: () => startSession(minutes),
       })),
       { type: 'separator' },
-      { label: 'Stop timer', enabled: state !== 'idle', click: stopTimer },
       {
         label: chargerPlaces.networkLabel()
           ? `Charger available at ${chargerPlaces.networkLabel()}`
@@ -166,7 +166,7 @@ app.on('window-all-closed', () => {});
         },
       },
       {
-        label: state === 'running' ? 'Tips: paused during flow' : 'Tips: on',
+        label: state === 'running' ? 'Tips: paused until the timer ends' : 'Tips: on',
         enabled: false,
       },
       { type: 'separator' },
