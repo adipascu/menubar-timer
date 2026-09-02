@@ -456,7 +456,7 @@
  },
  {
   "topic": "saas",
-  "title": "Go from teaser to preview to launch",
+  "title": "A Powerful Promo Site",
   "body": "The best promotional tool is a great product. Word will get out if you’ve got an app that people find really useful. Still, you need an ace promotional site too. What should you include on this site? Some ideas: Overview : Explain your app and its benefits.",
   "source": "Getting Real, 37signals",
   "url": "https://basecamp.com/gettingreal/13.2-a-powerful-promo-site"
@@ -771,10 +771,108 @@
  },
  {
   "topic": "psychiatry",
+  "title": "ACT is accepting the response and committing to the value",
+  "body": "Acceptance and commitment therapy is a form of cognitive behavioral psychotherapy that uses mindfulness to recognize one's psychological responses and be open to one's experiences and accept them, and commitment to one's core values to create a meaningful life.",
+  "source": "Acceptance and commitment therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Acceptance_and_commitment_therapy"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychological shock is a response to a terrifying experience",
+  "body": "Acute stress reaction (ASR), also known as psychological shock, mental shock, or simply shock, as well as acute stress disorder (ASD), is a psychological response to a terrifying, traumatic, or surprising experience.",
+  "source": "Acute stress reaction, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Acute_stress_reaction"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A maladaptive response to a stressor has a diagnosis",
+  "body": "Adjustment disorder is a mental disorder defined by a maladaptive response to a psychosocial stressor.",
+  "source": "Adjustment disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Adjustment_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Adult ADHD requires symptoms that started in childhood",
+  "body": "Adult attention deficit hyperactivity disorder is ADHD that persists into adulthood. It is a neurodevelopmental disorder, meaning impairing symptoms must have been present in childhood, except for when ADHD occurs after traumatic brain injury.",
+  "source": "Adult attention deficit hyperactivity disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Adult_attention_deficit_hyperactivity_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Alcoholism is continued drinking despite the problems it causes",
+  "body": "Alcoholism is the continued drinking of alcohol despite the user being unable to manage the problems it causes. Some definitions require evidence of dependence and withdrawal. Problematic alcohol use has been mentioned in the earliest historical records.",
+  "source": "Alcoholism, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Alcoholism"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Difficulty describing your emotions has a name",
+  "body": "Alexithymia, also called emotional blindness, is a neuropsychological phenomenon characterized by difficulties processing or describing one's emotions.",
+  "source": "Alexithymia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Alexithymia"
+ },
+ {
+  "topic": "psychology",
+  "title": "Overanalysis stops the decision from being made",
+  "body": "Analysis paralysis is a state of an individual or a group in which excessive analysis of a situation cause forward motion or decision-making to become paralyzed, meaning that no solution or course of action is decided upon within a natural time frame.",
+  "source": "Analysis paralysis, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Analysis_paralysis"
+ },
+ {
+  "topic": "psychology",
+  "title": "An irrelevant reference point still anchors the judgement",
+  "body": "The anchoring effect is a psychological phenomenon in which an individual's judgments or decisions are influenced by a reference point or \"anchor\" which can be completely irrelevant.",
+  "source": "Anchoring effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Anchoring_effect"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Anger management is a psychotherapeutic programme",
+  "body": "Anger management is a psycho-therapeutic program for anger prevention and control. It has been described as deploying anger successfully and efficiently.",
+  "source": "Anger management, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Anger_management"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Anhedonia is losing the ability to feel pleasure",
+  "body": "Anhedonia is a diverse array of deficits in hedonic function, including reduced motivation or ability to experience pleasure.",
+  "source": "Anhedonia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Anhedonia"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Antidepressants treat more than depression",
+  "body": "Antidepressants, also known in the past as psychic energizers, are a class of medications used to treat major depressive disorder, anxiety disorders, chronic pain, and addiction.",
+  "source": "Antidepressant, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Antidepressant"
+ },
+ {
+  "topic": "psychiatry",
   "title": "Anxiety becomes a disorder when it takes over function",
   "body": "Anxiety disorders are a group of mental disorders characterized by significant and uncontrollable feelings of anxiety and fear such that a person's social, occupational, and personal functions are significantly impaired.",
   "source": "Anxiety disorder, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Anxiety_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "An anxiolytic is anything that reduces anxiety, not only a drug",
+  "body": "An anxiolytic is a medication or other intervention that reduces anxiety. This effect is in contrast to anxiogenic agents which increase anxiety.",
+  "source": "Anxiolytic, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Anxiolytic"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Apathy is the absence of interest, concern or motivation",
+  "body": "Apathy, also referred to as indifference, is a lack of feeling, emotion, interest, and/or concern about something. It is a state of indifference, and/or the suppression of emotions such as concern, excitement, motivation, or passion.",
+  "source": "Apathy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Apathy"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "ADHD treatment is evidence-based practice",
+  "body": "Attention deficit hyperactivity disorder management options are evidence-based practices with established treatment efficacy for ADHD.",
+  "source": "Management of attention deficit hyperactivity disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Management_of_attention_deficit_hyperactivity_disorder"
  },
  {
   "topic": "psychiatry",
@@ -785,10 +883,32 @@
  },
  {
   "topic": "psychology",
+  "title": "Your attention is what advertising-funded products maximise",
+  "body": "The attention economy refers to the incentives of advertising-driven companies, in particular, to maximize the time and attention their users give to their product.",
+  "source": "Attention economy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Attention_economy"
+ },
+ {
+  "topic": "psychology",
   "title": "Directed attention runs down and nature refills it",
   "body": "Attention Restoration Theory (ART) proposes that spending time in natural settings or even viewing natural scenes helps people recover from directed attention fatigue (mental tiredness that occurs when sustaining deliberate focus on tasks).",
   "source": "Attention restoration theory, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Attention_restoration_theory"
+ },
+ {
+  "topic": "psychology",
+  "title": "Attention span is the time before distraction takes over",
+  "body": "Attention span is the amount of time spent concentrating on a task before becoming distracted. Distractibility occurs when attention is uncontrollably diverted to another activity or sensation.",
+  "source": "Attention span, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Attention_span"
+ },
+ {
+  "topic": "psychology",
+  "title": "Attention is concentration on one thing at the cost of the others",
+  "body": "Attention is the concentration of awareness directed at some task or phenomenon while mostly excluding others.",
+  "source": "Attention, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Attention",
+  "definition": true
  },
  {
   "topic": "psychology",
@@ -799,10 +919,53 @@
  },
  {
   "topic": "psychiatry",
+  "title": "Atypical depression lifts in response to good events",
+  "body": "Atypical depression is defined in the DSM-IV as depression that shares many of the typical symptoms of major depressive disorder or dysthymia, but is characterized by improved mood in response to positive events.",
+  "source": "Atypical depression, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Atypical_depression"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Autism includes routine, sensory and social differences",
+  "body": "Autism, also known as autism spectrum disorder (ASD), is a condition characterized by impairment in social communication and interaction, as well as a need or strong preference for predictability and routine, sensory processing differences, focused interests, or repetitive behaviors.",
+  "source": "Autism, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Autism"
+ },
+ {
+  "topic": "psychology",
+  "title": "You judge by the examples that come to mind first",
+  "body": "The availability heuristic, also known as availability bias, is a mental shortcut that relies on immediate examples that come to a given person's mind when evaluating a specific topic, concept, method, or decision.",
+  "source": "Availability heuristic, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Availability_heuristic"
+ },
+ {
+  "topic": "psychiatry",
   "title": "Doing the thing lifts the mood, not the reverse",
   "body": "Behavioral activation is a form of psychotherapy that emphasizes engaging in potentially mood-boosting activities.",
   "source": "Behavioral activation, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Behavioral_activation"
+ },
+ {
+  "topic": "psychology",
+  "title": "Behavioural economics is where decisions leave the rational model",
+  "body": "Behavioral economics is the study of the psychological factors involved in the decisions of individuals or institutions, and how these decisions deviate from those implied by traditional economic theory.",
+  "source": "Behavioral economics, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Behavioral_economics",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Behaviour therapy uses techniques from behaviourism",
+  "body": "Behaviour therapy or behavioural psychotherapy is a broad term referring to clinical psychotherapy that uses techniques derived from behaviourism and/or cognitive psychology.",
+  "source": "Behaviour therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Behaviour_therapy"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Benzodiazepines can create dependence",
+  "body": "Benzodiazepine dependence defines a situation in which one has developed one or more of either tolerance, withdrawal symptoms, drug seeking behaviors, such as continued use despite harmful effects, and maladaptive pattern of substance use, according to the DSM-IV.",
+  "source": "Benzodiazepine dependence, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Benzodiazepine_dependence"
  },
  {
   "topic": "psychiatry",
@@ -813,10 +976,96 @@
  },
  {
   "topic": "psychology",
+  "title": "Too little to do can make you ill",
+  "body": "Boredom boreout syndrome is a psychological disorder that causes physical illness, mainly caused by mental underload at the workplace due to lack of either adequate quantitative or qualitative workload.",
+  "source": "Boreout, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Boreout"
+ },
+ {
+  "topic": "psychology",
+  "title": "Positive emotion widens what you notice and try",
+  "body": "The broaden-and-build theory in positive psychology suggests that positive emotions broaden one's awareness and encourage novel, exploratory thoughts and actions.",
+  "source": "Broaden-and-build, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Broaden-and-build"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Caffeine dependence is a real substance dependence",
+  "body": "Caffeine dependence is substance dependence on caffeine. Conditions may include symptoms of tolerance, withdrawal, persistent desire or unsuccessful efforts to control use, and continued use despite knowledge of adverse consequences attributed to caffeine.",
+  "source": "Caffeine dependence, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Caffeine_dependence"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Caffeine can cause an anxiety disorder",
+  "body": "Caffeine-induced anxiety disorder is a mental health condition in which anxiety symptoms emerge as a result of caffeine use. These symptoms may appear during or shortly after caffeine consumption or withdrawal.",
+  "source": "Caffeine-induced anxiety disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Caffeine-induced_anxiety_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Cannabis use disorder is in the DSM-5 and ICD-11",
+  "body": "Cannabis use disorder (CUD), also known as cannabis addiction or marijuana addiction, is a psychiatric disorder defined in the fifth revision of the Diagnostic and Statistical Manual of Mental Disorders (DSM-5) and ICD-11 as the continued use of cannabis despite clinically significant impairment.",
+  "source": "Cannabis use disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cannabis_use_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A remembered stressor triggers the same response as a present one",
+  "body": "Chronic stress is the physiological or psychological response induced by a long-term internal or external stressor. The stressor, either physically present or recollected, will produce the same effect and trigger a chronic stress response.",
+  "source": "Chronic stress, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Chronic_stress"
+ },
+ {
+  "topic": "psychology",
+  "title": "Your chronotype is when your body wants to sleep",
+  "body": "A chronotype is the behavioral manifestation of an underlying circadian rhythm's myriad physical processes. A person's chronotype is the propensity for the individual to sleep at a particular time during a 24-hour period.",
+  "source": "Chronotype, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Chronotype"
+ },
+ {
+  "topic": "psychology",
+  "title": "Chunking binds pieces into one memorable whole",
+  "body": "In cognitive psychology, chunking is a process by which small individual pieces of a set of information are bound together to create a meaningful whole later on in memory.",
+  "source": "Chunking (psychology), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Chunking_(psychology)"
+ },
+ {
+  "topic": "saas",
+  "title": "Churn is the share of customers who leave in a period",
+  "body": "Churn rate is a metric that measures the proportion of individuals, customers, or items that leave a defined group during a specified period of time.",
+  "source": "Churn rate, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Churn_rate",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Sleep timing disorders are a family",
+  "body": "Circadian rhythm sleep disorders (CRSD), also known as circadian rhythm sleep–wake disorders (CRSWD), are a family of sleep disorders that affect the timing of sleep.",
+  "source": "Circadian rhythm sleep disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Circadian_rhythm_sleep_disorder"
+ },
+ {
+  "topic": "psychology",
   "title": "Your body runs on a 24-hour clock",
   "body": "A circadian rhythm, or circadian cycle, is a natural oscillation that repeats roughly every 24 hours. Circadian rhythms can refer to any process that originates within an organism and responds to the environment.",
   "source": "Circadian rhythm, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Circadian_rhythm"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Clinical psychology is the science of relieving psychological distress",
+  "body": "Clinical psychology is an integration of human science, behavioral science, theory, and clinical knowledge aimed at understanding, preventing, and relieving psychological distress or dysfunction as well as promoting well-being and personal growth.",
+  "source": "Clinical psychology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Clinical_psychology",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "CBT-I is the first-line treatment for insomnia, ahead of pills",
+  "body": "Cognitive behavioral therapy for insomnia (CBT-I) is a therapy technique for treating insomnia without medications. CBT-I is the first-line treatment for insomnia and probably more efficacious and acceptable than pharmacotherapy.",
+  "source": "Cognitive behavioral therapy for insomnia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cognitive_behavioral_therapy_for_insomnia"
  },
  {
   "topic": "psychiatry",
@@ -827,10 +1076,40 @@
  },
  {
   "topic": "psychology",
+  "title": "A cognitive bias is a systematic error in judgement",
+  "body": "A cognitive bias is a systematic pattern of deviation from the norm or rationality in judgment. Individuals create their own \"subjective reality\" from their perception of the input.",
+  "source": "Cognitive bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cognitive_bias",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Holding conflicting beliefs without noticing",
+  "body": "In the field of psychology, cognitive dissonance is described as a mental phenomenon in which people unknowingly or subconsciously hold fundamentally conflicting cognitions.",
+  "source": "Cognitive dissonance, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cognitive_dissonance"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A distorted thought perceives reality inaccurately",
+  "body": "A cognitive distortion is a thought that causes a person to perceive reality inaccurately due to being exaggerated or irrational. Cognitive distortions are involved in the onset or perpetuation of psychopathological states, such as depression and anxiety.",
+  "source": "Cognitive distortion, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cognitive_distortion"
+ },
+ {
+  "topic": "psychology",
   "title": "Working memory is the bottleneck",
   "body": "In cognitive psychology, cognitive load is the effort being used in the working memory.",
   "source": "Cognitive load, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Cognitive_load"
+ },
+ {
+  "topic": "psychology",
+  "title": "Cognitive psychology studies attention, memory and reasoning",
+  "body": "Cognitive psychology is the scientific study of human mental processes such as attention, language use, memory, perception, problem solving, creativity, and reasoning.",
+  "source": "Cognitive psychology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cognitive_psychology",
+  "definition": true
  },
  {
   "topic": "psychiatry",
@@ -841,10 +1120,184 @@
  },
  {
   "topic": "psychology",
+  "title": "Cognitive science studies the mind across disciplines",
+  "body": "Cognitive science is the interdisciplinary, scientific study of the mind and its processes. It examines the nature, the tasks, and the functions of cognition.",
+  "source": "Cognitive science, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cognitive_science",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Restrict your future options to make the commitment real",
+  "body": "A commitment device is a mechanism or arrangement that implements precommitment by deliberately restricting one’s own future options in order to make a commitment credible.",
+  "source": "Commitment device, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Commitment_device"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Comorbidity is two or more conditions at once",
+  "body": "In medicine, comorbidity refers to the simultaneous presence of two or more medical conditions in a person; often co-occurring with a primary condition. It originates from the Latin term morbus prefixed with co- (\"together\") and suffixed with -ity.",
+  "source": "Comorbidity, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Comorbidity",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Complex PTSD follows prolonged, inescapable trauma",
+  "body": "Complex post-traumatic stress disorder is a stress-related mental disorder generally occurring in response to complex traumas: commonly prolonged or repetitive exposure to a traumatic event or traumatic events, from which one sees little or no chance to escape.",
+  "source": "Complex post-traumatic stress disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Complex_post-traumatic_stress_disorder"
+ },
+ {
+  "topic": "psychology",
+  "title": "You search for what confirms what you already believe",
+  "body": "Confirmation bias is the tendency to search for, interpret, favor and recall information in a way that confirms or supports one's prior beliefs, values, or decisions.",
+  "source": "Confirmation bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Confirmation_bias"
+ },
+ {
+  "topic": "psychology",
+  "title": "Conscientiousness is wanting to do the task well",
+  "body": "Conscientiousness is the personality trait of being responsible, careful, or diligent. Conscientiousness implies a desire to do a task well, and to take obligations to others seriously.",
+  "source": "Conscientiousness, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Conscientiousness"
+ },
+ {
+  "topic": "psychology",
+  "title": "Coping is how you manage unpleasant emotion, consciously or not",
+  "body": "Coping refers to the application of coping mechanisms, conscious and unconscious cognitions that people use to manage unpleasant emotions, stress, and anxiety.",
+  "source": "Coping, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Coping"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A crisis hotline is immediate counselling by phone",
+  "body": "A crisis hotline is a phone number people can call to get immediate emergency telephone counseling, usually by trained volunteers.",
+  "source": "Crisis hotline, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Crisis_hotline"
+ },
+ {
+  "topic": "psychology",
+  "title": "Once you know it, you assume others do too",
+  "body": "The curse of knowledge, also called the curse of expertise or expert's curse, is a cognitive bias that occurs when a person who has specialized knowledge assumes that others share in that knowledge.",
+  "source": "Curse of knowledge, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Curse_of_knowledge"
+ },
+ {
+  "topic": "saas",
+  "title": "CAC is what it costs to persuade one customer",
+  "body": "Customer acquisition cost (CAC) is the cost of persuading a customer to purchase a product or service. As an important business metric, customer acquisition costs are often related to customer lifetime value.",
+  "source": "Customer acquisition cost, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Customer_acquisition_cost",
+  "definition": true
+ },
+ {
+  "topic": "saas",
+  "title": "Customer development is one third of a lean startup",
+  "body": "Customer development is a formal methodology for building startups and new corporate ventures. It is one of the three parts that make up a lean startup.",
+  "source": "Customer development, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Customer_development",
+  "definition": true
+ },
+ {
+  "topic": "saas",
+  "title": "LTV is the net profit a customer brings over the whole relationship",
+  "body": "In marketing, customer lifetime value, lifetime customer value (LCV), or life-time value (LTV) is an estimation and prediction of the net profit that a customer contributes to during the entire future relationship with a business.",
+  "source": "Customer lifetime value, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Customer_lifetime_value",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Cyclothymia cycles between low and elevated mood",
+  "body": "Cyclothymia, also known as cyclothymic disorder, psychothemia / psychothymia, bipolar III, affective personality disorder and cyclothymic personality disorder, is a mental and behavioural disorder that involves numerous periods of symptoms of depression and periods of symptoms of elevated mood.",
+  "source": "Cyclothymia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Cyclothymia"
+ },
+ {
+  "topic": "psychology",
   "title": "Decisions get worse the longer you keep making them",
   "body": "In decision making and psychology, decision fatigue refers to the deteriorating quality of decisions made by an individual after a long session of decision making. It is now understood as one of the causes of irrational trade-offs in decision making.",
   "source": "Decision fatigue, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Decision_fatigue"
+ },
+ {
+  "topic": "psychology",
+  "title": "Setting low expectations on purpose is a strategy",
+  "body": "Defensive pessimism is a cognitive strategy in which an individual sets a low expectation for their performance, regardless of how well they have done in the past.",
+  "source": "Defensive pessimism, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Defensive_pessimism"
+ },
+ {
+  "topic": "psychology",
+  "title": "Resisting the immediate reward for the larger later one",
+  "body": "Delayed gratification, or deferred gratification, is the ability to resist the temptation of an immediate reward in favor of a more valuable and long-lasting reward later.",
+  "source": "Delayed gratification, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Delayed_gratification"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A delayed body clock is a disorder, not laziness",
+  "body": "Delayed sleep phase disorder (DSPD), more often known as delayed sleep phase syndrome and also as delayed sleep–wake phase disorder, is the delaying of a person's circadian rhythm compared to those of social norms.",
+  "source": "Delayed sleep phase disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Delayed_sleep_phase_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Feeling detached from yourself is a dissociative disorder",
+  "body": "Depersonalization-derealization disorder (DPDR) is a dissociative disorder in which the person has persistent or recurrent feelings of depersonalization or derealization. Depersonalization is a feeling of being disconnected or detached from oneself.",
+  "source": "Depersonalization-derealization disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Depersonalization-derealization_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Low mood affects around 280 million people",
+  "body": "Depression is a mental state of low mood and aversion to activity. It affects about 3.5% of the global population, or about 280 million people worldwide, as of 2020. Depression affects a person's thoughts, behavior, feelings, and sense of well-being.",
+  "source": "Depression (mood), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Depression_(mood)"
+ },
+ {
+  "topic": "psychology",
+  "title": "The right amount of effort makes learning stick",
+  "body": "A desirable difficulty is a learning task that requires a considerable but desirable amount of effort, thereby improving long-term performance.",
+  "source": "Desirable difficulty, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Desirable_difficulty"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "The DSM is the shared language for classifying mental disorders",
+  "body": "The Diagnostic and Statistical Manual of Mental Disorders is a publication by the American Psychiatric Association (APA) for the classification of mental disorders using a common language and standard criteria.",
+  "source": "Diagnostic and Statistical Manual of Mental Disorders, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Diagnostic_and_Statistical_Manual_of_Mental_Disorders",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "DBT is evidence-based and began with personality disorders",
+  "body": "Dialectical behavior therapy (DBT) is an evidence-based psychotherapy that began with efforts to treat personality disorders and interpersonal conflicts.",
+  "source": "Dialectical behavior therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Dialectical_behavior_therapy"
+ },
+ {
+  "topic": "psychology",
+  "title": "Suppressing distraction wears out",
+  "body": "Directed attention fatigue (DAF) is a neuropsychological phenomenon that results from overuse of the brain's inhibitory attention mechanisms, which handle incoming distractions while maintaining focus on a specific task.",
+  "source": "Directed attention fatigue, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Directed_attention_fatigue"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Dissociation ranges from mild detachment to disconnection",
+  "body": "Dissociation is a concept which concerns a wide array of experiences, ranging from a mild emotional detachment from the immediate surroundings, to a more severe disconnection from physical and emotional experiences.",
+  "source": "Dissociation (psychology), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Dissociation_(psychology)"
+ },
+ {
+  "topic": "psychology",
+  "title": "Divergent thinking explores many solutions at once",
+  "body": "Divergent thinking is a thought process used to generate creative ideas by exploring many possible solutions. It typically occurs in a spontaneous, free-flowing, \"non-linear\" manner, such that many ideas are generated in an emergent cognitive fashion.",
+  "source": "Divergent thinking, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Divergent_thinking"
  },
  {
   "topic": "psychology",
@@ -855,10 +1308,125 @@
  },
  {
   "topic": "psychology",
+  "title": "The idea that willpower runs out with use",
+  "body": "Ego depletion is the idea that self-control or willpower draws upon conscious mental resources that can be taxed to exhaustion when in constant use with no reprieve.",
+  "source": "Ego depletion, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Ego_depletion"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Dysregulation is intense, prolonged reactions you cannot flex",
+  "body": "Emotional dysregulation is characterized by an inability to flexibly respond to and manage emotional states, resulting in intense and prolonged emotional reactions that deviate from social norms, given the nature of the environmental stimuli encountered.",
+  "source": "Emotional dysregulation, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Emotional_dysregulation"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Emotional exhaustion is a symptom of burnout",
+  "body": "Emotional exhaustion is a symptom of burnout, a chronic state of physical and emotional depletion that results from excessive work or personal demands, or continuous stress. It describes a feeling of being emotionally overextended and exhausted by one's work.",
+  "source": "Emotional exhaustion, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Emotional_exhaustion"
+ },
+ {
+  "topic": "psychology",
+  "title": "You value what you own more than what you could get",
+  "body": "In psychology and behavioral economics, the endowment effect, also known as divestiture aversion, is the finding that people are more likely to retain an object they own than acquire that same object when they do not own it.",
+  "source": "Endowment effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Endowment_effect"
+ },
+ {
+  "topic": "saas",
+  "title": "Entrepreneurship is creating value by commercialising an opportunity",
+  "body": "Entrepreneurship is the creation or extraction of economic value through identification and commercialization of opportunities to deliver products or services, a process that typically requires considerable innovation, initiative, and risk-taking to establish and grow an enterprise.",
+  "source": "Entrepreneurship, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Entrepreneurship",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Investing more because you already invested",
+  "body": "Escalation of commitment is a pattern of decision-making in which individuals or groups continue to invest in a chosen course of action despite mounting evidence that the decision is wrong or that the project is unlikely to succeed.",
+  "source": "Escalation of commitment, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Escalation_of_commitment"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Executive dysfunction disrupts the processes that manage the rest",
+  "body": "In psychology and neuroscience, executive dysfunction, or executive function deficit, is a disruption to the efficacy of the executive functions, which is a group of cognitive processes that regulate, control, and manage other cognitive processes.",
+  "source": "Executive dysfunction, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Executive_dysfunction"
+ },
+ {
+  "topic": "psychology",
+  "title": "Executive functions steer behaviour toward a goal",
+  "body": "In cognitive science and neuropsychology, executive functions are a set of cognitive processes that support goal-directed behavior, by regulating thoughts and actions through cognitive control, selecting and successfully monitoring actions that facilitate the attainment of chosen objectives.",
+  "source": "Executive functions, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Executive_functions",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Exposure therapy faces the source of the anxiety",
+  "body": "Exposure therapy is a technique in behavior therapy to treat anxiety disorders. Exposure therapy involves exposing the patient to the anxiety source or its context. Doing so is thought to help them overcome their anxiety or distress.",
+  "source": "Exposure therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Exposure_therapy"
+ },
+ {
+  "topic": "psychology",
+  "title": "FOMO is apprehension about what you are not part of",
+  "body": "Fear of missing out (FOMO) is the feeling of apprehension that one is either not in the know about or missing out on information, events, experiences, or life decisions that could make one's life better.",
+  "source": "Fear of missing out, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Fear_of_missing_out"
+ },
+ {
+  "topic": "psychology",
   "title": "Flow is a state you can set up on purpose",
   "body": "Flow in positive psychology, also known colloquially as being in the zone or focused, is the mental state in which a person performing some activity is fully immersed in a feeling of energized focus, full involvement, and enjoyment in the process of the activity.",
   "source": "Flow (psychology), Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Flow_(psychology)"
+ },
+ {
+  "topic": "psychology",
+  "title": "Memory decays on a curve unless you revisit it",
+  "body": "The Ebbinghaus forgetting curve measures the decline of memory retention across time, showing how information is lost when there is no attempt to retain it.",
+  "source": "Forgetting curve, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Forgetting_curve"
+ },
+ {
+  "topic": "psychology",
+  "title": "The same choice reads differently depending on the framing",
+  "body": "Framing effect is a cognitive bias where people's decisions change depending on how options or statements are framed, even when they are logically identical.",
+  "source": "Framing effect (psychology), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Framing_effect_(psychology)"
+ },
+ {
+  "topic": "saas",
+  "title": "Freemium gives the basic product away and charges for more",
+  "body": "Freemium, a portmanteau of the words \"free\" and \"premium\", is a pricing strategy by which a basic product or service is provided free of charge, but money is charged for additional features, services and virtual (online) or physical (offline) goods that expand the functionality of the free version of the software.",
+  "source": "Freemium, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Freemium",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "You only see the usual use of a thing",
+  "body": "Functional fixedness is a cognitive bias that limits a person to use an object only in the way it is traditionally used. The concept of functional fixedness originated in Gestalt psychology, a movement in psychology that emphasizes holistic processing.",
+  "source": "Functional fixedness, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Functional_fixedness"
+ },
+ {
+  "topic": "psychology",
+  "title": "You blame character when the situation did it",
+  "body": "In social psychology, the fundamental attribution error is a cognitive attribution bias in which observers underemphasize situational and environmental factors for the behavior of an actor while overemphasizing dispositional or personality factors.",
+  "source": "Fundamental attribution error, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Fundamental_attribution_error"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Worry that is excessive, uncontrollable and gets in the way",
+  "body": "Generalized anxiety disorder (GAD) is an anxiety disorder characterized by excessive, uncontrollable, and often irrational worry about events or activities. Worry often interferes with daily functioning.",
+  "source": "Generalized anxiety disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Generalized_anxiety_disorder"
  },
  {
   "topic": "psychology",
@@ -869,10 +1437,52 @@
  },
  {
   "topic": "psychology",
+  "title": "When a measure becomes a target it stops measuring",
+  "body": "Goodhart's law is an adage that has been stated as, \"When a measure becomes a target, it ceases to be a good measure\".",
+  "source": "Goodhart's law, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Goodhart's_law"
+ },
+ {
+  "topic": "psychology",
+  "title": "Grit is perseverance plus passion for a long goal",
+  "body": "In psychology, grit is a positive, non-cognitive trait based on a person's perseverance of effort combined with their passion for a particular long-term goal or end state.",
+  "source": "Grit (personality trait), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Grit_(personality_trait)"
+ },
+ {
+  "topic": "psychology",
   "title": "Repetition moves behaviour below conscious effort",
   "body": "A habit is a routine of behavior that is repeated regularly and tends to occur subconsciously.",
   "source": "Habit, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Habit"
+ },
+ {
+  "topic": "psychology",
+  "title": "Being observed changes what you do",
+  "body": "The Hawthorne effect is a type of behavioral reactivity in which individuals modify an aspect of their behavior in response to their awareness of being observed.",
+  "source": "Hawthorne effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hawthorne_effect"
+ },
+ {
+  "topic": "psychology",
+  "title": "You return to baseline happiness after almost anything",
+  "body": "The hedonic treadmill, also known as hedonic adaptation, is the conjecture that humans quickly return to a relatively stable level of happiness despite major positive or negative events or life changes.",
+  "source": "Hedonic treadmill, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hedonic_treadmill"
+ },
+ {
+  "topic": "psychology",
+  "title": "It only looks predictable afterwards",
+  "body": "Hindsight bias, also known as the knew-it-all-along phenomenon or creeping determinism, is the common tendency for people to perceive past events as having been more predictable than they were.",
+  "source": "Hindsight bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hindsight_bias"
+ },
+ {
+  "topic": "psychology",
+  "title": "It always takes longer than you expect",
+  "body": "Hofstadter's law is a self-referential adage, coined by Douglas Hofstadter in his book Gödel, Escher, Bach: An Eternal Golden Braid (1979) to describe the widely experienced difficulty of accurately estimating the time it will take to complete tasks of substantial complexity:Hofstadter's law: It always takes longer than you expect, even when you take into account Hofstadter's law.",
+  "source": "Hofstadter's law, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hofstadter's_law"
  },
  {
   "topic": "psychology",
@@ -883,10 +1493,60 @@
  },
  {
   "topic": "psychology",
+  "title": "Hyperfocus is intense concentration on one thing",
+  "body": "Hyperfocus is an intense form of mental concentration or visualization that focuses consciousness on a subject, topic, or task.",
+  "source": "Hyperfocus, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hyperfocus"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Hypersomnia is too much sleep or too much sleepiness",
+  "body": "Hypersomnia is a neurological disorder of excessive time spent sleeping or excessive sleepiness. It can have many possible causes and can cause distress and problems with functioning.",
+  "source": "Hypersomnia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hypersomnia"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Hypomania is elevated mood and energy, short of mania",
+  "body": "Hypomania is a psychiatric condition of abnormally heightened mood and increased energy that is less severe than mania. It is characterized essentially by an apparently non-contextual elevation of mood compared to the person's baseline mood.",
+  "source": "Hypomania, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Hypomania"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "ICD-11 is the global standard for recording health conditions",
+  "body": "The ICD-11 is the eleventh revision of the International Classification of Diseases (ICD). It replaces the ICD-10 as the global standard for recording health information and causes of death.",
+  "source": "ICD-11, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/ICD-11",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "You overvalue what you partly built yourself",
+  "body": "The IKEA effect is a cognitive bias in which consumers place a disproportionately high value on products they partially created. The name refers to Swedish manufacturer and furniture retailer IKEA, which sells many items of furniture that require assembly.",
+  "source": "IKEA effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/IKEA_effect"
+ },
+ {
+  "topic": "psychology",
+  "title": "You overestimate how much you control events",
+  "body": "The illusion of control is the tendency for people to overestimate their ability to control events. It was named by American psychologist Ellen Langer and is thought to influence gambling behavior and belief in the paranormal.",
+  "source": "Illusion of control, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Illusion_of_control"
+ },
+ {
+  "topic": "psychology",
   "title": "Turn the intention into an if-then plan",
   "body": "An implementation intention is a self-regulatory strategy in the form of if-then-plans that can lead to better goal attainment, as well as create useful habits and modify problematic behaviors.",
   "source": "Implementation intention, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Implementation_intention"
+ },
+ {
+  "topic": "psychology",
+  "title": "Impostor syndrome is feeling like a professional fraud",
+  "body": "Impostor syndrome, also known as impostor phenomenon, impostorism, or impostor thoughts, is a psychological experience in which a person suffers from feelings of intellectual and/or professional fraudulence.",
+  "source": "Impostor syndrome, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Impostor_syndrome"
  },
  {
   "topic": "psychology",
@@ -896,6 +1556,13 @@
   "url": "https://en.wikipedia.org/wiki/Incubation_(psychology)"
  },
  {
+  "topic": "psychology",
+  "title": "Too much information makes the decision harder",
+  "body": "Information overload, also known as infobesity, infoxication, or information anxiety, is the difficulty in understanding an issue and effectively making decisions when one has too much information (TMI) about that issue, and is generally associated with the excessive quantity of daily information.",
+  "source": "Information overload, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Information_overload"
+ },
+ {
   "topic": "psychiatry",
   "title": "Insomnia is a condition, not a character flaw",
   "body": "Insomnia, also known as sleeplessness, is a sleep disorder causing difficulty falling asleep or staying asleep for as long as desired. Insomnia is typically followed by daytime sleepiness, low energy, irritability, and a depressed mood.",
@@ -903,11 +1570,89 @@
   "url": "https://en.wikipedia.org/wiki/Insomnia"
  },
  {
+  "topic": "psychiatry",
+  "title": "Problematic internet use is defined by impairment or distress",
+  "body": "Internet addiction disorder (IAD), also called problematic Internet use (PIU), is characterized by excessive or poorly controlled preoccupations, urges, or behaviors regarding computer use and Internet access that lead to impairment or distress.",
+  "source": "Internet addiction disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Internet_addiction_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Interpersonal therapy is brief and focused on relationships",
+  "body": "Interpersonal psychotherapy (IPT) is a brief, attachment-focused psychotherapy that centers on resolving interpersonal problems and achieving symptomatic recovery.",
+  "source": "Interpersonal psychotherapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Interpersonal_psychotherapy"
+ },
+ {
+  "topic": "psychology",
+  "title": "Reshape the job to fit you, not the other way round",
+  "body": "Job crafting is an individually-driven work design process which refers to self-initiated, proactive strategies to change the characteristics of one's job to better align the job with personal needs, goals, and skills.",
+  "source": "Job crafting, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Job_crafting"
+ },
+ {
+  "topic": "psychology",
+  "title": "Trivial issues get disproportionate weight",
+  "body": "The law of triviality is C. Northcote Parkinson's 1957 argument that people within an organization commonly give disproportionate weight to trivial issues.",
+  "source": "Law of triviality, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Law_of_triviality"
+ },
+ {
+  "topic": "saas",
+  "title": "Lean startup shortens the cycle to find out if the model is viable",
+  "body": "Lean startup is a methodology for developing businesses and products that aims to shorten product development cycles and rapidly discover if a proposed business model is viable; this is achieved by adopting a combination of business-hypothesis-driven experimentation, iterative product releases, and validated learning.",
+  "source": "Lean startup, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Lean_startup",
+  "definition": true
+ },
+ {
   "topic": "psychology",
   "title": "Repeated futility teaches you to stop trying",
   "body": "Learned helplessness is the behavior exhibited by a subject after enduring repeated aversive stimuli beyond their control.",
   "source": "Learned helplessness, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Learned_helplessness"
+ },
+ {
+  "topic": "psychology",
+  "title": "Optimism can be learned by disputing negative self-talk",
+  "body": "Learned optimism is the idea in positive psychology that a talent for joy, like any other, can be cultivated. In contrast with learned helplessness, optimism is learned by consciously challenging negative self talk.",
+  "source": "Learned optimism, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Learned_optimism"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Bright light is a treatment for seasonal and circadian disorders",
+  "body": "Light therapy, also called phototherapy or bright light therapy, is the exposure to direct sunlight or artificial light at controlled wavelengths in order to treat a variety of medical disorders, including seasonal affective disorder (SAD), circadian rhythm sleep-wake disorders, cancers, neonatal jaundice, and skin wound infections.",
+  "source": "Light therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Light_therapy"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Lithium is a psychiatric medication for bipolar disorder",
+  "body": "Certain lithium compounds, also known as lithium salts, are used as psychiatric medication, primarily for bipolar disorder and for major depressive disorder. Lithium is taken orally.",
+  "source": "Lithium (medication), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Lithium_(medication)"
+ },
+ {
+  "topic": "psychology",
+  "title": "Locus of control is where you think outcomes come from",
+  "body": "Locus of control is the degree to which people believe that they, as opposed to external forces, have control over the outcome of events in their lives.",
+  "source": "Locus of control, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Locus_of_control"
+ },
+ {
+  "topic": "psychology",
+  "title": "Loneliness is social pain, and it is a signal",
+  "body": "Loneliness is an unpleasant emotional response to perceived or actual social isolation. Loneliness has been described as social pain, a psychological mechanism that motivates individuals to seek social connections.",
+  "source": "Loneliness, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Loneliness"
+ },
+ {
+  "topic": "psychology",
+  "title": "The same outcome hurts more framed as a loss",
+  "body": "In cognitive science and behavioral economics, loss aversion is a cognitive bias in which the same situation is perceived as worse if it is framed as a loss, rather than a gain.",
+  "source": "Loss aversion, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Loss_aversion"
  },
  {
   "topic": "psychiatry",
@@ -918,10 +1663,90 @@
  },
  {
   "topic": "psychiatry",
+  "title": "Mania is abnormally elevated mood with risky behaviour",
+  "body": "Mania is a psychiatric behavioral syndrome defined as a state of abnormally elevated mood with hyperactivity and risky behavior.",
+  "source": "Mania, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mania"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Melatonin is a hormone before it is a supplement",
+  "body": "Melatonin is a naturally occurring hormone produced in the brain that is also used as a dietary supplement and medication. As a hormone, melatonin is released by the pineal gland and is involved in sleep–wake cycles.",
+  "source": "Melatonin as a medication and supplement, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Melatonin_as_a_medication_and_supplement"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A mental disorder is a pattern that causes distress or impairment",
+  "body": "A mental disorder, also referred to as a mental illness, a mental health condition, or a psychiatric disability, is a behavioral or mental pattern that causes significant distress or impairment of personal functioning.",
+  "source": "Mental disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mental_disorder",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "First aid extends to mental health",
+  "body": "Mental health first aid is an extension of the concept of traditional first aid to cover mental health conditions.",
+  "source": "Mental health first aid, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mental_health_first_aid"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Mental health professional is a broad category",
+  "body": "A mental health professional is a health care practitioner or social and human services provider who offers services for the purpose of improving an individual's mental health or to treat mental disorders.",
+  "source": "Mental health professional, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mental_health_professional",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
   "title": "Mental health is more than the absence of illness",
   "body": "Mental health encompasses emotional, psychological, and social well-being, influencing cognition, perception, and behavior.",
   "source": "Mental health, Wikipedia",
-  "url": "https://en.wikipedia.org/wiki/Mental_health"
+  "url": "https://en.wikipedia.org/wiki/Mental_health",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Thinking about your own thinking",
+  "body": "Metacognition is an awareness of one's thought processes and an understanding of the patterns behind them. In simple terms it is \"to think about one's own thinking\". The term comes from the root word meta, meaning \"beyond\", or \"on top of\".",
+  "source": "Metacognition, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Metacognition"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Methylphenidate is a stimulant used for ADHD",
+  "body": "Methylphenidate, sold under the brand names Ritalin and Concerta, among others, is a central nervous system (CNS) stimulant used in the treatment of attention deficit hyperactivity disorder (ADHD) and narcolepsy.",
+  "source": "Methylphenidate, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Methylphenidate"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A microsleep is a few seconds you did not choose",
+  "body": "A microsleep is a sudden temporary episode of sleep or drowsiness which may last for a few seconds where an individual fails to respond to some arbitrary sensory input and becomes unconscious.",
+  "source": "Microsleep, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Microsleep"
+ },
+ {
+  "topic": "psychology",
+  "title": "Mind-wandering comes in three kinds, and one is useful",
+  "body": "Mind-wandering is broadly defined as thoughts that are task-unrelated and stimulus-independent. This can take the form of three different subtypes: positive constructive daydreaming, guilty fear of failure, and poor attentional control.",
+  "source": "Mind-wandering, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mind-wandering"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "MBCT combines mindfulness with CBT to prevent relapse",
+  "body": "Mindfulness-based cognitive therapy (MBCT) is a form of psychotherapy that uses mindfulness techniques in combination with cognitive behavioral therapy (CBT) to prevent depression-relapse.",
+  "source": "Mindfulness-based cognitive therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mindfulness-based_cognitive_therapy"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "MBSR is a course in mindfulness for managing stress",
+  "body": "Mindfulness-based stress reduction (MBSR) is an educational program designed for learning mindfulness and discovering skillful ways to manage stress. MBSR was developed in the late 1970s by Jon Kabat-Zinn at the University of Massachusetts Medical School.",
+  "source": "Mindfulness-based stress reduction, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mindfulness-based_stress_reduction"
  },
  {
   "topic": "psychology",
@@ -929,6 +1754,80 @@
   "body": "In clinical psychology and well-being, mindfulness is the cognitive skill of, or state reached by, intentionally maintaining moment-by-moment awareness of bodily sensations, feelings, thoughts, and immediate surroundings with a non-judgmental or equanimous attitude, counteracting [the mind's] automatic rumination and cognitive elaborations on one's experiences.",
   "source": "Mindfulness, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Mindfulness"
+ },
+ {
+  "topic": "saas",
+  "title": "An MVP has just enough to get feedback from early customers",
+  "body": "A minimum viable product (MVP) is a version of a product with just enough features to be usable by early customers who can then provide feedback for future product development.",
+  "source": "Minimum viable product, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Minimum_viable_product",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A mood disorder is a disturbance of mood at its core",
+  "body": "A mood disorder, also known as an affective disorder, is any of a group of conditions of mental and behavioral disorder where the main underlying characteristic is a disturbance in the person's mood.",
+  "source": "Mood disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mood_disorder",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Mood stabilisers treat sustained mood shifts",
+  "body": "A mood stabilizer is a psychiatric medication used to treat mood disorders characterized by intense and sustained mood shifts, such as bipolar disorder and the bipolar type of schizoaffective disorder.",
+  "source": "Mood stabilizer, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Mood_stabilizer"
+ },
+ {
+  "topic": "psychology",
+  "title": "Motivation is the internal state behind goal-directed behaviour",
+  "body": "Motivation is an internal state that propels individuals to engage in goal-directed behavior. It is often understood as a force that explains why people or other animals initiate, continue, or terminate a certain behavior at a particular time.",
+  "source": "Motivation, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Motivation",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Bad affects you more than an equal good",
+  "body": "Negativity bias, also known as the negativity effect, is a cognitive bias that human cognition is relatively more affected by a negative affect than an equally potent positive affect.",
+  "source": "Negativity bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Negativity_bias"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Neurodiversity frames cognition and focus as differences",
+  "body": "The neurodiversity paradigm is a framework for understanding human brain function that considers the diversity within sensory processing, motor abilities, social comfort, cognition, and focus as neurobiological differences.",
+  "source": "Neurodiversity, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Neurodiversity"
+ },
+ {
+  "topic": "psychology",
+  "title": "Neuroscience is the study of the nervous system",
+  "body": "Neuroscience is the scientific study of the nervous system, its functions, and its disorders.",
+  "source": "Neuroscience, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Neuroscience",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Avoiding what comes from outside has a name",
+  "body": "Not invented here (NIH) is the tendency to avoid using or buying products, research, standards, or knowledge from external origins. It is usually adopted by social, corporate, or institutional cultures.",
+  "source": "Not invented here, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Not_invented_here"
+ },
+ {
+  "topic": "psychology",
+  "title": "Design the environment so the better choice is easier",
+  "body": "Nudge theory is a concept in behavioral economics, decision making, behavioral policy, social psychology, consumer behavior, and related behavioral sciences that proposes adaptive designs of the decision environment as ways to influence the behavior and decision-making of groups or individuals.",
+  "source": "Nudge theory, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Nudge_theory"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "OCD is intrusive thoughts and the compulsions that relieve them",
+  "body": "Obsessive–compulsive disorder (OCD) is a mental disorder in which an individual has intrusive thoughts and feels the need to perform certain behaviors (compulsions) repeatedly to relieve the distress caused by the obsession, to the extent where it impairs general function.",
+  "source": "Obsessive–compulsive disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Obsessive%E2%80%93compulsive_disorder"
  },
  {
   "topic": "psychiatry",
@@ -939,10 +1838,87 @@
  },
  {
   "topic": "psychology",
+  "title": "Job stress is chronic, and it is manageable",
+  "body": "Occupational stress is chronic psychological stress related to one's job. Occupational stress can be managed by understanding what the stressful conditions at work are and taking steps to remediate those conditions.",
+  "source": "Occupational stress, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Occupational_stress"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Therapy over the internet is a recognised form of care",
+  "body": "Online counseling, also known as online therapy, teletherapy, e-therapy, cyber therapy, or web-based counseling, is a form of mental health care that is delivered through the internet.",
+  "source": "Online counseling, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Online_counseling"
+ },
+ {
+  "topic": "psychology",
+  "title": "You overestimate the good outcomes and underestimate the bad",
+  "body": "Optimism bias is the tendency of an individual to overestimate the likelihood of positive events and underestimate that of negative events.",
+  "source": "Optimism bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Optimism_bias"
+ },
+ {
+  "topic": "psychology",
+  "title": "Too many options makes the decision worse",
+  "body": "Overchoice or choice overload is the paradoxical phenomenon in which choosing between a large variety of options can be detrimental to decision making processes. The term was first introduced by Alvin Toffler in his 1970 book, Future Shock.",
+  "source": "Overchoice, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Overchoice"
+ },
+ {
+  "topic": "psychology",
+  "title": "Confidence runs ahead of accuracy",
+  "body": "The overconfidence effect is a cognitive bias in which a person's subjective confidence in their judgments is reliably greater than the objective accuracy of those judgments, especially when confidence is relatively high.",
+  "source": "Overconfidence effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Overconfidence_effect"
+ },
+ {
+  "topic": "psychology",
+  "title": "Paying yourself for what you love can kill the love",
+  "body": "The overjustification effect is a phenomenon in psychology in which providing expected external incentive, such as money or prizes, for an already intrinsically rewarding activity can reduce a person's intrinsic motivation to perform that activity.",
+  "source": "Overjustification effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Overjustification_effect"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A panic attack is sudden, intense and physical",
+  "body": "Panic attacks are sudden periods of intense fear and discomfort that may include palpitations, otherwise defined as a rapid, irregular heartbeat, sweating, chest pain or discomfort, shortness of breath, trembling, dizziness, numbness, confusion, or a sense of impending doom or loss of control.",
+  "source": "Panic attack, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Panic_attack"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Panic disorder is recurring unexpected panic attacks",
+  "body": "Panic disorder is an anxiety disorder characterized by reoccurring unexpected panic attacks. Panic attacks are sudden periods of intense fear that may include palpitations, sweating, shaking, shortness of breath, numbness, or a sense of impending doom.",
+  "source": "Panic disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Panic_disorder"
+ },
+ {
+  "topic": "psychology",
+  "title": "You remember the peak and the end, not the average",
+  "body": "The peak–end rule is a psychological heuristic in which people judge an experience largely based on how they felt at its peak and at its end, rather than based on the total sum or average of every moment of the experience.",
+  "source": "Peak–end rule, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Peak%E2%80%93end_rule"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "People who have been there can help",
+  "body": "Peer support occurs when people provide knowledge, experience, emotional, social or practical help to each other.",
+  "source": "Peer support, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Peer_support"
+ },
+ {
+  "topic": "psychology",
   "title": "Perfectionism comes with a critic attached",
   "body": "In psychology, perfectionism is a broad personality trait characterized by a person's concern with striving for flawlessness and perfection and is accompanied by critical self-evaluations and concerns regarding others' evaluations.",
   "source": "Perfectionism (psychology), Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Perfectionism_(psychology)"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Dysthymia is depression that lasts two years or more",
+  "body": "Dysthymia, known as persistent depressive disorder (PDD) in the DSM-5-TR and dysthymic disorder in ICD-11, is a psychiatric condition marked by symptoms that are similar to those of major depressive disorder, but which persist for at least two years in adults and one year among children.",
+  "source": "Dysthymia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Dysthymia"
  },
  {
   "topic": "psychology",
@@ -953,17 +1929,113 @@
  },
  {
   "topic": "psychology",
+  "title": "Twenty-five minutes on a kitchen timer, then a break",
+  "body": "The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. It uses a kitchen timer to break work into intervals, typically 25 minutes in length, separated by short breaks.",
+  "source": "Pomodoro Technique, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Pomodoro_Technique"
+ },
+ {
+  "topic": "psychology",
+  "title": "Positive psychology studies what makes people flourish",
+  "body": "Positive psychology is the scientific study of conditions and processes that contribute to positive psychological states, well-being, positive relationships, and positive institutions.",
+  "source": "Positive psychology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Positive_psychology",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "The after-lunch slump is physiological",
+  "body": "Postprandial somnolence is a benign state of drowsiness or lassitude following a meal, a general state of sleepiness and low energy related to activation of the parasympathetic nervous system in response to mass in the gastrointestinal tract.",
+  "source": "Postprandial somnolence, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Postprandial_somnolence"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "PTSD develops from experiencing a traumatic event",
+  "body": "Post-traumatic stress disorder (PTSD) is a mental disorder that develops from experiencing a traumatic event.",
+  "source": "Post-traumatic stress disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder"
+ },
+ {
+  "topic": "psychology",
+  "title": "A short nap that stops before deep sleep",
+  "body": "A power nap or cat nap is a short sleep that terminates before deep sleep. A power nap is intended to quickly revitalize the sleeper.",
+  "source": "Power nap, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Power_nap"
+ },
+ {
+  "topic": "psychology",
+  "title": "You overvalue the reward you can have now",
+  "body": "Present bias is the tendency to settle for a smaller present reward rather than wait for a larger future reward, in a trade-off situation. It describes the trend of overvaluing immediate rewards, while putting less worth in long-term consequences.",
+  "source": "Present bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Present_bias"
+ },
+ {
+  "topic": "psychology",
+  "title": "Working while sick has a name and a cost",
+  "body": "Presenteeism or working while sick is the act or culture of employees continuing to work as a performative measure, despite having reduced productivity levels or negative consequences.",
+  "source": "Presenteeism, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Presenteeism"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Smartphone dependence is a behavioural dependence",
+  "body": "Problematic smartphone use is psychological or behavioral dependence on cell phones. It is closely related to other forms of digital media overuse such as social media addiction or internet addiction disorder.",
+  "source": "Problematic smartphone use, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Problematic_smartphone_use"
+ },
+ {
+  "topic": "psychology",
   "title": "Procrastination is avoidance, not laziness",
   "body": "Procrastination is an avoidance coping behavior that involves unnecessarily delaying or postponing something despite knowing that there could be negative consequences for doing so.",
   "source": "Procrastination, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Procrastination"
  },
  {
+  "topic": "saas",
+  "title": "Product-market fit is how strongly the market wants it",
+  "body": "Product-market fit is the degree to which a product satisfies a strong market demand.",
+  "source": "Product-market fit, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Product-market_fit",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Grief that does not resolve has a diagnosis",
+  "body": "Prolonged grief disorder (PGD), also known as complicated grief, traumatic grief, and persistent complex bereavement disorder, is a mental disorder consisting of a distinct set of symptoms following the death of a family member or close friend.",
+  "source": "Prolonged grief disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Prolonged_grief_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "An assessment gathers information to make a diagnosis",
+  "body": "A psychiatric assessment, or psychological screening, is the process of gathering information about a person within a psychiatric service, with the purpose of making a diagnosis.",
+  "source": "Psychiatric assessment, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychiatric_assessment"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychiatric medication acts on the chemistry of the brain",
+  "body": "A psychiatric or psychotropic medication is a psychoactive drug taken to exert an effect on the chemical makeup of the brain and nervous system. Thus, these medications are used to treat mental illnesses.",
+  "source": "Psychiatric medication, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychiatric_medication",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A psychiatrist is a physician first",
+  "body": "A psychiatrist is a physician who specializes in psychiatry. Psychiatrists evaluate patients to determine whether their symptoms are the result of a physical illness, a combination of physical and mental ailments, or strict mental issues.",
+  "source": "Psychiatrist, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychiatrist",
+  "definition": true
+ },
+ {
   "topic": "psychiatry",
   "title": "Psychiatry is a medical specialty",
   "body": "Psychiatry is the medical specialty devoted to the diagnosis, treatment, and prevention of deleterious mental conditions. These include matters related to cognition, perceptions, mood, emotion, and behavior.",
   "source": "Psychiatry, Wikipedia",
-  "url": "https://en.wikipedia.org/wiki/Psychiatry"
+  "url": "https://en.wikipedia.org/wiki/Psychiatry",
+  "definition": true
  },
  {
   "topic": "psychiatry",
@@ -974,10 +2046,133 @@
  },
  {
   "topic": "psychology",
+  "title": "Resilience is coping with a crisis and coming back quickly",
+  "body": "Psychological resilience, or mental resilience, is the ability to cope mentally and emotionally with a crisis, or to return to pre-crisis status quickly.",
+  "source": "Psychological resilience, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychological_resilience"
+ },
+ {
+  "topic": "psychology",
+  "title": "Stress is strain, and a small amount can help",
+  "body": "In psychology, stress is a feeling of emotional strain and pressure. Stress is a form of psychological and mental discomfort. Small amounts of stress may be beneficial, as it can improve athletic performance, motivation and reaction to the environment.",
+  "source": "Psychological stress, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychological_stress"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Trauma is the response, not the event",
+  "body": "Psychological trauma is an emotional response caused by severe distressing events, such as bodily injury, sexual violence, or other threats to the life of the subject or their loved ones; indirect exposure, such as from watching television news, may be extremely distressing and can produce an involuntary and possibly overwhelming physiological stress response, but does not always produce trauma.",
+  "source": "Psychological trauma, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychological_trauma"
+ },
+ {
+  "topic": "psychology",
+  "title": "Psychology is the scientific study of mind and behaviour",
+  "body": "Psychology is the scientific study of the mind and behavior. Its subject matter includes the behavior of humans and nonhumans, both conscious and unconscious phenomena, and mental processes such as thoughts, feelings, and motives.",
+  "source": "Psychology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychology",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychopathology is the study of mental illness",
+  "body": "Psychopathology is the study of mental illness. It includes the signs and symptoms of all mental disorders. The field includes abnormal cognition, maladaptive behavior, and experiences which differ according to social norms.",
+  "source": "Psychopathology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychopathology",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychopharmacology is what drugs do to mood and thinking",
+  "body": "Psychopharmacology is the scientific study of the effects drugs have on mood, sensation, thinking, behavior, judgment and evaluation, and memory.",
+  "source": "Psychopharmacology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychopharmacology",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychosis is losing the line between real and not",
+  "body": "In psychopathology, psychosis is the inability to distinguish what is or is not real. Examples of psychotic symptoms are delusions, hallucinations, and disorganized or incoherent thoughts or speech.",
+  "source": "Psychosis, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychosis"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychotherapy is psychological method applied through regular contact",
+  "body": "Psychotherapy is the use of psychological methods, particularly when based on regular personal interaction, to help a person change behavior, increase happiness, and overcome problems.",
+  "source": "Psychotherapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Psychotherapy",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "High expectations lift performance",
+  "body": "The Pygmalion effect is a psychological phenomenon in which high expectations lead to improved performance in a given area.",
+  "source": "Pygmalion effect, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Pygmalion_effect"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "The recovery model centres on the potential to recover",
+  "body": "The recovery model, recovery approach or psychological recovery is an approach to mental disorders or substance dependence that emphasizes and supports a person's potential for recovery.",
+  "source": "Recovery model, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Recovery_model"
+ },
+ {
+  "topic": "psychology",
+  "title": "Consequences that make a behaviour more likely",
+  "body": "In behavioral psychology, reinforcement refers to consequences that increase the likelihood of an organism's future behavior, typically in the presence of a particular antecedent stimulus.",
+  "source": "Reinforcement, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Reinforcement"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Relapse prevention identifies the high-risk situations first",
+  "body": "Relapse prevention (RP) is a cognitive-behavioral approach to relapse with the goal of identifying and preventing high-risk situations such as unhealthy substance use, obsessive-compulsive behavior, sexual offending, obesity, and depression.",
+  "source": "Relapse prevention, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Relapse_prevention"
+ },
+ {
+  "topic": "psychology",
   "title": "Chewing on it is not the same as solving it",
   "body": "Rumination is the sustained focus on and repetition of negative thoughts and emotions.",
   "source": "Rumination (psychology), Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Rumination_(psychology)"
+ },
+ {
+  "topic": "psychology",
+  "title": "Stop at good enough, deliberately",
+  "body": "Satisficing is a decision-making strategy or cognitive heuristic that entails searching through the available alternatives until an acceptability threshold is met, without necessarily maximizing any specific objective.",
+  "source": "Satisficing, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Satisficing"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Depression that returns at the same time each year",
+  "body": "Seasonal affective disorder is a mood disorder subset in which people who typically have normal mental health throughout most of the year exhibit depressive symptoms at the same time each year.",
+  "source": "Seasonal affective disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Seasonal_affective_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "SSRIs are the antidepressants typically used",
+  "body": "Selective serotonin reuptake inhibitors (SSRIs) are a class of drugs that are typically used as antidepressants in the treatment of major depressive disorder, anxiety disorders, and other psychiatric conditions.",
+  "source": "Selective serotonin reuptake inhibitor, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Selective_serotonin_reuptake_inhibitor"
+ },
+ {
+  "topic": "psychology",
+  "title": "Turn compassion on yourself when you fail",
+  "body": "In psychology, self-compassion is extending compassion to one's self in instances of perceived inadequacy, failure, or general suffering.",
+  "source": "Self-compassion, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Self-compassion"
+ },
+ {
+  "topic": "psychology",
+  "title": "Self-control is an executive function, not a virtue",
+  "body": "Self-control is the ability to regulate one's emotions, thoughts, and behavior in the face of temptations and impulses. It is an aspect of inhibitory control, one of the core human executive functions.",
+  "source": "Self-control, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Self-control"
  },
  {
   "topic": "psychology",
@@ -994,11 +2189,67 @@
   "url": "https://en.wikipedia.org/wiki/Self-efficacy"
  },
  {
+  "topic": "psychology",
+  "title": "Self-handicapping is avoiding effort so failure does not count",
+  "body": "Self-handicapping is a cognitive strategy by which people avoid effort in the hopes of keeping potential failure from hurting self-esteem.",
+  "source": "Self-handicapping, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Self-handicapping"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Self-harm is usually without suicidal intention",
+  "body": "Self-harm is intentional behavior that causes harm to oneself. This is most commonly regarded as direct injury of one's own tissues, usually without suicidal intention.",
+  "source": "Self-harm, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Self-harm"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Self-help groups are voluntary and shared",
+  "body": "Self-help groups for mental health are voluntary associations of people who share a common desire to overcome mental illness or otherwise increase their level of cognitive or emotional wellbeing.",
+  "source": "Self-help groups for mental health, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Self-help_groups_for_mental_health"
+ },
+ {
+  "topic": "psychology",
+  "title": "Self-esteem bends how you perceive yourself",
+  "body": "A self-serving bias is any cognitive or perceptual process that is distorted by the need to maintain and enhance self-esteem, or the tendency to perceive oneself in an overly favorable manner.",
+  "source": "Self-serving bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Self-serving_bias"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Working through the sleep period has its own disorder",
+  "body": "Shift work sleep disorder (SWSD) is a circadian rhythm sleep disorder characterized by insomnia, excessive sleepiness, or both affecting people whose work hours overlap with the typical sleep period.",
+  "source": "Shift work sleep disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Shift_work_sleep_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Sleep apnea is breathing that stops during sleep",
+  "body": "Sleep apnea is a sleep-related breathing disorder in which repetitive pauses in breathing, periods of shallow breathing, or collapse of the upper airway during sleep result in poor ventilation and sleep disruption.",
+  "source": "Sleep apnea, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Sleep_apnea"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Lost sleep accumulates",
+  "body": "Sleep debt or sleep deficit is the cumulative effect of not getting enough sleep. A large sleep debt may lead to mental or physical fatigue, and can adversely affect one's mood, energy, and ability to think clearly.",
+  "source": "Sleep debt, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Sleep_debt"
+ },
+ {
   "topic": "psychiatry",
   "title": "Short sleep is a health condition",
   "body": "Sleep deprivation, also known as sleep insufficiency or sleeplessness, is the health condition of not having adequate duration or quality of sleep to support proper alertness, performance, and health.",
   "source": "Sleep deprivation, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Sleep_deprivation"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "A sleep disorder is a medical disorder",
+  "body": "A sleep disorder, or somnipathy, is a medical disorder that disrupts an individual's sleep patterns and quality. This can cause serious health issues and affect physical, mental, and emotional well-being.",
+  "source": "Sleep disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Sleep_disorder"
  },
  {
   "topic": "psychology",
@@ -1009,10 +2260,140 @@
  },
  {
   "topic": "psychology",
+  "title": "You are impaired right after waking",
+  "body": "Sleep inertia is a physiological state of impaired cognitive and sensory-motor performance that is present immediately after awakening.",
+  "source": "Sleep inertia, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Sleep_inertia"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Sleep has its own medical specialty",
+  "body": "Sleep medicine or somnology is a medical specialty or subspecialty devoted to the diagnosis and therapy of sleep disturbances and disorders.",
+  "source": "Sleep medicine, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Sleep_medicine"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Social anxiety becomes a disorder when it impairs daily life",
+  "body": "Social anxiety disorder (SAD), previously known as social phobia, is an anxiety disorder characterized by high levels of anxiety and self-consciousness in social situations, resulting in significant distress and an impaired ability to function in daily life.",
+  "source": "Social anxiety disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_anxiety_disorder"
+ },
+ {
+  "topic": "psychology",
+  "title": "Social comparison is how you try to evaluate yourself",
+  "body": "Social comparison theory, initially proposed by social psychologist Leon Festinger in 1954, centers on the belief that individuals drive to gain accurate self-evaluations.",
+  "source": "Social comparison theory, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_comparison_theory"
+ },
+ {
+  "topic": "psychology",
+  "title": "Being around others can improve your performance",
+  "body": "Social facilitation is a social phenomenon in which being in the presence of others improves individual task performance. That is, people do better on tasks when they are with other people rather than when they are doing the task alone.",
+  "source": "Social facilitation, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_facilitation"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Isolation is lack of contact, loneliness is how it feels",
+  "body": "Social isolation is a state of complete or near-complete lack of contact between an individual and society. It differs from loneliness, which reflects temporary and involuntary lack of contact with other humans in the world.",
+  "source": "Social isolation, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_isolation"
+ },
+ {
+  "topic": "psychology",
+  "title": "You try less in a group than alone",
+  "body": "In social psychology, social loafing is the phenomenon of a person exerting less effort to achieve a goal when they work in a group than when working alone.",
+  "source": "Social loafing, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_loafing"
+ },
+ {
+  "topic": "psychology",
+  "title": "Social psychology is how other people shape what you think and do",
+  "body": "Social psychology is the methodical study of how thoughts, feelings, and behaviors are influenced by the actual, imagined, or implied presence of others.",
+  "source": "Social psychology, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_psychology",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "Social support is knowing help is there",
+  "body": "Social support is the perception and actuality that one is cared for, has assistance available from other people, and, most popularly, that one is part of a supportive social network.",
+  "source": "Social support, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Social_support"
+ },
+ {
+  "topic": "saas",
+  "title": "SaaS is software delivered and run by the provider",
+  "body": "Software as a service is a cloud computing service model in which a provider delivers application software to clients while managing the required physical and software resources.",
+  "source": "Software as a service, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Software_as_a_service",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Excessive focus on physical symptoms is itself a disorder",
+  "body": "Somatic symptom disorder (SSD) is a mental disorder characterized by an excessive focus on physical symptoms—such as pain or shortness of breath—that cause significant distress or impairment.",
+  "source": "Somatic symptom disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Somatic_symptom_disorder"
+ },
+ {
+  "topic": "psychology",
   "title": "Spread the practice out, don't cram it",
   "body": "The spacing effect demonstrates that learning is more effective when study sessions are spaced out.",
   "source": "Spacing effect, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Spacing_effect"
+ },
+ {
+  "topic": "saas",
+  "title": "A startup exists to find a scalable business model",
+  "body": "A startup or start-up is a company or project typically undertaken by an entrepreneur to seek, develop, and validate a scalable business model.",
+  "source": "Startup company, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Startup_company",
+  "definition": true
+ },
+ {
+  "topic": "psychology",
+  "title": "The current state is the reference point for everything else",
+  "body": "A status quo bias or default bias is a cognitive bias which results from a preference for the maintenance of one's existing state of affairs. The current baseline is taken as a reference point, and any change from that baseline is perceived as a loss or gain.",
+  "source": "Status quo bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Status_quo_bias"
+ },
+ {
+  "topic": "psychology",
+  "title": "Planned procrastination has a name",
+  "body": "Student syndrome refers to planned procrastination, when a student will substantially apply themselves to an assignment or task at the last moment before its deadline.",
+  "source": "Student syndrome, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Student_syndrome"
+ },
+ {
+  "topic": "saas",
+  "title": "Subscriptions are recurring payment for continued access",
+  "body": "The subscription business model is a business model in which a customer must pay a recurring price at regular intervals for access to a product or service. The model was pioneered by publishers of books and periodicals in the 17th century.",
+  "source": "Subscription business model, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Subscription_business_model",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Persistent use despite substantial harm is the definition",
+  "body": "Substance use disorder (SUD) is the persistent use of drugs despite substantial harm and adverse consequences to self and others. Related terms include substance use problems and problematic drug or alcohol use.",
+  "source": "Substance use disorder, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Substance_use_disorder"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Suicidal ideation is thinking about the possibility of suicide",
+  "body": "Suicidal ideation, or suicidal thoughts, is the thought process of having ideas or ruminations about the possibility of dying by suicide.",
+  "source": "Suicidal ideation, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Suicidal_ideation"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Suicide is often preventable",
+  "body": "Suicide prevention is a collection of efforts to reduce the risk of suicide. Suicide is often preventable, and the efforts to prevent it may occur at the individual, relationship, community, and society level.",
+  "source": "Suicide prevention, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Suicide_prevention"
  },
  {
   "topic": "psychology",
@@ -1023,10 +2404,102 @@
  },
  {
   "topic": "psychology",
+  "title": "You only see the ones that made it",
+  "body": "Survivorship bias or survivor bias is a statistical error that results from concentrating on entities that passed a selection process while overlooking those that did not. This can lead to incorrect conclusions because of incomplete data.",
+  "source": "Survivorship bias, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Survivorship_bias"
+ },
+ {
+  "topic": "psychology",
+  "title": "Switching tasks is set-shifting, an executive function",
+  "body": "Task switching, or set-shifting, is an executive function that involves the ability to subconsciously shift attention between one task and another.",
+  "source": "Task switching (psychology), Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Task_switching_(psychology)"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Psychiatric care can be delivered remotely",
+  "body": "Telepsychiatry or telemental health refers to the use of telecommunications technology to deliver psychiatric care remotely for people with mental health conditions. It is a branch of telemedicine.",
+  "source": "Telepsychiatry, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Telepsychiatry"
+ },
+ {
+  "topic": "psychology",
   "title": "Retrieving beats rereading",
   "body": "The testing effect suggests long-term memory is increased when part of the learning period is devoted to retrieving information from memory.",
   "source": "Testing effect, Wikipedia",
   "url": "https://en.wikipedia.org/wiki/Testing_effect"
+ },
+ {
+  "topic": "psychology",
+  "title": "Give the activity a maximum time and stop there",
+  "body": "In agile principles, timeboxing is the allocation of a maximum unit of time to an activity, called a timebox, within which a planned activity takes place. It is used by agile principles-based project management approaches and for personal time management.",
+  "source": "Timeboxing, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Timeboxing"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Treatment-resistant depression means two adequate trials failed",
+  "body": "Treatment-resistant depression (TRD) is often defined as major depressive disorder in which an affected person does not respond adequately to at least two different antidepressant medications at an adequate dose and for an adequate duration.",
+  "source": "Treatment-resistant depression, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Treatment-resistant_depression"
+ },
+ {
+  "topic": "psychology",
+  "title": "Cycles shorter than a day run through your day",
+  "body": "In chronobiology, an ultradian rhythm is a recurrent period or cycle repeated throughout a 24-hour day. In contrast, circadian rhythms complete one cycle daily, while infradian rhythms such as the menstrual cycle have periods longer than a day.",
+  "source": "Ultradian rhythm, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Ultradian_rhythm"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Gaming disorder is compulsive use that impairs life",
+  "body": "Video game addiction (VGA), also known as gaming disorder or internet gaming disorder, is generally defined as a behavioural addiction involving problematic, compulsive use of video games that results in significant impairment to an individual's ability to function in various life domains over a prolonged period of time.",
+  "source": "Video game addiction, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Video_game_addiction"
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Deliberate sleep deprivation is used to treat mood disorders",
+  "body": "Wake therapy is a specific application of intentional sleep deprivation. It encompasses many sleep-restricting paradigms that aim to address mood disorders with a form of non-pharmacological therapy.",
+  "source": "Wake therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Wake_therapy"
+ },
+ {
+  "topic": "psychology",
+  "title": "Work-life balance is the equilibrium between the two",
+  "body": "In the intersection of work and personal life, the work–life balance is the equilibrium between the two. There are many aspects of one's personal life that can intersect with work, including family, leisure, and health.",
+  "source": "Work–life balance, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Work%E2%80%93life_balance"
+ },
+ {
+  "topic": "psychology",
+  "title": "Working compulsively despite the damage is workaholism",
+  "body": "A workaholic is a person who works compulsively. A workaholic experiences an inability to limit the amount of time they spend on work despite negative consequences such as damage to their relationships or health.",
+  "source": "Workaholic, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Workaholic"
+ },
+ {
+  "topic": "psychology",
+  "title": "Working memory holds a little, briefly",
+  "body": "Working memory is a cognitive system with a limited capacity that can hold information temporarily. It is important for reasoning and the guidance of decision-making and behavior.",
+  "source": "Working memory, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Working_memory",
+  "definition": true
+ },
+ {
+  "topic": "psychiatry",
+  "title": "Worry is distress from anticipated fear",
+  "body": "Worrying is the mental distress or agitation resulting from anxiety, usually coming from a place of anticipatory fear (terror) or fear coming from a present threat (horror).",
+  "source": "Worry, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Worry"
+ },
+ {
+  "topic": "psychology",
+  "title": "Writing is used clinically for healing and growth",
+  "body": "Writing therapy is a form of expressive therapy that uses the act of writing and processing the written word in clinical interventions for healing and personal growth.",
+  "source": "Writing therapy, Wikipedia",
+  "url": "https://en.wikipedia.org/wiki/Writing_therapy"
  },
  {
   "topic": "psychology",
