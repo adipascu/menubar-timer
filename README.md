@@ -6,6 +6,10 @@ A macOS menu bar timer with two modes and a coach that only talks when you are n
 
 **Flow mode off.** A Clippy-style card slides into the corner every four to twelve minutes with one idea, drawn from 161 tips distilled from free sources. It sits above every window and every space until you press OK, so it survives switching apps. The second button opens a Claude Code session seeded with that tip so you can argue with it.
 
+Each card carries a beacon along its top edge, there to catch an attention that drifts. It is a small canvas animation in phosphor green, picked at random from Matrix rain, a decode marquee and a port scan log, or a spectrum analyser when something is playing audio at half volume or louder, or at any level through an output that reports no volume of its own. The three random ones invert the whole strip 2.5 times a second and the analyser slams every bar to the top at the same rate. Hover the card and the beacon goes dark so the tip can be read in peace.
+
+![The coach popup cycling through its four beacon animations](docs/coach-popup.gif)
+
 The tips cover three subjects: building a SaaS, the psychology of attention, motivation and habit, and the psychiatry around working with your own head. Cards are drawn so the three stay mixed, roughly one card in three away from SaaS, rather than letting the largest pool crowd out the rest. Each subject seeds a different conversation when you press the second button, and the psychiatry one is told to stay inside its source, avoid diagnosing, and name when something belongs with a doctor.
 
 That session starts in `/tmp`, and its prompt names TimerBar's own checkout, so an argument about a tip can turn into a change to the coach. A packaged build learns that checkout path from the first run out of the source tree, because the bundle only knows its own location inside `/Applications`.
@@ -44,6 +48,7 @@ That has a measurable failure mode. When another app is fullscreen the menu bar 
 - **`'screen-saver'` is the always-on-top level that clears fullscreen apps.** `'floating'` is not enough, and `visibleOnFullScreen` has to be set through `setVisibleOnAllWorkspaces`, not the constructor.
 - **`InstantAmperage` from `ioreg` is a 64-bit two's complement value, and `Number` cannot hold it.** On battery the current is negative, so it arrives as an unsigned integer just under 2^64, where JavaScript doubles are spaced 2048 apart. Parsed with `Number`, every reading rounded to a multiple of 2048 mA, so the app only ever saw 0, 24 or 48 W and the 22 W threshold was really tripping at about 12 W. `BigInt.asIntN(64, ...)` recovers the exact value.
 - **A tray title that changes width shifts every menu bar item to its left.** The flame prefix flashing in and out moved the rest of the bar by about 23 points twice a second, and the system font's proportional digits moved it by up to 9 points on every tick of the countdown, since `11:11` is narrower than `00:00`. The flame is now a fixed-size tray image, swapped for a transparent image of the same size while it is unlit, and the title is set with `fontType: 'monospacedDigit'`. Measured with `tray.getBounds()`, lit, unlit, `00:00` and `11:11` all come out at the same width. `swift scripts/render-flame.swift` regenerates the flame bitmaps from the emoji at the menu bar font size.
+- **`pmset -g assertions` knows when audio is playing.** While any app has an output stream open, `coreaudiod` holds a `PreventUserIdleSystemSleep` assertion whose resource line starts with `audio-out`. That one shell call, next to `get volume settings` from `osascript`, is enough to tell loud music from silence without a private framework.
 
 ## Install
 
