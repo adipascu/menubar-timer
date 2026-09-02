@@ -104,7 +104,7 @@ const openClaudeSession = (tip) => {
   })
 }
 
-export const createCoach = (getState, onSnooze = () => {}) => {
+export const createCoach = (getState) => {
   rememberSourcePath()
   const calibration = createCalibration()
   const nextTip = createTipQueue(calibration.personalTips)
@@ -192,11 +192,6 @@ export const createCoach = (getState, onSnooze = () => {}) => {
   })
 
   ipcMain.on('coach:dismiss', () => closePopup())
-
-  ipcMain.on('coach:snooze', () => {
-    closePopup()
-    onSnooze()
-  })
 
   ipcMain.on('coach:discuss', () => {
     const tip = showing

@@ -8,9 +8,6 @@ const LOW_BATTERY_PERCENT = 40
 const ALERT_GAP_MS = 3 * 60 * 1000
 const UNKNOWN_MINUTES = 65535
 
-export const SNOOZE_MINUTES = 10
-const SNOOZE_MS = SNOOZE_MINUTES * 60 * 1000
-
 const number = (text, key) => {
   const match = text.match(new RegExp(`"${key}" = (-?\\d+)`))
   return match ? Number(match[1]) : null
@@ -51,7 +48,7 @@ export const readPower = () =>
 
 const TUNABLES = [
   'This alert comes from TimerBar itself, so if it fired at the wrong moment we can retune it.',
-  `The knobs are all at the top of src/power.js: HEAVY_LOAD_WATTS ${HEAVY_LOAD_WATTS}, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts, and SNOOZE_MINUTES ${SNOOZE_MINUTES} for the snooze button on this card.`,
+  `The knobs are all at the top of src/power.js: HEAVY_LOAD_WATTS ${HEAVY_LOAD_WATTS}, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, and ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts.`,
   'The reading comes from ioreg AppleSmartBattery, InstantAmperage times Voltage, so it is whole-system draw rather than any one process.',
 ].join(' ')
 
@@ -60,7 +57,6 @@ const heavyLoadCard = (watts, reading) => ({
   title: `Plug in, you are pulling ${watts.toFixed(0)} W`,
   body: `Sustained ${watts.toFixed(0)} W on battery for the last five minutes, well above light browsing or editing. Battery is at ${reading.percent}%${describeRemaining(reading.minutesRemaining)}.`,
   source: 'Power draw',
-  snoozeLabel: `Snooze ${SNOOZE_MINUTES} min`,
   prompt: [
     `My Mac has been drawing a sustained ${watts.toFixed(0)} W on battery for the last five minutes, with the battery at ${reading.percent}%. That is well above light use.`,
     '',
@@ -90,9 +86,6 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
   let lastSuppressedLogAt = 0
   let timer = null
   let underLoad = false
-  let snoozedUntil = 0
-
-  const isSnoozed = () => Date.now() < snoozedUntil
 
   const reportLoad = (active) => {
     if (active === underLoad) return
@@ -110,7 +103,6 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
     if (!reading) return
     if (!reading.onBattery) {
       watts.length = 0
-      snoozedUntil = 0
       reportLoad(false)
       return
     }
@@ -119,7 +111,7 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
     if (watts.length > WINDOW_SAMPLES) watts.shift()
 
     const sustained = watts.length === WINDOW_SAMPLES ? median(watts) : 0
-    const overheating = sustained >= HEAVY_LOAD_WATTS && !isSnoozed()
+    const overheating = sustained >= HEAVY_LOAD_WATTS
     reportLoad(overheating)
 
     if (Date.now() - lastAlertAt < ALERT_GAP_MS) return
@@ -150,10 +142,5 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
       timer = setInterval(check, SAMPLE_MS)
     },
     stop: () => clearInterval(timer),
-    snooze: () => {
-      snoozedUntil = Date.now() + SNOOZE_MS
-      reportLoad(false)
-      log(`overheat snoozed for ${SNOOZE_MINUTES} minutes`)
-    },
   }
 }
