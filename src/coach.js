@@ -8,6 +8,7 @@ import { createFeedback } from './feedback.js'
 import { menuBarIsCovered } from './fullscreen.js'
 import { log } from './log.js'
 import { musicIsLoud } from './music.js'
+import { quizCard } from './quiz.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const tips = JSON.parse(readFileSync(join(here, 'tips.json'), 'utf8'))
@@ -102,7 +103,7 @@ const discussionPrompt = (tip) => [
 ].join('\n')
 
 const openClaudeSession = (tip) => {
-  const promptFile = join(app.getPath('temp'), `saas-tip-${Date.now()}.txt`)
+  const promptFile = join(app.getPath('temp'), `timerbar-prompt-${Date.now()}.txt`)
   writeFileSync(promptFile, `${tip.prompt ?? discussionPrompt(tip)}\n\n${ownSourceNote()}`)
 
   const command = `cd ${SCRATCH_DIR} && claude "$(cat ${JSON.stringify(promptFile)})"`
@@ -115,10 +116,19 @@ const openClaudeSession = (tip) => {
   })
 }
 
+const exportPool = () => {
+  const file = join(app.getPath('userData'), 'tips-builtin.json')
+  writeFileSync(file, readFileSync(join(here, 'tips.json')))
+  return file
+}
+
 export const createCoach = (getState) => {
   rememberSourcePath()
   const feedback = createFeedback()
-  const calibration = createCalibration(feedback.file)
+  const tipsFile = join(app.getPath('userData'), 'tips-personal.json')
+  const quizFile = join(app.getPath('userData'), 'quiz.json')
+  const poolFile = exportPool()
+  const calibration = createCalibration(tipsFile, feedback.file)
   const allTips = () => [...tips, ...calibration.personalTips().map((tip) => ({ ...tip, personal: true }))]
   const nextTip = createTipQueue(allTips, feedback.retiredTitles)
   let timer = null
@@ -236,6 +246,7 @@ export const createCoach = (getState) => {
       closePopup()
       show(card)
     },
+    quiz: () => openClaudeSession(quizCard({ poolFile, tipsFile, feedbackFile: feedback.file, quizFile })),
     refresh: () => {
       if (tipsAreAllowed()) schedule(randomGap())
       else closePopup()

@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { PERSONAL_TIP_SHAPE, SOURCE_RULE } from './personal-tips.js'
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -13,16 +14,15 @@ const buildPrompt = (tipsFile, feedbackFile, since) => [
   '',
   '3. Tell me in a few sentences what you found, then interview me. Ask what making money with SaaS actually means for me, what "there" looks like and by when, where I am struggling right now, what I have already tried, and what my real constraints are in time, money, skill and risk. Then ask about the other half of it: how the working itself has been going, what my attention, sleep and stress have been like, and what keeps draining me. Ask one question at a time and keep going until you genuinely have enough to coach me well rather than generically.',
   '',
-  `4. Then write my personalised tips to ${tipsFile} as a JSON array. Each entry is {"topic": one of "saas", "psychology" or "psychiatry", "title": a short imperative line, "body": two or three sentences, "source": where the idea comes from, "url": a real link or omitted}. Write 20 to 40 of them, spread evenly across the three topics. They must be specific to my situation, my goal and where I am stuck, and together they should form a path from where I am now to where I said I want to be. Mix concrete next actions with the principles behind them.`,
+  `4. Then write my personalised tips to ${tipsFile} as a JSON array. ${PERSONAL_TIP_SHAPE} Write 20 to 40 of them, spread evenly across the three topics. They must be specific to my situation, my goal and where I am stuck, and together they should form a path from where I am now to where I said I want to be. Mix concrete next actions with the principles behind them.`,
   '',
-  'Anything you file under "psychology" or "psychiatry" has to come from a real source you can link, stay inside what that source supports, and never read as a diagnosis. Point me at a professional instead when that is the honest answer.',
+  SOURCE_RULE,
   '',
   'That file becomes the popups that interrupt me while I work all week, so make every one worth the interruption.',
 ].join('\n')
 
-export const createCalibration = (feedbackFile) => {
+export const createCalibration = (tipsFile, feedbackFile) => {
   const stateFile = join(app.getPath('userData'), 'coach.json')
-  const tipsFile = join(app.getPath('userData'), 'tips-personal.json')
 
   if (!existsSync(stateFile)) writeFileSync(stateFile, JSON.stringify({ seededAt: Date.now() }))
   const { seededAt } = JSON.parse(readFileSync(stateFile, 'utf8'))
