@@ -75,7 +75,9 @@ export const parseBinaryPlist = (buffer) => {
       }
       case TYPE_UTF16: {
         const { count, start } = readCount(offset, info)
-        return Buffer.from(buffer.subarray(start, start + count * 2)).swap16().toString('utf16le')
+        return Buffer.from(buffer.subarray(start, start + count * 2))
+          .swap16()
+          .toString('utf16le')
       }
       case TYPE_ARRAY:
       case TYPE_SET: {

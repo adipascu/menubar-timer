@@ -90,30 +90,40 @@ const ownSourceNote = () => {
 
 const DISCUSSION_BY_TOPIC = {
   saas: 'That tip just popped up while I was working. Help me think it through and work out what it means for the SaaS I am building. Ask me what I am building before you give advice.',
-  psychology: 'That popped up while I was working. Help me think it through and work out what it means for how I actually work: my attention, my motivation, my habits. Ask me how the work has been going lately before you give advice, and stay with what the research behind it supports rather than the pop version.',
-  psychiatry: 'That popped up while I was working. Help me understand what it actually says and what it means for looking after my head while I build things. Ask about my situation before you answer, keep to what the source supports, do not diagnose me, and say plainly when something belongs with a doctor rather than with you.',
+  psychology:
+    'That popped up while I was working. Help me think it through and work out what it means for how I actually work: my attention, my motivation, my habits. Ask me how the work has been going lately before you give advice, and stay with what the research behind it supports rather than the pop version.',
+  psychiatry:
+    'That popped up while I was working. Help me understand what it actually says and what it means for looking after my head while I build things. Ask about my situation before you answer, keep to what the source supports, do not diagnose me, and say plainly when something belongs with a doctor rather than with you.',
 }
 
-const discussionPrompt = (tip) => [
-  `"${tip.title}" — ${tip.source}${tip.url ? `, ${tip.url}` : ''}`,
-  '',
-  tip.body,
-  '',
-  DISCUSSION_BY_TOPIC[tip.topic],
-].join('\n')
+const discussionPrompt = (tip) =>
+  [
+    `"${tip.title}" — ${tip.source}${tip.url ? `, ${tip.url}` : ''}`,
+    '',
+    tip.body,
+    '',
+    DISCUSSION_BY_TOPIC[tip.topic],
+  ].join('\n')
 
 const openClaudeSession = (tip) => {
   const promptFile = join(app.getPath('temp'), `timerbar-prompt-${Date.now()}.txt`)
   writeFileSync(promptFile, `${tip.prompt ?? discussionPrompt(tip)}\n\n${ownSourceNote()}`)
 
   const command = `cd ${SCRATCH_DIR} && claude "$(cat ${JSON.stringify(promptFile)})"`
-  execFile('osascript', [
-    '-e', `tell application "Terminal" to do script ${JSON.stringify(command)}`,
-    '-e', 'tell application "Terminal" to activate',
-  ], { timeout: 10000 }, (error) => {
-    if (error) log(`could not open a Claude Code session: ${error.message.trim()}`)
-    else log(`opened a Claude Code session for "${tip.title}"`)
-  })
+  execFile(
+    'osascript',
+    [
+      '-e',
+      `tell application "Terminal" to do script ${JSON.stringify(command)}`,
+      '-e',
+      'tell application "Terminal" to activate',
+    ],
+    { timeout: 10000 },
+    (error) => {
+      if (error) log(`could not open a Claude Code session: ${error.message.trim()}`)
+      else log(`opened a Claude Code session for "${tip.title}"`)
+    },
+  )
 }
 
 const exportPool = () => {
