@@ -10,15 +10,13 @@ const UNKNOWN_MINUTES = 65535
 
 const number = (text, key) => {
   const match = text.match(new RegExp(`"${key}" = (-?\\d+)`))
-  return match ? Number(match[1]) : null
+  return match ? Number(BigInt.asIntN(64, BigInt(match[1]))) : null
 }
 
 const flag = (text, key) => {
   const match = text.match(new RegExp(`"${key}" = (Yes|No)`))
   return match ? match[1] === 'Yes' : null
 }
-
-const signedMilliamps = (raw) => (raw > 2 ** 63 ? raw - 2 ** 64 : raw)
 
 const median = (values) => {
   const sorted = [...values].sort((a, b) => a - b)
@@ -41,7 +39,7 @@ export const readPower = () =>
         onBattery: flag(stdout, 'ExternalConnected') === false,
         percent: number(stdout, 'CurrentCapacity'),
         minutesRemaining: number(stdout, 'TimeRemaining'),
-        watts: Math.abs(signedMilliamps(number(stdout, 'InstantAmperage')) * number(stdout, 'Voltage')) / 1e6,
+        watts: Math.abs(number(stdout, 'InstantAmperage') * number(stdout, 'Voltage')) / 1e6,
       })
     })
   })
