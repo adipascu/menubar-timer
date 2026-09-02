@@ -3,7 +3,7 @@ import { log } from './log.js'
 
 const SAMPLE_MS = 30 * 1000
 const WINDOW_SAMPLES = 10
-const HEAVY_LOAD_WATTS = 22
+const HEAVY_LOAD_RUNTIME_HOURS = 4
 const LOW_BATTERY_PERCENT = 40
 const ALERT_GAP_MS = 3 * 60 * 1000
 const UNKNOWN_MINUTES = 65535
@@ -35,28 +35,33 @@ export const readPower = () =>
         reject(error)
         return
       }
+      const milliamps = Math.abs(number(stdout, 'InstantAmperage'))
+      const volts = number(stdout, 'Voltage') / 1000
       resolve({
         onBattery: flag(stdout, 'ExternalConnected') === false,
         percent: number(stdout, 'CurrentCapacity'),
         minutesRemaining: number(stdout, 'TimeRemaining'),
-        watts: Math.abs(number(stdout, 'InstantAmperage') * number(stdout, 'Voltage')) / 1e6,
+        designMilliampHours: number(stdout, 'DesignCapacity'),
+        milliamps,
+        volts,
+        watts: (milliamps * volts) / 1000,
       })
     })
   })
 
 const TUNABLES = [
   'This alert comes from TimerBar itself, so if it fired at the wrong moment we can retune it.',
-  `The knobs are all at the top of src/power.js: HEAVY_LOAD_WATTS ${HEAVY_LOAD_WATTS}, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, and ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts.`,
+  `The knobs are all at the top of src/power.js: HEAVY_LOAD_RUNTIME_HOURS ${HEAVY_LOAD_RUNTIME_HOURS}, meaning the alert fires once the sustained current would drain the battery's design capacity from full in under that many hours, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, and ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts.`,
   'The reading comes from ioreg AppleSmartBattery, InstantAmperage times Voltage, so it is whole-system draw rather than any one process.',
 ].join(' ')
 
 const heavyLoadCard = (watts, reading) => ({
   kind: 'power',
   title: `Plug in, you are pulling ${watts.toFixed(0)} W`,
-  body: `Sustained ${watts.toFixed(0)} W on battery for the last five minutes, well above light browsing or editing. Battery is at ${reading.percent}%${describeRemaining(reading.minutesRemaining)}.`,
+  body: `Sustained ${watts.toFixed(0)} W on battery for the last five minutes, enough to drain a full battery in under ${HEAVY_LOAD_RUNTIME_HOURS} hours. Battery is at ${reading.percent}%${describeRemaining(reading.minutesRemaining)}.`,
   source: 'Power draw',
   prompt: [
-    `My Mac has been drawing a sustained ${watts.toFixed(0)} W on battery for the last five minutes, with the battery at ${reading.percent}%. That is well above light use.`,
+    `My Mac has been drawing a sustained ${watts.toFixed(0)} W on battery for the last five minutes, with the battery at ${reading.percent}%. That would drain a full battery in under ${HEAVY_LOAD_RUNTIME_HOURS} hours.`,
     '',
     'Help me find what is responsible. Suggest what to run, read the output with me, and tell me whether it is worth killing something or whether I should just plug in.',
     '',
@@ -79,7 +84,7 @@ const lowBatteryCard = (reading) => ({
 })
 
 export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNearby = () => true) => {
-  const watts = []
+  const milliamps = []
   let lastAlertAt = 0
   let lastSuppressedLogAt = 0
   let timer = null
@@ -100,21 +105,23 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
 
     if (!reading) return
     if (!reading.onBattery) {
-      watts.length = 0
+      milliamps.length = 0
       reportLoad(false)
       return
     }
 
-    watts.push(reading.watts)
-    if (watts.length > WINDOW_SAMPLES) watts.shift()
+    milliamps.push(reading.milliamps)
+    if (milliamps.length > WINDOW_SAMPLES) milliamps.shift()
 
-    const sustained = watts.length === WINDOW_SAMPLES ? median(watts) : 0
-    const overheating = sustained >= HEAVY_LOAD_WATTS
+    const sustainedMilliamps = milliamps.length === WINDOW_SAMPLES ? median(milliamps) : 0
+    const sustainedWatts = (sustainedMilliamps * reading.volts) / 1000
+    const heavyLoadMilliamps = reading.designMilliampHours / HEAVY_LOAD_RUNTIME_HOURS
+    const overheating = heavyLoadMilliamps > 0 && sustainedMilliamps > heavyLoadMilliamps
     reportLoad(overheating)
 
     if (Date.now() - lastAlertAt < ALERT_GAP_MS) return
     const card = overheating
-      ? heavyLoadCard(sustained, reading)
+      ? heavyLoadCard(sustainedWatts, reading)
       : reading.percent < LOW_BATTERY_PERCENT
         ? lowBatteryCard(reading)
         : null
@@ -130,7 +137,7 @@ export const createPowerWatch = (onAlert, onSustainedLoad = () => {}, chargerNea
     }
 
     lastAlertAt = Date.now()
-    log(`power alert: ${card.title} (median ${sustained.toFixed(1)} W over ${watts.length} samples)`)
+    log(`power alert: ${card.title} (median ${sustainedMilliamps} mA, ${sustainedWatts.toFixed(1)} W over ${milliamps.length} samples, heavy from ${Math.round(heavyLoadMilliamps)} mA)`)
     onAlert(card)
   }
 
