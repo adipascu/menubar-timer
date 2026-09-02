@@ -4,6 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCalibration } from './calibration.js'
+import { createFeedback } from './feedback.js'
 import { menuBarIsCovered } from './fullscreen.js'
 import { log } from './log.js'
 import { musicIsLoud } from './music.js'
@@ -36,22 +37,31 @@ const shuffled = (items) => {
   return copy
 }
 
-const spreadAcrossTopics = (items) => {
-  const topics = [...new Set(items.map((item) => item.topic))]
-  return topics
-    .flatMap((topic) => {
-      const group = shuffled(items.filter((item) => item.topic === topic))
-      return group.map((tip, index) => ({ tip, at: (index + 0.5) / group.length }))
-    })
-    .sort((a, b) => a.at - b.at)
-    .map((entry) => entry.tip)
+const orderedForTopic = (pool, topic) => {
+  const ofTopic = pool.filter((tip) => tip.topic === topic)
+  const personal = ofTopic.filter((tip) => tip.personal)
+  const definitions = ofTopic.filter((tip) => tip.definition && !tip.personal)
+  const rest = ofTopic.filter((tip) => !tip.definition && !tip.personal)
+  return [...shuffled(personal), ...shuffled(definitions), ...shuffled(rest)]
 }
 
-const createTipQueue = (personalTips) => {
-  let queue = []
+const createTipQueue = (allTips, retiredTitles) => {
+  const queues = {}
+  let turn = 0
+
   return () => {
-    if (queue.length === 0) queue = [...spreadAcrossTopics(tips).reverse(), ...shuffled(personalTips())]
-    return queue.pop()
+    const retired = retiredTitles()
+    const available = allTips().filter((tip) => !retired.has(tip.title))
+    const topics = [...new Set(available.map((tip) => tip.topic))]
+    if (topics.length === 0) return null
+
+    const topic = topics[turn % topics.length]
+    turn += 1
+    for (;;) {
+      if (!queues[topic]?.length) queues[topic] = orderedForTopic(available, topic)
+      const tip = queues[topic].shift()
+      if (!retired.has(tip.title)) return tip
+    }
   }
 }
 
@@ -107,8 +117,10 @@ const openClaudeSession = (tip) => {
 
 export const createCoach = (getState) => {
   rememberSourcePath()
-  const calibration = createCalibration()
-  const nextTip = createTipQueue(calibration.personalTips)
+  const feedback = createFeedback()
+  const calibration = createCalibration(feedback.file)
+  const allTips = () => [...tips, ...calibration.personalTips().map((tip) => ({ ...tip, personal: true }))]
+  const nextTip = createTipQueue(allTips, feedback.retiredTitles)
   let timer = null
   let popup = null
   let showing = null
@@ -167,7 +179,7 @@ export const createCoach = (getState) => {
   const dueNow = async () => {
     if (calibration.isDue()) return calibration.popup()
     if (timerIsOff() && (await menuBarIsCovered())) return HIDDEN_TIMER_NUDGE
-    return nextTip()
+    return nextTip() ?? calibration.popup()
   }
 
   const tick = async () => {
@@ -179,6 +191,7 @@ export const createCoach = (getState) => {
     const tip = await dueNow()
     if (tipsAreAllowed() && popup === null) {
       show(tip)
+      if (tip.topic) feedback.recordShown(tip)
       log(`showed ${tip.kind ?? 'tip'}: ${tip.title}`)
     }
     schedule(randomGap())
@@ -198,6 +211,13 @@ export const createCoach = (getState) => {
   })
 
   ipcMain.on('coach:dismiss', () => closePopup())
+
+  ipcMain.on('coach:mark', (_event, status) => {
+    const tip = showing
+    closePopup()
+    feedback.mark(tip, status)
+    log(`marked "${tip.title}" ${status}`)
+  })
 
   ipcMain.on('coach:discuss', () => {
     const tip = showing

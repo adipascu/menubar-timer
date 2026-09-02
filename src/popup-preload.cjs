@@ -5,5 +5,7 @@ contextBridge.exposeInMainWorld('coach', {
   reportHeight: (height) => ipcRenderer.send('coach:height', height),
   dismiss: () => ipcRenderer.send('coach:dismiss'),
   discuss: () => ipcRenderer.send('coach:discuss'),
+  markKnown: () => ipcRenderer.send('coach:mark', 'known'),
+  markNotInterested: () => ipcRenderer.send('coach:mark', 'not-interested'),
   openSource: (url) => ipcRenderer.send('coach:open-source', url),
 })
