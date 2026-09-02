@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/*-preload.cjs", "scripts/*.js", "scripts/*.cjs", "test/**/*.test.js"],
+  "project": ["src/**/*.{js,cjs}", "scripts/**/*.{js,cjs}", "test/**/*.js"],
+  "ignoreBinaries": ["ioreg", "osascript"]
+}

@@ -1,7 +1,7 @@
-import { app, Tray, Menu, nativeImage, } from 'electron'
+import { app, Tray, Menu, nativeImage } from 'electron'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import ansiStyles from 'ansi-styles';
+import ansiStyles from 'ansi-styles'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createPowerWatch } from './power.js'
@@ -43,10 +43,10 @@ const formatTime = (seconds) => {
 
 const formatWatts = (watts) => `${watts.toFixed(1).padStart(4, FIGURE_SPACE)} W`
 
-app.setName('Timer App');
-app.on('window-all-closed', () => {});
+app.setName('Timer App')
+app.on('window-all-closed', () => {})
 
-(async () => {
+;(async () => {
   let interval = null
   let state = 'idle'
   let status = IDLE_STATUS
@@ -87,16 +87,16 @@ app.on('window-all-closed', () => {});
   }
 
   const flashMenuBar = () => {
-    let isGreen = true;
+    let isGreen = true
     return setInterval(() => {
       if (isGreen) {
-        setStatus(`${ansiStyles.bgGreen.open}Time's up!${ansiStyles.bgGreen.close}`);
+        setStatus(`${ansiStyles.bgGreen.open}Time's up!${ansiStyles.bgGreen.close}`)
       } else {
-        setStatus("Time's up!");
+        setStatus("Time's up!")
       }
-      isGreen = !isGreen;
-    }, 500);
-  };
+      isGreen = !isGreen
+    }, 500)
+  }
 
   const setState = (next) => {
     log(`state ${state} to ${next}, tips ${next === 'running' ? 'paused' : 'on'}`)
@@ -106,29 +106,29 @@ app.on('window-all-closed', () => {});
   }
 
   const resetTimer = (minutes) => {
-    clearInterval(interval);
+    clearInterval(interval)
     sessionMinutes = minutes
 
-    const endTime = Date.now() + minutes * 60 * 1000;
+    const endTime = Date.now() + minutes * 60 * 1000
 
     const updateTimer = () => {
-      const currentTime = Date.now();
-      const timeLeft = Math.max(0, Math.round((endTime - currentTime) / 1000));
+      const currentTime = Date.now()
+      const timeLeft = Math.max(0, Math.round((endTime - currentTime) / 1000))
 
       if (timeLeft <= 0) {
-        clearInterval(interval);
-        setStatus("Time's up!");
-        interval = flashMenuBar();
-        setState('expired');
+        clearInterval(interval)
+        setStatus("Time's up!")
+        interval = flashMenuBar()
+        setState('expired')
       } else {
-        setStatus(formatTime(timeLeft));
+        setStatus(formatTime(timeLeft))
       }
-    };
+    }
 
-    setState('running');
-    updateTimer();
-    interval = setInterval(updateTimer, 1000);
-  };
+    setState('running')
+    updateTimer()
+    interval = setInterval(updateTimer, 1000)
+  }
 
   const startSession = (minutes) => {
     if (task.get()) {
@@ -150,46 +150,48 @@ app.on('window-all-closed', () => {});
 
   const renderMenu = () => {
     const label = task.get()
-    tray.setContextMenu(Menu.buildFromTemplate([
-      { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
-      { type: 'separator' },
-      { label: FREEBASING, type: 'radio', checked: state === 'idle', click: stopTimer },
-      ...DURATIONS.map(({ minutes, hint }) => ({
-        label: `${minutes} min · ${hint}`,
-        type: 'radio',
-        checked: state !== 'idle' && minutes === sessionMinutes,
-        click: () => startSession(minutes),
-      })),
-      { type: 'separator' },
-      {
-        label: chargerPlaces.networkLabel()
-          ? `Charger available at ${chargerPlaces.networkLabel()}`
-          : 'Charger available here',
-        type: 'checkbox',
-        checked: chargerPlaces.isMarked(),
-        enabled: chargerPlaces.networkLabel() !== null,
-        click: () => {
-          chargerPlaces.toggleHere()
-          renderMenu()
+    tray.setContextMenu(
+      Menu.buildFromTemplate([
+        { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
+        { type: 'separator' },
+        { label: FREEBASING, type: 'radio', checked: state === 'idle', click: stopTimer },
+        ...DURATIONS.map(({ minutes, hint }) => ({
+          label: `${minutes} min · ${hint}`,
+          type: 'radio',
+          checked: state !== 'idle' && minutes === sessionMinutes,
+          click: () => startSession(minutes),
+        })),
+        { type: 'separator' },
+        {
+          label: chargerPlaces.networkLabel()
+            ? `Charger available at ${chargerPlaces.networkLabel()}`
+            : 'Charger available here',
+          type: 'checkbox',
+          checked: chargerPlaces.isMarked(),
+          enabled: chargerPlaces.networkLabel() !== null,
+          click: () => {
+            chargerPlaces.toggleHere()
+            renderMenu()
+          },
         },
-      },
-      {
-        label: state === 'running' ? 'Tips: paused until the timer ends' : 'Tips: on',
-        enabled: false,
-      },
-      { label: 'Quiz me…', click: () => coach.quiz() },
-      { type: 'separator' },
-      {
-        label: 'Start at login',
-        type: 'checkbox',
-        checked: loginItem.isEnabled(),
-        click: () => {
-          loginItem.setEnabled(!loginItem.isEnabled())
-          renderMenu()
+        {
+          label: state === 'running' ? 'Tips: paused until the timer ends' : 'Tips: on',
+          enabled: false,
         },
-      },
-      { role: 'quit' },
-    ]))
+        { label: 'Quiz me…', click: () => coach.quiz() },
+        { type: 'separator' },
+        {
+          label: 'Start at login',
+          type: 'checkbox',
+          checked: loginItem.isEnabled(),
+          click: () => {
+            loginItem.setEnabled(!loginItem.isEnabled())
+            renderMenu()
+          },
+        },
+        { role: 'quit' },
+      ]),
+    )
   }
 
   await app.whenReady()

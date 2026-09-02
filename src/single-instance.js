@@ -24,8 +24,7 @@ const previousInstance = () => {
   }
 }
 
-const stillRunning = ({ pid, execPath }) =>
-  pid !== process.pid && commandOf(pid).startsWith(execPath)
+const stillRunning = ({ pid, execPath }) => pid !== process.pid && commandOf(pid).startsWith(execPath)
 
 export const claim = () => {
   const previous = previousInstance()

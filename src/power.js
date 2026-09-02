@@ -24,11 +24,9 @@ const median = (values) => {
 }
 
 const describeRemaining = (minutes) =>
-  minutes > 0 && minutes < UNKNOWN_MINUTES
-    ? `, about ${Math.floor(minutes / 60)}h ${minutes % 60}m left`
-    : ''
+  minutes > 0 && minutes < UNKNOWN_MINUTES ? `, about ${Math.floor(minutes / 60)}h ${minutes % 60}m left` : ''
 
-export const readPower = () =>
+const readPower = () =>
   new Promise((resolve, reject) => {
     execFile('ioreg', ['-rn', 'AppleSmartBattery'], { timeout: 5000 }, (error, stdout) => {
       if (error) {
@@ -132,7 +130,9 @@ export const createPowerWatch = (onAlert, onDraw = () => {}, chargerNearby = () 
     }
 
     lastAlertAt = Date.now()
-    log(`power alert: ${card.title} (median ${sustained.toFixed(1)} W over ${watts.length} samples, limit ${HEAVY_LOAD_WATTS} W)`)
+    log(
+      `power alert: ${card.title} (median ${sustained.toFixed(1)} W over ${watts.length} samples, limit ${HEAVY_LOAD_WATTS} W)`,
+    )
     onAlert(card)
   }
 

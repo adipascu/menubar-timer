@@ -7,6 +7,11 @@
   },
   "scripts": {
     "start": "electron .",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "knip": "knip",
+    "test": "node --test \"test/**/*.test.js\"",
     "build": "electron-builder --dir",
     "build:mac": "electron-builder -m --config.mac.target=dmg --publish=never"
   },
@@ -22,8 +27,14 @@
     "ansi-styles": "^6.2.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "electron": "^35.2.0",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "eslint": "^10.9.1",
+    "eslint-plugin-html": "^8.2.0",
+    "globals": "^17.12.0",
+    "knip": "^6.34.0",
+    "prettier": "^3.9.6"
   },
   "description": "A macOS menu bar timer with a Freebasing mode and Clippy-style coaching popups on SaaS, psychology and psychiatry"
 }
