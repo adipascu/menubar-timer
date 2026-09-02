@@ -1,4 +1,6 @@
 import { app, Tray, Menu, nativeImage, } from 'electron'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import ansiStyles from 'ansi-styles';
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
@@ -7,6 +9,8 @@ import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
 import * as singleInstance from './single-instance.js'
+
+const here = dirname(fileURLToPath(import.meta.url))
 
 const IDLE_STATUS = '⏱'
 const DURATIONS = [
@@ -20,8 +24,15 @@ const DURATIONS = [
   { minutes: 90, hint: 'one full focus cycle' },
 ]
 const DEFAULT_DURATION = 15
-const FIREBALL = '🔥'
 const FLASH_MS = 500
+
+const transparentImageSizedLike = (image) => {
+  const { width, height } = image.getSize()
+  return nativeImage.createFromBitmap(Buffer.alloc(width * height * 4), { width, height })
+}
+
+const FLAME = nativeImage.createFromPath(join(here, 'flame.png'))
+const FLAME_SLOT = transparentImageSizedLike(FLAME)
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
@@ -42,9 +53,10 @@ app.on('window-all-closed', () => {});
 
   const renderTitle = () => {
     const label = task.get()
-    const flame = flameLit ? `${FIREBALL} ` : ''
-    tray.setTitle(`${flame}${label ? `${label} · ${status}` : status}`)
+    tray.setTitle(label ? `${label} · ${status}` : status, { fontType: 'monospacedDigit' })
   }
+
+  const renderFlame = () => tray.setImage(flameLit ? FLAME : FLAME_SLOT)
 
   const setSustainedLoad = (active) => {
     clearInterval(loadFlash)
@@ -54,11 +66,11 @@ app.on('window-all-closed', () => {});
     if (active) {
       loadFlash = setInterval(() => {
         flameLit = !flameLit
-        renderTitle()
+        renderFlame()
       }, FLASH_MS)
     }
 
-    renderTitle()
+    renderFlame()
   }
 
   const setStatus = (next) => {
@@ -189,7 +201,7 @@ app.on('window-all-closed', () => {});
   const chargerPlaces = createChargerPlaces(() => renderMenu())
   const powerWatch = createPowerWatch((card) => coach.alert(card), setSustainedLoad, chargerPlaces.shouldAlert)
 
-  const tray = new Tray(nativeImage.createEmpty())
+  const tray = new Tray(FLAME_SLOT)
   renderTitle()
   renderMenu()
   coach.start()
