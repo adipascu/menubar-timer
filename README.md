@@ -70,6 +70,7 @@ pnpm run build:mac  # produces a dmg in dist/
 pnpm lint           # eslint, including the inline scripts in src/*.html
 pnpm format:check   # prettier
 pnpm knip           # unused files, exports and dependencies
+pnpm test           # syntax pass over src/ and scripts/, then the node:test suite
 ```
 
 Node 22.x, as pinned in the `engines` field.

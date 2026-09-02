@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "knip": "knip",
+    "test": "node --test \"test/**/*.test.js\"",
     "build": "electron-builder --dir",
     "build:mac": "electron-builder -m --config.mac.target=dmg --publish=never"
   },
