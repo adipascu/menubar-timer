@@ -61,57 +61,17 @@
 
       #beacon {
         grid-column: 1 / -1;
-        position: relative;
-        height: 14px;
-        border-radius: 999px;
-        overflow: hidden;
-        background: #ff1f0f;
-        animation: beacon-flash 400ms steps(2, jump-none) infinite;
+        display: block;
+        width: 100%;
+        height: 18px;
+        border-radius: 5px;
+        background: #020803;
+        box-shadow: 0 0 0 1px #0f3a17, 0 0 12px rgba(57, 255, 20, 0.3);
+        transition: opacity 180ms ease;
       }
 
-      #beacon::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(100deg, transparent 12%, rgba(255, 255, 255, 0.95) 50%, transparent 88%);
-        animation: beacon-sweep 760ms linear infinite;
-      }
-
-      #beacon::after {
-        content: "";
-        position: absolute;
-        inset: 3px 4px 3px auto;
-        width: 8px;
-        border-radius: 50%;
-        background: #ffffff;
-        animation: beacon-blink 400ms steps(2, jump-none) infinite;
-      }
-
-      @keyframes beacon-flash {
-        from {
-          background-color: #ff1f0f;
-        }
-        to {
-          background-color: #1636ff;
-        }
-      }
-
-      @keyframes beacon-sweep {
-        from {
-          transform: translateX(-100%);
-        }
-        to {
-          transform: translateX(100%);
-        }
-      }
-
-      @keyframes beacon-blink {
-        from {
-          opacity: 1;
-        }
-        to {
-          opacity: 0.04;
-        }
+      #beacon.bell {
+        box-shadow: 0 0 0 1px #39ff14, 0 0 24px rgba(57, 255, 20, 0.85);
       }
 
       #clip {
@@ -200,7 +160,7 @@
   </head>
   <body>
     <div id="card">
-      <div id="beacon" aria-hidden="true"></div>
+      <canvas id="beacon" aria-hidden="true"></canvas>
       <svg id="clip" viewBox="0 0 34 44" fill="none" aria-hidden="true">
         <path
           d="M24 13v18a8 8 0 0 1-16 0V11a5 5 0 0 1 10 0v18a2.5 2.5 0 0 1-5 0V14"
@@ -230,12 +190,13 @@
       const source = document.getElementById('source')
       const discuss = document.getElementById('discuss')
 
-      const BEACON_STYLE = { display: 'block', visibility: 'visible', opacity: '1' }
+      let calm = false
 
       const keepBeaconVisible = () => {
         if (!beacon.isConnected) (card.isConnected ? card : document.body).prepend(beacon)
         beacon.hidden = false
-        for (const [property, value] of Object.entries(BEACON_STYLE)) {
+        const wanted = { display: 'block', visibility: 'visible', opacity: calm ? '0' : '1' }
+        for (const [property, value] of Object.entries(wanted)) {
           if (beacon.style.getPropertyValue(property) !== value) {
             beacon.style.setProperty(property, value, 'important')
           }
@@ -250,6 +211,371 @@
       })
       setInterval(keepBeaconVisible, 200)
 
+      const FRAME_MS = 33
+      const MAX_STEP_MS = 100
+      const PAD = 8
+      const BELL_EVERY_MS = 400
+      const BELL_MS = 50
+      const PHOSPHOR = '#39ff14'
+      const GROUND = '#020803'
+      const INK_ON_PHOSPHOR = '#03140a'
+      const HEX = '0123456789ABCDEF'
+      const SYMBOLS = '<>/\\|{}[]#$%&*+=?!;:'
+      const KANA = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ'
+
+      const mono = (px) => `600 ${px}px ui-monospace, Menlo, Monaco, monospace`
+      const pick = (items) => items[Math.floor(Math.random() * items.length)]
+      const between = (min, max) => min + Math.random() * (max - min)
+      const chance = (probability) => Math.random() < probability
+      const bellIsOn = (t) => t % BELL_EVERY_MS < BELL_MS
+
+      const randomGlyph = () => {
+        const roll = Math.random()
+        if (roll < 0.08) return pick(KANA)
+        if (roll < 0.22) return pick(SYMBOLS)
+        return pick(HEX)
+      }
+
+      const setup = (canvas, height) => {
+        canvas.style.height = `${height}px`
+        const dpr = window.devicePixelRatio || 1
+        const width = canvas.clientWidth
+        canvas.width = Math.round(width * dpr)
+        canvas.height = Math.round(height * dpr)
+        const ctx = canvas.getContext('2d')
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        return { ctx, width, height }
+      }
+
+      const paintGround = ({ ctx, width, height }, inverted) => {
+        ctx.fillStyle = inverted ? PHOSPHOR : GROUND
+        ctx.fillRect(0, 0, width, height)
+      }
+
+      const glow = ({ ctx, width, height }) => {
+        ctx.save()
+        ctx.filter = 'blur(3px)'
+        ctx.globalCompositeOperation = 'lighter'
+        ctx.globalAlpha = 0.8
+        ctx.drawImage(ctx.canvas, 0, 0, width, height)
+        ctx.restore()
+      }
+
+      const scanlines = ({ ctx, width, height }) => {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.22)'
+        for (let y = 1; y < height; y += 2) ctx.fillRect(0, y, width, 1)
+      }
+
+      const matrixRain = (canvas) => {
+        const strip = setup(canvas, 28)
+        const { ctx, width, height } = strip
+        ctx.font = mono(9)
+        ctx.textBaseline = 'middle'
+        const advance = 8
+        const rows = 3
+        const rowHeight = height / rows
+        const count = Math.max(0, Math.floor((width - 2 * PAD) / advance))
+        const cells = Array.from({ length: count }, () =>
+          Array.from({ length: rows }, () => ({ glyph: randomGlyph(), heat: 0 })),
+        )
+        const newDrop = (delay) => ({ head: -between(0, delay), lastRow: -1, speed: between(9, 18) })
+        const drops = Array.from({ length: count }, () => newDrop(12))
+        const heatColor = (heat) => {
+          if (heat > 0.85) return '#e6ffe0'
+          return `rgb(${Math.round(14 + 40 * heat)}, ${Math.round(88 + 167 * heat)}, ${Math.round(24 + 8 * heat)})`
+        }
+
+        return {
+          ...strip,
+          frame(t, dt, inverted) {
+            drops.forEach((drop, col) => {
+              drop.head += (drop.speed * dt) / 1000
+              const reached = Math.floor(drop.head)
+              for (let row = drop.lastRow + 1; row <= reached; row += 1) {
+                if (row >= 0 && row < rows) cells[col][row] = { glyph: randomGlyph(), heat: 1 }
+              }
+              drop.lastRow = Math.max(drop.lastRow, reached)
+              if (drop.head > rows + 2) Object.assign(drop, newDrop(6))
+            })
+            for (const column of cells) {
+              for (const cell of column) {
+                cell.heat *= 0.9
+                if (chance(0.03)) cell.glyph = randomGlyph()
+              }
+            }
+            paintGround(strip, inverted)
+            cells.forEach((column, col) => {
+              column.forEach((cell, row) => {
+                if (cell.heat < 0.04) return
+                ctx.fillStyle = inverted ? INK_ON_PHOSPHOR : heatColor(cell.heat)
+                ctx.fillText(cell.glyph, PAD + col * advance, rowHeight * (row + 0.5) + 0.5)
+              })
+            })
+          },
+        }
+      }
+
+      const spectrum = (canvas) => {
+        const strip = setup(canvas, 22)
+        const { ctx, width, height } = strip
+        const pitch = 7
+        const bar = 5
+        const segmentPitch = 3
+        const segmentHeight = 2
+        const bins = Math.max(0, Math.floor((width - 2 * PAD + (pitch - bar)) / pitch))
+        const segmentCount = Math.floor((height - 4) / segmentPitch)
+        const left = (width - (bins * pitch - (pitch - bar))) / 2
+        const level = new Float32Array(bins)
+        const target = new Float32Array(bins)
+        const peak = new Float32Array(bins)
+        let lastRetarget = -1000
+
+        const segmentColor = (index) => {
+          if (index >= segmentCount - 1) return '#ff3b2f'
+          if (index >= segmentCount - 3) return '#ffd23b'
+          return PHOSPHOR
+        }
+
+        return {
+          ...strip,
+          frame(t, dt, inverted) {
+            if (t - lastRetarget >= 70) {
+              lastRetarget = t
+              for (let i = 0; i < bins; i += 1) {
+                const shape = 0.35 + 0.28 * Math.sin(i * 0.45 + t / 260) + 0.18 * Math.sin(i * 1.7 - t / 140)
+                target[i] = Math.min(1, Math.max(0.05, shape + between(-0.2, 0.3) + (chance(0.07) ? 0.6 : 0)))
+              }
+            }
+            for (let i = 0; i < bins; i += 1) {
+              if (inverted) {
+                level[i] = 1
+                peak[i] = 1
+              } else {
+                level[i] += (target[i] - level[i]) * (target[i] > level[i] ? 0.65 : 0.22)
+                peak[i] = Math.max(peak[i] - 0.035, level[i])
+              }
+            }
+            paintGround(strip, false)
+            for (let i = 0; i < bins; i += 1) {
+              const x = left + i * pitch
+              const litCount = Math.round(level[i] * segmentCount)
+              for (let s = 0; s < segmentCount; s += 1) {
+                const y = height - 2 - (s + 1) * segmentPitch + (segmentPitch - segmentHeight)
+                ctx.fillStyle = s < litCount ? segmentColor(s) : 'rgba(57, 255, 20, 0.09)'
+                ctx.fillRect(x, y, bar, segmentHeight)
+              }
+              const peakY = height - 2 - Math.round(peak[i] * segmentCount) * segmentPitch
+              ctx.fillStyle = '#e6ffe0'
+              ctx.fillRect(x, Math.max(2, peakY), bar, 1)
+            }
+          },
+        }
+      }
+
+      const decodeMarquee = (canvas) => {
+        const strip = setup(canvas, 18)
+        const { ctx, width, height } = strip
+        ctx.font = mono(11)
+        ctx.textBaseline = 'middle'
+        const TRACKING = 1.08
+        const CRAWL_PX_PER_S = 55
+        const FRONT_PERIOD_MS = 1400
+        const FRONT_OVERSCAN = 40
+        const FRONT_RADIUS = 22
+        const CORRUPTION_CHANCE = 0.012
+        const CORRUPTION_MIN_MS = 60
+        const CORRUPTION_MAX_MS = 260
+        const FIRST_GLITCH_AT_MS = 350
+        const GLITCH_MIN_MS = 40
+        const GLITCH_MAX_MS = 110
+        const GLITCH_GAP_MIN_MS = 150
+        const GLITCH_GAP_MAX_MS = 480
+        const message = '>> INCOMING TRANSMISSION :: READ ME :: '
+        const advance = ctx.measureText('0').width * TRACKING
+        const messageWidth = message.length * advance
+        const text = message.repeat(Math.ceil(width / messageWidth) + 1)
+        const shoutStart = message.indexOf('READ ME')
+        const shoutEnd = shoutStart + 'READ ME'.length
+        const ROLE_COLORS = { shout: '#e6ffe0', plain: PHOSPHOR, dim: '#2f9a3a' }
+        const roleOf = (index) => {
+          const local = index % message.length
+          if (local >= shoutStart && local < shoutEnd) return 'shout'
+          return '>:'.includes(message[local]) ? 'dim' : 'plain'
+        }
+        const corruptionLeft = new Float32Array(text.length)
+        const shown = [...text]
+        const scrambled = new Array(text.length).fill(false)
+        let glitch = null
+        let nextGlitchAt = FIRST_GLITCH_AT_MS
+
+        const drawText = (offset, inverted, color = null, dx = 0) => {
+          const y = height / 2 + 0.5
+          for (let i = 0; i < text.length; i += 1) {
+            const x = PAD - offset + i * advance + dx
+            if (x < -advance || x > width || text[i] === ' ') continue
+            ctx.fillStyle = color ?? (inverted ? INK_ON_PHOSPHOR : scrambled[i] ? '#f4fff0' : ROLE_COLORS[roleOf(i)])
+            ctx.fillText(shown[i], x, y)
+          }
+        }
+
+        const newGlitch = (t) => ({
+          slices: Array.from({ length: 1 + Math.floor(Math.random() * 3) }, () => {
+            const h = Math.round(between(2, height * 0.45))
+            return { y: Math.round(between(0, height - h)), h, dx: Math.round(between(-14, 14)) }
+          }),
+          blocks: Array.from({ length: Math.floor(Math.random() * 3) }, () => ({
+            x: between(0, width - 24),
+            y: between(0, height - 4),
+            w: between(4, 24),
+            h: between(2, 5),
+          })),
+          until: t + between(GLITCH_MIN_MS, GLITCH_MAX_MS),
+        })
+
+        const currentGlitch = (t) => {
+          if (glitch && t >= glitch.until) glitch = null
+          if (!glitch && t >= nextGlitchAt) {
+            glitch = newGlitch(t)
+            nextGlitchAt = glitch.until + between(GLITCH_GAP_MIN_MS, GLITCH_GAP_MAX_MS)
+          }
+          return glitch
+        }
+
+        const drawGlitch = (offset, inverted) => {
+          for (const { y, h, dx } of glitch.slices) {
+            ctx.save()
+            ctx.beginPath()
+            ctx.rect(0, y, width, h)
+            ctx.clip()
+            ctx.fillStyle = inverted ? PHOSPHOR : GROUND
+            ctx.fillRect(0, y, width, h)
+            drawText(offset, inverted, 'rgba(255, 60, 120, 0.85)', dx - 3)
+            drawText(offset, inverted, 'rgba(60, 235, 255, 0.85)', dx + 3)
+            drawText(offset, inverted, null, dx)
+            ctx.restore()
+          }
+          ctx.fillStyle = inverted ? INK_ON_PHOSPHOR : '#8dff6a'
+          for (const block of glitch.blocks) ctx.fillRect(block.x, block.y, block.w, block.h)
+        }
+
+        return {
+          ...strip,
+          frame(t, dt, inverted) {
+            const offset = ((t / 1000) * CRAWL_PX_PER_S) % messageWidth
+            const front = ((t / FRONT_PERIOD_MS) % 1) * (width + 2 * FRONT_OVERSCAN) - FRONT_OVERSCAN
+            for (let i = 0; i < text.length; i += 1) {
+              const x = PAD - offset + i * advance
+              if (corruptionLeft[i] > 0) corruptionLeft[i] -= dt
+              else if (chance(CORRUPTION_CHANCE)) corruptionLeft[i] = between(CORRUPTION_MIN_MS, CORRUPTION_MAX_MS)
+              scrambled[i] = text[i] !== ' ' && (corruptionLeft[i] > 0 || Math.abs(x - front) < FRONT_RADIUS)
+              shown[i] = scrambled[i] ? randomGlyph() : text[i]
+            }
+            paintGround(strip, inverted)
+            drawText(offset, inverted)
+            if (currentGlitch(t)) drawGlitch(offset, inverted)
+          },
+        }
+      }
+
+      const scanLog = (canvas) => {
+        const strip = setup(canvas, 26)
+        const { ctx, width, height } = strip
+        ctx.font = mono(10)
+        ctx.textBaseline = 'middle'
+        const LINE_MS = 130
+        const lineHeight = 12
+        const ip = () => `10.0.${Math.floor(between(0, 255))}.${Math.floor(between(1, 254))}`
+        const port = () => pick([22, 53, 80, 443, 8080, 5432, 6379, 3000])
+        const hex4 = () => Array.from({ length: 4 }, () => pick(HEX)).join('')
+        const templates = [
+          () => ['+', `${ip()}:${port()} open`],
+          () => ['*', `syn ${hex4()} ack ${hex4()}`],
+          () => ['!', `tip queued ${hex4()}`],
+          () => ['+', `sha256 ${hex4()}${hex4()} ok`],
+          () => ['-', `${ip()} timeout`],
+          () => ['*', `handshake ${hex4()}`],
+          () => ['+', `${ip()}:${port()} open`],
+        ]
+        const TAG_COLORS = { '+': PHOSPHOR, '*': '#4be3ff', '!': '#ffb02b', '-': '#5f8f5f' }
+        const spinner = '|/-\\'
+        const lines = Array.from({ length: 3 }, () => pick(templates)())
+        let lastLineAt = 0
+        let frames = 0
+
+        return {
+          ...strip,
+          frame(t, dt, inverted) {
+            frames += 1
+            if (t - lastLineAt >= LINE_MS) {
+              lastLineAt = t
+              lines.push(pick(templates)())
+              if (lines.length > 3) lines.shift()
+            }
+            const slide = lineHeight * (1 - (t - lastLineAt) / LINE_MS)
+            paintGround(strip, inverted)
+            ctx.save()
+            ctx.beginPath()
+            ctx.rect(0, 0, width - 64, height)
+            ctx.clip()
+            lines.forEach(([tag, text], index) => {
+              const fromBottom = lines.length - 1 - index
+              const y = height - 7 - fromBottom * lineHeight + slide
+              const blinkOff = tag === '!' && Math.floor(t / 100) % 2 === 1
+              ctx.fillStyle = inverted ? INK_ON_PHOSPHOR : blinkOff ? '#7a4a00' : TAG_COLORS[tag]
+              ctx.fillText(`[${tag}]`, PAD, y)
+              ctx.fillStyle = inverted ? INK_ON_PHOSPHOR : '#8fe86d'
+              ctx.fillText(text, PAD + 26, y)
+            })
+            ctx.restore()
+            ctx.fillStyle = inverted ? INK_ON_PHOSPHOR : '#e6ffe0'
+            ctx.textAlign = 'right'
+            const counter = frames.toString(16).toUpperCase().padStart(4, '0').slice(-4)
+            ctx.fillText(`0x${counter}`, width - PAD - 12, height / 2 + 0.5)
+            ctx.fillText(spinner[Math.floor(t / 125) % 4], width - PAD, height / 2 + 0.5)
+            ctx.textAlign = 'left'
+          },
+        }
+      }
+
+      const AMBIENT_BEACONS = [matrixRain, decodeMarquee, scanLog]
+
+      let runner = null
+      let started = null
+      let lastFrame = 0
+      let frameRequest = 0
+
+      const loop = (now) => {
+        frameRequest = requestAnimationFrame(loop)
+        if (now - lastFrame < FRAME_MS) return
+        const first = started === null
+        started ??= now
+        const t = now - started
+        const dt = first ? FRAME_MS : Math.min(now - lastFrame, MAX_STEP_MS)
+        lastFrame = now
+        const inverted = bellIsOn(t)
+        runner.frame(t, dt, inverted)
+        if (!inverted) glow(runner)
+        scanlines(runner)
+        beacon.classList.toggle('bell', inverted)
+      }
+
+      const pause = () => cancelAnimationFrame(frameRequest)
+
+      const resume = () => {
+        pause()
+        if (runner && !calm) frameRequest = requestAnimationFrame(loop)
+      }
+
+      const setCalm = (next) => {
+        calm = next
+        keepBeaconVisible()
+        if (calm) pause()
+        else resume()
+      }
+
+      card.addEventListener('mouseenter', () => setCalm(true))
+      card.addEventListener('mouseleave', () => setCalm(false))
+
       window.coach.onTip((tip) => {
         title.textContent = tip.title
         body.textContent = tip.body
@@ -260,6 +586,8 @@
         requestAnimationFrame(() => {
           window.coach.reportHeight(card.offsetHeight + 20)
         })
+        runner = (tip.loudMusic ? spectrum : pick(AMBIENT_BEACONS))(beacon)
+        resume()
       })
 
       source.addEventListener('click', (event) => {

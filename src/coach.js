@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { createCalibration } from './calibration.js'
 import { menuBarIsCovered } from './fullscreen.js'
 import { log } from './log.js'
+import { musicIsLoud } from './music.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const tips = JSON.parse(readFileSync(join(here, 'tips.json'), 'utf8'))
@@ -132,6 +133,7 @@ export const createCoach = (getState) => {
 
   const show = (tip) => {
     showing = tip
+    const loudMusic = musicIsLoud().catch(() => false)
     popup = new BrowserWindow({
       width: POPUP_WIDTH,
       height: 200,
@@ -154,8 +156,12 @@ export const createCoach = (getState) => {
       showing = null
     })
 
-    popup.webContents.on('did-finish-load', () => popup.webContents.send('tip', tip))
-    popup.loadFile(join(here, 'popup.html'))
+    const window = popup
+    window.webContents.on('did-finish-load', async () => {
+      const tipWithBeacon = { ...tip, loudMusic: await loudMusic }
+      if (!window.isDestroyed()) window.webContents.send('tip', tipWithBeacon)
+    })
+    window.loadFile(join(here, 'popup.html'))
   }
 
   const dueNow = async () => {
