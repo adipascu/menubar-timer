@@ -1,16 +1,13 @@
-import { app, Tray, Menu, nativeImage, } from 'electron'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { app, Tray, Menu } from 'electron'
 import ansiStyles from 'ansi-styles';
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createPowerWatch } from './power.js'
+import { createReadout } from './readout.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
 import * as singleInstance from './single-instance.js'
-
-const here = dirname(fileURLToPath(import.meta.url))
 
 const IDLE_STATUS = '⏱'
 const DURATIONS = [
@@ -25,23 +22,12 @@ const DURATIONS = [
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
 const FLASH_MS = 500
-const FIGURE_SPACE = '\u2007'
-
-const transparentImageSizedLike = (image) => {
-  const { width, height } = image.getSize()
-  return nativeImage.createFromBitmap(Buffer.alloc(width * height * 4), { width, height })
-}
-
-const FLAME = nativeImage.createFromPath(join(here, 'flame.png'))
-const FLAME_SLOT = transparentImageSizedLike(FLAME)
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = seconds % 60
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
 }
-
-const formatWatts = (watts) => `${watts.toFixed(1).padStart(4, FIGURE_SPACE)} W`
 
 app.setName('Timer App');
 app.on('window-all-closed', () => {});
@@ -51,34 +37,30 @@ app.on('window-all-closed', () => {});
   let state = 'idle'
   let status = IDLE_STATUS
   let sessionMinutes = null
-  let drawWatts = null
+  let reading = null
   let loadFlash = null
-  let flameLit = false
+  let flameShowing = false
 
   const renderTitle = () => {
-    const readout = drawWatts === null ? null : formatWatts(drawWatts)
-    const parts = [readout, task.get(), status].filter(Boolean)
-    tray.setTitle(parts.join(' · '), { fontType: 'monospacedDigit' })
+    const label = task.get()
+    tray.setTitle(label ? `${label} · ${status}` : status, { fontType: 'monospacedDigit' })
   }
 
-  const renderFlame = () => tray.setImage(flameLit ? FLAME : FLAME_SLOT)
+  const renderSlot = () => tray.setImage(flameShowing ? readout.flame : reading)
 
   const setPowerDraw = (watts, overLimit) => {
-    drawWatts = watts
-    renderTitle()
-
+    reading = readout.reading(watts)
     if (overLimit) {
       loadFlash ??= setInterval(() => {
-        flameLit = !flameLit
-        renderFlame()
+        flameShowing = !flameShowing
+        renderSlot()
       }, FLASH_MS)
-      return
+    } else {
+      clearInterval(loadFlash)
+      loadFlash = null
+      flameShowing = false
     }
-
-    clearInterval(loadFlash)
-    loadFlash = null
-    flameLit = watts !== null
-    renderFlame()
+    renderSlot()
   }
 
   const setStatus = (next) => {
@@ -210,7 +192,8 @@ app.on('window-all-closed', () => {});
   const chargerPlaces = createChargerPlaces(() => renderMenu())
   const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
 
-  const tray = new Tray(FLAME_SLOT)
+  const readout = createReadout()
+  const tray = new Tray(readout.reading(null))
   renderTitle()
   renderMenu()
   coach.start()
