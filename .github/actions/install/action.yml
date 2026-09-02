@@ -1,0 +1,24 @@
+name: Install
+description: Pin Node to engines.node, enable corepack, restore the pnpm store and install from the frozen lockfile
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version-file: package.json
+    - run: corepack enable
+      shell: bash
+    - run: node scripts/assert-node-version.js
+      shell: bash
+    - id: store
+      run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+      shell: bash
+    - uses: actions/cache@v6
+      with:
+        path: |
+          ${{ steps.store.outputs.path }}
+          ~/Library/Caches/electron
+        key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-${{ runner.os }}-
+    - run: pnpm install --frozen-lockfile --engine-strict
+      shell: bash
