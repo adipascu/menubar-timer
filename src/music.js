@@ -1,18 +1,12 @@
-import { execFile } from 'node:child_process'
 import { log } from './log.js'
+import { run } from './shell.js'
 
 const LOUD_VOLUME = 50
-const COMMAND_TIMEOUT_MS = 5000
 
-const output = (command, args) =>
-  new Promise((resolve) => {
-    execFile(command, args, { timeout: COMMAND_TIMEOUT_MS }, (error, stdout) => resolve(error ? '' : stdout))
-  })
-
-const audioIsPlaying = async () => /Resources:.*\baudio-out\b/.test(await output('pmset', ['-g', 'assertions']))
+const audioIsPlaying = async () => /Resources:.*\baudio-out\b/.test(await run('pmset', ['-g', 'assertions']))
 
 const outputVolume = async () => {
-  const settings = await output('osascript', ['-e', 'get volume settings'])
+  const settings = await run('osascript', ['-e', 'get volume settings'])
   if (/output muted:true/.test(settings)) return 0
   const volume = settings.match(/output volume:(\d+)/)
   return volume ? Number(volume[1]) : null

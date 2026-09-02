@@ -1,15 +1,11 @@
 import { app } from 'electron'
-import { execFile } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { log } from './log.js'
+import { run } from './shell.js'
+import { readSsid } from './wifi.js'
 
 const REFRESH_MS = 30 * 1000
-
-const run = (command, args) =>
-  new Promise((resolve) => {
-    execFile(command, args, { timeout: 5000 }, (error, stdout) => resolve(error ? '' : stdout))
-  })
 
 const normalizeMac = (raw) =>
   raw
@@ -17,6 +13,8 @@ const normalizeMac = (raw) =>
     .split(':')
     .map((octet) => octet.padStart(2, '0'))
     .join(':')
+
+const label = (place) => place.ssid ?? place.domain ?? place.id
 
 const readFingerprint = async () => {
   const route = await run('route', ['-n', 'get', 'default'])
@@ -30,8 +28,9 @@ const readFingerprint = async () => {
 
   const packet = await run('ipconfig', ['getpacket', iface])
   const domain = packet.match(/domain_name \(string\): (\S+)/)?.[1] ?? null
+  const ssid = await readSsid(iface)
 
-  return { id: normalizeMac(mac), domain }
+  return { id: normalizeMac(mac), ssid, domain }
 }
 
 export const createChargerPlaces = (onChange = () => {}) => {
@@ -50,7 +49,7 @@ export const createChargerPlaces = (onChange = () => {}) => {
     current = next
     if (changed) {
       log(
-        `network ${next ? `${next.domain ?? next.id}` : 'unknown'}, ` +
+        `network ${next ? label(next) : 'unknown'}, ` +
           `charger ${next === null ? 'unknown' : isMarked() ? 'available' : 'not marked'}`,
       )
       onChange()
@@ -63,14 +62,14 @@ export const createChargerPlaces = (onChange = () => {}) => {
       timer = setInterval(refresh, REFRESH_MS)
     },
     stop: () => clearInterval(timer),
-    networkLabel: () => (current ? current.domain ?? current.id : null),
+    networkLabel: () => (current ? label(current) : null),
     isMarked,
     shouldAlert: () => places().length === 0 || isMarked(),
     toggleHere: () => {
       if (!current) return
       const rest = places().filter((place) => place.id !== current.id)
       save(isMarked() ? rest : [...rest, current])
-      log(`charger ${isMarked() ? 'marked' : 'unmarked'} at ${current.domain ?? current.id}`)
+      log(`charger ${isMarked() ? 'marked' : 'unmarked'} at ${label(current)}`)
       onChange()
     },
   }
