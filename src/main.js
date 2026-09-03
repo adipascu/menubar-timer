@@ -21,6 +21,7 @@ const DURATIONS = [
   { minutes: 90, hint: 'one full focus cycle' },
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
+const NO_TASK = 'No task, on purpose'
 const FLASH_MS = 500
 
 const formatTime = (seconds) => {
@@ -42,7 +43,7 @@ app.on('window-all-closed', () => {});
   let flameShowing = false
 
   const renderTitle = () => {
-    const label = task.get()
+    const label = state === 'idle' ? '' : task.get()
     tray.setTitle(label ? `${label} · ${status}` : status, { fontType: 'monospacedDigit' })
   }
 
@@ -83,6 +84,7 @@ app.on('window-all-closed', () => {});
   const setState = (next) => {
     log(`state ${state} to ${next}, tips ${next === 'running' ? 'paused' : 'on'}`)
     state = next
+    renderTitle()
     coach.refresh()
     renderMenu()
   }
@@ -133,7 +135,9 @@ app.on('window-all-closed', () => {});
   const renderMenu = () => {
     const label = task.get()
     tray.setContextMenu(Menu.buildFromTemplate([
-      { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
+      state === 'idle'
+        ? { label: NO_TASK, enabled: false }
+        : { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
       { type: 'separator' },
       { label: FREEBASING, type: 'radio', checked: state === 'idle', click: stopTimer },
       ...DURATIONS.map(({ minutes, hint }) => ({
