@@ -30,6 +30,7 @@ const DURATIONS = [
   { minutes: 90, hint: 'one full focus cycle' },
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
+const NO_TASK = 'No task, on purpose'
 const FLASH_MS = 500
 const MENU_REFRESH_MS = 60 * 1000
 
@@ -56,7 +57,7 @@ app.on('window-all-closed', () => {})
   let goalCardShownAt = null
 
   const renderTitle = () => {
-    const label = task.get()
+    const label = state === 'idle' ? '' : task.get()
     const shown = state === 'running' ? swatchOf(categories.active().color).paint(status) : status
     tray.setTitle(label ? `${label} · ${shown}` : shown, { fontType: 'monospacedDigit' })
   }
@@ -251,7 +252,9 @@ app.on('window-all-closed', () => {})
     menuDay = periods(now)[0].from
     const label = task.get()
     const menu = Menu.buildFromTemplate([
-      { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
+      state === 'idle'
+        ? { label: NO_TASK, enabled: false }
+        : { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
       { type: 'separator' },
       { label: FREEBASING, type: 'radio', checked: state === 'idle', click: stopTimer },
       ...DURATIONS.map(({ minutes, hint }) => ({
