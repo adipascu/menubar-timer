@@ -222,12 +222,25 @@ export const createCoach = (getState) => {
 
   ipcMain.on('coach:dismiss', () => closePopup())
 
-  ipcMain.on('coach:mark', (_event, status) => {
+  const closeAndRecord = (record) => {
     const tip = showing
     closePopup()
-    feedback.mark(tip, status)
-    log(`marked "${tip.title}" ${status}`)
-  })
+    if (tip?.topic) record(tip)
+  }
+
+  ipcMain.on('coach:mark', (_event, status) =>
+    closeAndRecord((tip) => {
+      feedback.mark(tip, status)
+      log(`marked "${tip.title}" ${status}`)
+    }),
+  )
+
+  ipcMain.on('coach:interested', () =>
+    closeAndRecord((tip) => {
+      feedback.markInterested(tip)
+      log(`asked for more like "${tip.title}"`)
+    }),
+  )
 
   ipcMain.on('coach:discuss', () => {
     const tip = showing

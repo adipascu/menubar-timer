@@ -183,6 +183,7 @@
           <div id="actions">
             <button id="known" title="Retire this card, you have it covered">Already know this</button>
             <button id="not-interested" title="Retire this card and steer the tune-up away from it">Not interested</button>
+            <button id="more-like-this" title="Keep this card in play and steer the tune-up and the quiz toward it">More like this</button>
             <button id="discuss">Talk it through</button>
             <button id="dismiss" class="primary">Got it</button>
           </div>
@@ -198,6 +199,7 @@
       const source = document.getElementById('source')
       const known = document.getElementById('known')
       const notInterested = document.getElementById('not-interested')
+      const moreLikeThis = document.getElementById('more-like-this')
       const discuss = document.getElementById('discuss')
 
       let calm = false
@@ -594,6 +596,7 @@
         source.hidden = !tip.url
         known.hidden = !tip.topic
         notInterested.hidden = !tip.topic
+        moreLikeThis.hidden = !tip.topic
         discuss.hidden = tip.kind === 'nudge'
         requestAnimationFrame(() => {
           window.coach.reportHeight(card.offsetHeight + 20)
@@ -609,6 +612,7 @@
 
       known.addEventListener('click', () => window.coach.markKnown())
       notInterested.addEventListener('click', () => window.coach.markNotInterested())
+      moreLikeThis.addEventListener('click', () => window.coach.markInterested())
       discuss.addEventListener('click', () => window.coach.discuss())
       document.getElementById('dismiss').addEventListener('click', () => window.coach.dismiss())
     </script>
