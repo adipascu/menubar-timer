@@ -12,6 +12,7 @@ import { swatchOf } from './palette.js'
 import { createPowerWatch } from './power.js'
 import { createReader } from './reader.js'
 import { createReadout } from './readout.js'
+import { createSettings } from './settings.js'
 import { swatchImage } from './swatch.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
@@ -299,7 +300,16 @@ app.on('window-all-closed', () => {})
           renderMenu()
         },
       },
-      { role: 'quit' },
+      {
+        label: 'Show Quit in menu',
+        type: 'checkbox',
+        checked: settings.get('showQuit'),
+        click: () => {
+          settings.set('showQuit', !settings.get('showQuit'))
+          renderMenu()
+        },
+      },
+      ...(settings.get('showQuit') ? [{ role: 'quit' }] : []),
     ])
     menu.on('menu-will-show', () => {
       menuOpen = true
@@ -326,6 +336,7 @@ app.on('window-all-closed', () => {})
     Menu.buildFromTemplate([{ role: 'editMenu' }, { label: 'Window', submenu: [{ role: 'close' }] }]),
   )
 
+  const settings = createSettings()
   const focusLog = createFocusLog()
   focusLog.recover()
   app.on('before-quit', () => focusLog.end('quit'))
