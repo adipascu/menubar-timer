@@ -79,6 +79,8 @@ Start at login defaults to off. The app offers it once on first run, and it is s
 /Applications/TimerBar.app/Contents/MacOS/TimerBar --status
 ```
 
+Quit shows at the bottom of the menu by default. Unticking the Show Quit in menu checkbox, next to Start at login, hides it. The checkbox stays in the menu, so bringing Quit back is one click.
+
 The fullscreen card needs Accessibility access in System Settings, Privacy & Security. Everything else works without it, and the log says so when the check is refused.
 
 Logs rotate at 1 MB to `~/Library/Logs/TimerBar.log`.
