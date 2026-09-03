@@ -4,6 +4,7 @@ import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createPowerWatch } from './power.js'
 import { createReadout } from './readout.js'
+import { createSettings } from './settings.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
@@ -170,7 +171,16 @@ app.on('window-all-closed', () => {});
           renderMenu()
         },
       },
-      { role: 'quit' },
+      {
+        label: 'Show Quit in menu',
+        type: 'checkbox',
+        checked: settings.get('showQuit'),
+        click: () => {
+          settings.set('showQuit', !settings.get('showQuit'))
+          renderMenu()
+        },
+      },
+      ...(settings.get('showQuit') ? [{ role: 'quit' }] : []),
     ]))
   }
 
@@ -184,6 +194,7 @@ app.on('window-all-closed', () => {});
   singleInstance.claim()
   app.dock?.hide()
 
+  const settings = createSettings()
   const task = createTaskField(() => {
     renderTitle()
     renderMenu()
