@@ -721,7 +721,9 @@
         } catch (error) {
           runner = pick(AMBIENT_BEACONS)(beacon)
           reportHeight()
-          window.coach.reportBeacon(`${runner.name}, the spectrum could not hear the system audio: ${error.name}: ${error.message}`)
+          window.coach.reportBeacon(
+            `${runner.name}, the spectrum could not hear the system audio: ${error.name}: ${error.message}`,
+          )
         }
         resume()
       }
