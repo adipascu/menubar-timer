@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('coach', {
   markNotInterested: () => ipcRenderer.send('coach:mark', 'not-interested'),
   markInterested: () => ipcRenderer.send('coach:interested'),
   openSource: (url) => ipcRenderer.send('coach:open-source', url),
+  selected: () => ipcRenderer.send('coach:selected'),
 })

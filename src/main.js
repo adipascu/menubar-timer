@@ -183,6 +183,7 @@ app.on('window-all-closed', () => {});
 
   singleInstance.claim()
   app.dock?.hide()
+  Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'editMenu' }, { label: 'Window', submenu: [{ role: 'close' }] }]))
 
   const task = createTaskField(() => {
     renderTitle()
