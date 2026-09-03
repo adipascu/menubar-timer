@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, powerMonitor, screen, shell } from 'electron'
+import { app, BrowserWindow, clipboard, ipcMain, Menu, powerMonitor, screen, shell } from 'electron'
 import { execFile } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -116,6 +116,13 @@ const openClaudeSession = (tip) => {
   })
 }
 
+const focusCard = (window) => {
+  if (window.isDestroyed()) return
+  window.setFocusable(true)
+  window.focus()
+  app.focus({ steal: true })
+}
+
 const exportPool = () => {
   const file = join(app.getPath('userData'), 'tips-builtin.json')
   writeFileSync(file, readFileSync(join(here, 'tips.json')))
@@ -179,6 +186,26 @@ export const createCoach = (getState) => {
     })
 
     const window = popup
+    window.on('blur', () => window.setFocusable(false))
+    window.on('close', () => {
+      if (window.isFocused()) app.hide()
+    })
+    const whileOpen = (action) => () => {
+      if (!window.isDestroyed()) action()
+    }
+    window.webContents.on('context-menu', (_event, { selectionText, linkURL }) => {
+      Menu.buildFromTemplate([
+        { label: 'Copy', enabled: selectionText.length > 0, click: whileOpen(() => window.webContents.copy()) },
+        { label: 'Copy Link', visible: linkURL.length > 0, click: () => clipboard.writeText(linkURL) },
+        {
+          label: 'Select All',
+          click: whileOpen(() => {
+            window.webContents.selectAll()
+            focusCard(window)
+          }),
+        },
+      ]).popup({ window })
+    })
     window.webContents.on('did-finish-load', async () => {
       const tipWithBeacon = { ...tip, loudMusic: await loudMusic }
       if (!window.isDestroyed()) window.webContents.send('tip', tipWithBeacon)
@@ -251,6 +278,11 @@ export const createCoach = (getState) => {
   ipcMain.on('coach:open-source', (_event, url) => {
     shell.openExternal(url)
     closePopup()
+  })
+
+  ipcMain.on('coach:selected', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (window) focusCard(window)
   })
 
   return {

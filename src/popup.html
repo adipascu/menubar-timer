@@ -126,11 +126,23 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        -webkit-user-select: text;
+        -webkit-user-drag: none;
       }
 
       #source:hover {
         color: var(--accent);
         text-decoration: underline;
+      }
+
+      #title,
+      #body {
+        -webkit-user-select: text;
+        cursor: text;
+      }
+
+      ::selection {
+        background: color-mix(in srgb, var(--accent) 35%, transparent);
       }
 
       button {
@@ -588,6 +600,22 @@
       card.addEventListener('mouseenter', () => setCalm(true))
       card.addEventListener('mouseleave', () => setCalm(false))
 
+      const selectedText = () => window.getSelection().toString()
+
+      document.addEventListener('mouseup', () => {
+        if (selectedText()) window.coach.selected()
+      })
+
+      document.addEventListener('copy', (event) => {
+        if (source.hidden || !window.getSelection().containsNode(source, true)) return
+        event.clipboardData.setData('text/plain', `${selectedText().trimEnd()}\n${source.href}`)
+        event.preventDefault()
+      })
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') window.coach.dismiss()
+      })
+
       window.coach.onTip((tip) => {
         title.textContent = tip.title
         body.textContent = tip.body
@@ -607,6 +635,7 @@
 
       source.addEventListener('click', (event) => {
         event.preventDefault()
+        if (selectedText()) return
         window.coach.openSource(source.href)
       })
 
