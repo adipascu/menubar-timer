@@ -297,7 +297,9 @@
 
         return {
           ...strip,
-          frame(t, dt, inverted) {
+          name: 'matrix rain',
+          frame(t, dt) {
+            const inverted = bellIsOn(t)
             drops.forEach((drop, col) => {
               drop.head += (drop.speed * dt) / 1000
               const reached = Math.floor(drop.head)
@@ -321,11 +323,38 @@
                 ctx.fillText(cell.glyph, PAD + col * advance, rowHeight * (row + 0.5) + 0.5)
               })
             })
+            return inverted
           },
         }
       }
 
-      const spectrum = (canvas) => {
+      const hearSystemAudio = async () => {
+        const FFT_SIZE = 2048
+        const SMOOTHING = 0.35
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true },
+          video: false,
+        })
+        const context = new AudioContext({ sinkId: { type: 'none' } })
+        const analyser = context.createAnalyser()
+        analyser.fftSize = FFT_SIZE
+        analyser.smoothingTimeConstant = SMOOTHING
+        context.createMediaStreamSource(stream).connect(analyser)
+        return { analyser, binHz: context.sampleRate / analyser.fftSize }
+      }
+
+      const spectrum = async (canvas) => {
+        const LOWEST_HZ = 40
+        const HIGHEST_HZ = 16000
+        const FLOOR_DB = -50
+        const CEILING_DB = -18
+        const TILT_DB_PER_OCTAVE = 3.5
+        const BEAT_BAND_HZ = [40, 160]
+        const BEAT_MEMORY_FRAMES = 40
+        const BEAT_RATIO = 1.5
+        const BEAT_FLOOR_DB = -60
+        const BEAT_GAP_MS = 200
+        const BLIP_MS = 70
         const strip = setup(canvas, 22)
         const { ctx, width, height } = strip
         const pitch = 7
@@ -335,10 +364,53 @@
         const bins = Math.max(0, Math.floor((width - 2 * PAD + (pitch - bar)) / pitch))
         const segmentCount = Math.floor((height - 4) / segmentPitch)
         const left = (width - (bins * pitch - (pitch - bar))) / 2
+        const { analyser, binHz } = await hearSystemAudio()
+        const magnitudes = new Float32Array(analyser.frequencyBinCount)
+        const edgeHz = (i) => LOWEST_HZ * (HIGHEST_HZ / LOWEST_HZ) ** (i / bins)
+        const fftBins = (fromHz, toHz) => {
+          const from = Math.max(1, Math.floor(fromHz / binHz))
+          return [from, Math.max(from + 1, Math.ceil(toHz / binHz))]
+        }
+        const bands = Array.from({ length: bins }, (_, i) => fftBins(edgeHz(i), edgeHz(i + 1)))
+        const tilt = Array.from({ length: bins }, (_, i) => TILT_DB_PER_OCTAVE * Math.log2(edgeHz(i + 0.5) / LOWEST_HZ))
+        const beatBins = fftBins(...BEAT_BAND_HZ)
+        const beatFloor = 10 ** (BEAT_FLOOR_DB / 10)
+        const beatMemory = new Float32Array(BEAT_MEMORY_FRAMES)
         const level = new Float32Array(bins)
-        const target = new Float32Array(bins)
         const peak = new Float32Array(bins)
-        let lastRetarget = -1000
+        let framesHeard = 0
+        let lastBeatAt = -Infinity
+        let blipUntil = -Infinity
+
+        const loudestDb = ([from, to]) => {
+          let loudest = -Infinity
+          for (let k = from; k < to; k += 1) loudest = Math.max(loudest, magnitudes[k])
+          return loudest
+        }
+
+        const bandLevel = (i) =>
+          Math.min(1, Math.max(0, (loudestDb(bands[i]) + tilt[i] - FLOOR_DB) / (CEILING_DB - FLOOR_DB)))
+
+        const bassPower = () => {
+          let sum = 0
+          for (let k = beatBins[0]; k < beatBins[1]; k += 1) sum += 10 ** (magnitudes[k] / 10)
+          return sum / (beatBins[1] - beatBins[0])
+        }
+
+        const hearsBeat = (t) => {
+          const power = bassPower()
+          const remembered = Math.min(framesHeard, BEAT_MEMORY_FRAMES)
+          let usual = 0
+          for (let k = 0; k < remembered; k += 1) usual += beatMemory[k] / remembered
+          beatMemory[framesHeard % BEAT_MEMORY_FRAMES] = power
+          framesHeard += 1
+          return (
+            remembered === BEAT_MEMORY_FRAMES &&
+            power > beatFloor &&
+            power > BEAT_RATIO * usual &&
+            t - lastBeatAt >= BEAT_GAP_MS
+          )
+        }
 
         const segmentColor = (index) => {
           if (index >= segmentCount - 1) return '#ff3b2f'
@@ -348,20 +420,21 @@
 
         return {
           ...strip,
-          frame(t, dt, inverted) {
-            if (t - lastRetarget >= 70) {
-              lastRetarget = t
-              for (let i = 0; i < bins; i += 1) {
-                const shape = 0.35 + 0.28 * Math.sin(i * 0.45 + t / 260) + 0.18 * Math.sin(i * 1.7 - t / 140)
-                target[i] = Math.min(1, Math.max(0.05, shape + between(-0.2, 0.3) + (chance(0.07) ? 0.6 : 0)))
-              }
+          name: 'spectrum',
+          frame(t) {
+            analyser.getFloatFrequencyData(magnitudes)
+            if (hearsBeat(t)) {
+              lastBeatAt = t
+              blipUntil = t + BLIP_MS
             }
+            const inverted = t < blipUntil
             for (let i = 0; i < bins; i += 1) {
               if (inverted) {
                 level[i] = 1
                 peak[i] = 1
               } else {
-                level[i] += (target[i] - level[i]) * (target[i] > level[i] ? 0.65 : 0.22)
+                const target = bandLevel(i)
+                level[i] += (target - level[i]) * (target > level[i] ? 0.65 : 0.22)
                 peak[i] = Math.max(peak[i] - 0.035, level[i])
               }
             }
@@ -378,6 +451,7 @@
               ctx.fillStyle = '#e6ffe0'
               ctx.fillRect(x, Math.max(2, peakY), bar, 1)
             }
+            return inverted
           },
         }
       }
@@ -470,7 +544,9 @@
 
         return {
           ...strip,
-          frame(t, dt, inverted) {
+          name: 'decode marquee',
+          frame(t, dt) {
+            const inverted = bellIsOn(t)
             const offset = ((t / 1000) * CRAWL_PX_PER_S) % messageWidth
             const front = ((t / FRONT_PERIOD_MS) % 1) * (width + 2 * FRONT_OVERSCAN) - FRONT_OVERSCAN
             for (let i = 0; i < text.length; i += 1) {
@@ -483,6 +559,7 @@
             paintGround(strip, inverted)
             drawText(offset, inverted)
             if (currentGlitch(t)) drawGlitch(offset, inverted)
+            return inverted
           },
         }
       }
@@ -514,7 +591,9 @@
 
         return {
           ...strip,
-          frame(t, dt, inverted) {
+          name: 'scan log',
+          frame(t) {
+            const inverted = bellIsOn(t)
             frames += 1
             if (t - lastLineAt >= LINE_MS) {
               lastLineAt = t
@@ -543,6 +622,7 @@
             ctx.fillText(`0x${counter}`, width - PAD - 12, height / 2 + 0.5)
             ctx.fillText(spinner[Math.floor(t / 125) % 4], width - PAD, height / 2 + 0.5)
             ctx.textAlign = 'left'
+            return inverted
           },
         }
       }
@@ -562,8 +642,7 @@
         const t = now - started
         const dt = first ? FRAME_MS : Math.min(now - lastFrame, MAX_STEP_MS)
         lastFrame = now
-        const inverted = bellIsOn(t)
-        runner.frame(t, dt, inverted)
+        const inverted = runner.frame(t, dt)
         if (!inverted) glow(runner)
         scanlines(runner)
         beacon.classList.toggle('bell', inverted)
@@ -586,6 +665,25 @@
       card.addEventListener('mouseenter', () => setCalm(true))
       card.addEventListener('mouseleave', () => setCalm(false))
 
+      const reportHeight = () => {
+        requestAnimationFrame(() => {
+          window.coach.reportHeight(card.offsetHeight + 20)
+        })
+      }
+
+      const startBeacon = async (make) => {
+        runner = null
+        try {
+          runner = await make(beacon)
+          window.coach.reportBeacon(runner.name)
+        } catch (error) {
+          runner = pick(AMBIENT_BEACONS)(beacon)
+          reportHeight()
+          window.coach.reportBeacon(`${runner.name}, the spectrum could not hear the system audio: ${error.name}: ${error.message}`)
+        }
+        resume()
+      }
+
       window.coach.onTip((tip) => {
         title.textContent = tip.title
         body.textContent = tip.body
@@ -595,11 +693,8 @@
         known.hidden = !tip.topic
         notInterested.hidden = !tip.topic
         discuss.hidden = tip.kind === 'nudge'
-        requestAnimationFrame(() => {
-          window.coach.reportHeight(card.offsetHeight + 20)
-        })
-        runner = (tip.loudMusic ? spectrum : pick(AMBIENT_BEACONS))(beacon)
-        resume()
+        reportHeight()
+        startBeacon(tip.loudMusic ? spectrum : pick(AMBIENT_BEACONS))
       })
 
       source.addEventListener('click', (event) => {
