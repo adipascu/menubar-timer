@@ -1,3 +1,4 @@
+import { session } from 'electron'
 import { log } from './log.js'
 import { run } from './shell.js'
 
@@ -18,3 +19,8 @@ export const musicIsLoud = async () => {
   log(`audio ${playing ? 'playing' : 'silent'}, output volume ${volume ?? 'unknown'}, spectrum ${loud ? 'on' : 'off'}`)
   return loud
 }
+
+export const shareSystemAudio = () =>
+  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+    callback(request.audioRequested && !request.videoRequested ? { audio: 'loopback' } : {})
+  })

@@ -8,7 +8,7 @@ import { editionCard } from './edition.js'
 import { createFeedback } from './feedback.js'
 import { menuBarIsCovered } from './fullscreen.js'
 import { log } from './log.js'
-import { musicIsLoud } from './music.js'
+import { musicIsLoud, shareSystemAudio } from './music.js'
 import { quizCard } from './quiz.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -142,6 +142,7 @@ const exportPool = () => {
 
 export const createCoach = (getState, library) => {
   rememberSourcePath()
+  shareSystemAudio()
   const feedback = createFeedback()
   const quizFile = join(app.getPath('userData'), 'quiz.json')
   const poolFile = exportPool()
@@ -260,6 +261,8 @@ export const createCoach = (getState, library) => {
     placeBottomRight(window)
     window.showInactive()
   })
+
+  ipcMain.on('coach:beacon', (_event, label) => log(`beacon ${label}`))
 
   ipcMain.on('coach:dismiss', () => closePopup())
 
