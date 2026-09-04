@@ -5,12 +5,13 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
-const WINDOW_WIDTH = 420
-const WINDOW_HEIGHT = 138
+const WINDOW_WIDTH = 480
+const WINDOW_HEIGHT = 148
 
 export const createTaskField = (onChange) => {
   const file = join(app.getPath('userData'), 'task.json')
   let label = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')).label : ''
+  let draft = null
   let window = null
   let onLabelled = null
 
@@ -20,17 +21,25 @@ export const createTaskField = (onChange) => {
     onLabelled = null
   }
 
+  const discard = () => {
+    draft = null
+    close()
+  }
+
   const store = (next) => {
     label = next.trim()
     writeFileSync(file, JSON.stringify({ label }))
     onChange()
     const continuation = label ? onLabelled : null
-    close()
+    discard()
     if (continuation) continuation()
   }
 
   ipcMain.on('task:save', (_event, next) => store(next))
-  ipcMain.on('task:cancel', () => close())
+  ipcMain.on('task:cancel', () => discard())
+  ipcMain.on('task:draft', (_event, next) => {
+    draft = next
+  })
 
   return {
     get: () => label,
@@ -71,7 +80,7 @@ export const createTaskField = (onChange) => {
 
       opened.webContents.on('did-finish-load', () => {
         if (!isCurrent()) return
-        opened.webContents.send('label', label)
+        opened.webContents.send('label', label, draft)
         app.focus({ steal: true })
         opened.show()
       })
