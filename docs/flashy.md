@@ -8,7 +8,7 @@ He is not humble. He knows 366 things about building a SaaS, about attention, mo
 
 ## What he does
 
-Whenever the timer is off and you are at the keyboard, he slides a card into the bottom right corner every four to twelve minutes with one thing he knows. It stays above every window and every Space until you deal with it, and while it is up he runs a beacon along its top edge, a strip of phosphor green animation there to catch an eye that has drifted. Hover the card and he goes quiet so you can read.
+Whenever the timer is off and you are at the keyboard, he slides a card into the bottom right corner every four to twelve minutes with one thing he knows. It stays above every window and every Space until you deal with it, and while it is up he runs a beacon along its top edge, a strip of animation in whichever preset you picked, phosphor green by default, there to catch an eye that has drifted. Hover the card and he goes quiet so you can read.
 
 He keeps the three subjects in strict rotation, a third each, and inside a subject, once your personal cards are out of the way, he starts with the definitions before the finer points, so nobody can say he skipped the basics.
 

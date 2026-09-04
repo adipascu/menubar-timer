@@ -1,5 +1,6 @@
 import { app, Tray, Menu } from 'electron'
 import ansiStyles from 'ansi-styles';
+import { BEACON_PRESETS, createBeaconPreset } from './beacon.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createPowerWatch } from './power.js'
@@ -160,6 +161,15 @@ app.on('window-all-closed', () => {});
         enabled: false,
       },
       { label: 'Quiz me…', click: () => coach.quiz() },
+      {
+        label: `Beacon: ${BEACON_PRESETS.find(({ id }) => id === beacon.get()).name}`,
+        submenu: BEACON_PRESETS.map(({ id, name }) => ({
+          label: name,
+          type: 'radio',
+          checked: beacon.get() === id,
+          click: () => beacon.set(id),
+        })),
+      },
       { type: 'separator' },
       {
         label: 'Start at login',
@@ -189,7 +199,11 @@ app.on('window-all-closed', () => {});
     renderTitle()
     renderMenu()
   })
-  const coach = createCoach(() => state)
+  const beacon = createBeaconPreset((id) => {
+    coach.setBeacon(id)
+    renderMenu()
+  })
+  const coach = createCoach(() => state, beacon.get)
   const chargerPlaces = createChargerPlaces(() => renderMenu())
   const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
 
