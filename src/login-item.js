@@ -1,9 +1,13 @@
 import { app, dialog } from 'electron'
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { log } from './log.js'
 
 const FLAGS = ['--enable-login-item', '--disable-login-item', '--status']
+
+const firstRunMarker = () => join(app.getPath('userData'), 'first-run.json')
+
+export const isFirstRun = () => !existsSync(firstRunMarker())
 
 export const isEnabled = () => app.getLoginItemSettings().openAtLogin
 
@@ -17,14 +21,13 @@ export const setEnabled = (enabled) => {
 }
 
 export const offerOnFirstRun = async () => {
-  const marker = join(app.getPath('userData'), 'first-run.json')
-  if (existsSync(marker)) return
+  if (!isFirstRun()) return
 
-  writeFileSync(marker, JSON.stringify({ shownAt: new Date().toISOString() }))
+  writeFileSync(firstRunMarker(), JSON.stringify({ shownAt: new Date().toISOString() }))
   const { response } = await dialog.showMessageBox({
     type: 'question',
-    message: 'Start TimerBar at login?',
-    detail: 'TimerBar lives in the menu bar and only coaches you when the timer is off. Starting it at login is the recommended setup.',
+    message: 'Start LockIn at login?',
+    detail: 'LockIn lives in the menu bar and only coaches you when the timer is off. Starting it at login is the recommended setup.',
     buttons: ['Start at login', 'Not now'],
     defaultId: 0,
     cancelId: 1,
@@ -33,6 +36,8 @@ export const offerOnFirstRun = async () => {
   if (response === 0) setEnabled(true)
   else log('start at login declined at first run')
 }
+
+export const resetFirstRunOffer = () => rmSync(firstRunMarker(), { force: true })
 
 export const handleCommandLine = () => {
   const flag = process.argv.find((argument) => FLAGS.includes(argument))

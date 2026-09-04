@@ -83,7 +83,7 @@ const sourcePath = () => {
 const ownSourceNote = () => {
   const source = sourcePath()
   return [
-    'The popup came from TimerBar, a menu bar coach I built myself and keep changing, so if this turns into a change worth making to the coach we can go and make it.',
+    'The popup came from LockIn, a menu bar coach I built myself and keep changing, so if this turns into a change worth making to the coach we can go and make it.',
     source ? ` Its source is at ${source}.` : '',
   ].join('')
 }
@@ -103,7 +103,7 @@ const discussionPrompt = (tip) => [
 ].join('\n')
 
 const openClaudeSession = (tip) => {
-  const promptFile = join(app.getPath('temp'), `timerbar-prompt-${Date.now()}.txt`)
+  const promptFile = join(app.getPath('temp'), `lockin-prompt-${Date.now()}.txt`)
   writeFileSync(promptFile, `${tip.prompt ?? discussionPrompt(tip)}\n\n${ownSourceNote()}`)
 
   const command = `cd ${SCRATCH_DIR} && claude "$(cat ${JSON.stringify(promptFile)})"`

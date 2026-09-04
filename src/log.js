@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 const MAX_BYTES = 1024 * 1024
 
-const logFile = () => join(app.getPath('home'), 'Library', 'Logs', 'TimerBar.log')
+export const logFile = () => join(app.getPath('home'), 'Library', 'Logs', 'LockIn.log')
 
 export const log = (message) => {
   const path = logFile()

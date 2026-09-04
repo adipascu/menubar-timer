@@ -6,6 +6,7 @@ import { createCoach } from './coach.js'
 import { createPowerWatch } from './power.js'
 import { createReadout } from './readout.js'
 import { createTaskField } from './task.js'
+import { adoptLegacyFiles } from './legacy.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
 import * as singleInstance from './single-instance.js'
@@ -30,7 +31,8 @@ const formatTime = (seconds) => {
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
 }
 
-app.setName('Timer App');
+app.setName('LockIn')
+adoptLegacyFiles()
 app.on('window-all-closed', () => {});
 
 (async () => {
