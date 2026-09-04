@@ -45,7 +45,7 @@ export const createTaskField = (onChange) => {
       }
 
       const { workArea } = screen.getPrimaryDisplay()
-      window = new BrowserWindow({
+      const opened = new BrowserWindow({
         width: WINDOW_WIDTH,
         height: WINDOW_HEIGHT,
         x: Math.round(workArea.x + (workArea.width - WINDOW_WIDTH) / 2),
@@ -59,19 +59,24 @@ export const createTaskField = (onChange) => {
         hasShadow: false,
         webPreferences: { preload: join(here, 'task-preload.cjs') },
       })
+      window = opened
+      const isCurrent = () => window === opened
 
-      window.on('closed', () => {
-        window = null
+      opened.on('closed', () => {
+        if (isCurrent()) window = null
       })
-      window.on('blur', () => close())
+      opened.on('blur', () => {
+        if (isCurrent()) close()
+      })
 
-      window.webContents.on('did-finish-load', () => {
-        window.webContents.send('label', label)
+      opened.webContents.on('did-finish-load', () => {
+        if (!isCurrent()) return
+        opened.webContents.send('label', label)
         app.focus({ steal: true })
-        window.show()
+        opened.show()
       })
 
-      window.loadFile(join(here, 'task.html'))
+      opened.loadFile(join(here, 'task.html'))
     },
   }
 }
