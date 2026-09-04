@@ -45,7 +45,7 @@ export const readPower = () =>
   })
 
 const TUNABLES = [
-  'This alert comes from TimerBar itself, so if it fired at the wrong moment we can retune it.',
+  'This alert comes from LockIn itself, so if it fired at the wrong moment we can retune it.',
   `The knobs are all at the top of src/power.js: HEAVY_LOAD_WATTS ${HEAVY_LOAD_WATTS}, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, and ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts.`,
   'The reading comes from ioreg AppleSmartBattery, InstantAmperage times Voltage, so it is whole-system draw rather than any one process.',
 ].join(' ')

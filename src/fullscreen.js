@@ -17,7 +17,7 @@ export const menuBarIsCovered = () =>
     execFile('osascript', ['-e', SCRIPT], { timeout: TIMEOUT_MS }, (error, stdout) => {
       if (error) {
         log(`fullscreen check failed, treating the menu bar as visible: ${error.message.trim()}`)
-        log('grant TimerBar Accessibility access in System Settings > Privacy & Security to enable it')
+        log('grant LockIn Accessibility access in System Settings > Privacy & Security to enable it')
         resolve(false)
         return
       }

@@ -1,7 +1,7 @@
 {
-  "appId": "be.pascu.timerbar",
-  "productName": "TimerBar",
-  "executableName": "TimerBar",
+  "appId": "be.pascu.lockin",
+  "productName": "LockIn",
+  "executableName": "LockIn",
   "artifactName": "${productName}.${ext}",
   "files": [
     "src/**/*",

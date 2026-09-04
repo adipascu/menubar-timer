@@ -292,7 +292,7 @@ def slugify(title):
 def download(url, path):
     if os.path.exists(path) and os.path.getsize(path) > 0:
         return False
-    request = urllib.request.Request(url, headers={"User-Agent": "TimerBar/1.0 (https://github.com/adipascu/menubar-timer)"})
+    request = urllib.request.Request(url, headers={"User-Agent": "LockIn/1.0 (https://github.com/adipascu/menubar-timer)"})
     with urllib.request.urlopen(request, timeout=45) as response:
         open(path, "wb").write(response.read())
     time.sleep(0.5)

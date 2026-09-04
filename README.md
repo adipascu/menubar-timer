@@ -1,6 +1,6 @@
-# TimerBar
+# LockIn
 
-A macOS menu bar timer with two modes and a coach that only talks when you are not working.
+A macOS menu bar timer with two modes and a coach that only talks when you are not working. It is named for the phrase young professionals use when they mean to focus, since they are who it is built for.
 
 In the menu they are one radio group, Freebasing at the top and the eight timer lengths under it, so exactly one is checked at a time. Picking Freebasing stops the timer, running or flashing, and picking a length starts one, which is also how you restart the one already running.
 
@@ -18,7 +18,7 @@ The tips cover three subjects, 122 cards each: building a SaaS, the psychology o
 
 Every card you see is recorded in `feedback.json` in the app's user data, keyed by title, with its subject, how many times it has shown, the status you gave it, and how many times you asked for more like it. Retired cards never come back, a subject whose cards are all retired drops out of the rotation, and when nothing is left the tune-up card takes over. Cards you asked for more of keep coming round, the count survives a later known mark, a later Not interested mark wins over it, and both the tune-up and the quiz read those cards as the places to go further.
 
-That session starts in `/tmp`, and its prompt names TimerBar's own checkout, so an argument about a tip can turn into a change to the coach. A packaged build learns that checkout path from the first run out of the source tree, because the bundle only knows its own location inside `/Applications`.
+That session starts in `/tmp`, and its prompt names LockIn's own checkout, so an argument about a tip can turn into a change to the coach. A packaged build learns that checkout path from the first run out of the source tree, because the bundle only knows its own location inside `/Applications`.
 
 Once a week the usual tip is replaced by a tune-up card. Acting on it opens a Claude Code session that reads your recent session transcripts and the feedback file, works out what you have actually been building, what you already know and what you asked for more of, interviews you about your goals and where you are stuck and how your attention, sleep and stress have been, and rewrites the tip pool around your situation, spread evenly over the three subjects. Until you run it, it is the only card you get.
 
@@ -45,9 +45,9 @@ Wikipedia arrives through the REST summary API, one lead paragraph per concept, 
 
 ## The problem it solves
 
-The original app was a countdown and nothing else. The gap it left is that the menu bar is the one surface you stop looking at the moment you stop working, which is exactly when a nudge would land. TimerBar inverts that: it is quiet while the timer runs and only speaks when the timer is off.
+The original app was a countdown and nothing else. The gap it left is that the menu bar is the one surface you stop looking at the moment you stop working, which is exactly when a nudge would land. LockIn inverts that: it is quiet while the timer runs and only speaks when the timer is off.
 
-That has a measurable failure mode. When another app is fullscreen the menu bar is gone entirely, so the timer is invisible and the app is silently useless. TimerBar detects that case and shows the card anyway.
+That has a measurable failure mode. When another app is fullscreen the menu bar is gone entirely, so the timer is invisible and the app is silently useless. LockIn detects that case and shows the card anyway.
 
 ## Findings worth writing down
 
@@ -64,7 +64,7 @@ That has a measurable failure mode. When another app is fullscreen the menu bar 
 
 ## Install
 
-The landing page at [timerbar.pascu.be](https://timerbar.pascu.be), served from Cloudflare Pages where it also answers as [timerbar.pages.dev](https://timerbar.pages.dev), links the latest dmg and walks through the first launch, which macOS refuses until you allow the ad-hoc signed build in Privacy & Security or clear its quarantine flag. The page is `site/index.html`, with its favicon, `robots.txt` and `llms.txt` beside it, and `pnpm site:deploy` stages them with the card screenshot and publishes through a `wrangler` you have installed and logged in. The build names the dmg `TimerBar.dmg`, without a version, so the page's download link stays the same across releases.
+The landing page at [timerbar.pascu.be](https://timerbar.pascu.be), served from Cloudflare Pages where it also answers as [timerbar.pages.dev](https://timerbar.pages.dev), links the latest dmg and walks through the first launch, which macOS refuses until you allow the ad-hoc signed build in Privacy & Security or clear its quarantine flag. The page is `site/index.html`, with its favicon, `robots.txt` and `llms.txt` beside it, and `pnpm site:deploy` stages them with the card screenshot and publishes through a `wrangler` you have installed and logged in. The build names the dmg `LockIn.dmg`, without a version, so the page's download link stays the same across releases.
 
 To build from source:
 
@@ -80,14 +80,16 @@ Node 22.x, as pinned in the `engines` field.
 Start at login defaults to off. The app offers it once on first run, and it is scriptable:
 
 ```bash
-/Applications/TimerBar.app/Contents/MacOS/TimerBar --enable-login-item
-/Applications/TimerBar.app/Contents/MacOS/TimerBar --disable-login-item
-/Applications/TimerBar.app/Contents/MacOS/TimerBar --status
+/Applications/LockIn.app/Contents/MacOS/LockIn --enable-login-item
+/Applications/LockIn.app/Contents/MacOS/LockIn --disable-login-item
+/Applications/LockIn.app/Contents/MacOS/LockIn --status
 ```
 
 The fullscreen card needs Accessibility access in System Settings, Privacy & Security. Everything else works without it, and the log says so when the check is refused.
 
-Logs rotate at 1 MB to `~/Library/Logs/TimerBar.log`.
+Logs rotate at 1 MB to `~/Library/Logs/LockIn.log`.
+
+A Mac that ran the app under its old name, TimerBar, keeps everything. The first launch of LockIn moves `~/Library/Application Support/Timer App` to `LockIn`, carries `TimerBar.log` over, and offers start at login again, since that setting belonged to the old bundle. Accessibility access, if you had granted it, has to be granted to LockIn again, since macOS keys that permission to the bundle. The old app can then be deleted from Applications and removed from Login Items in System Settings.
 
 ---
 
