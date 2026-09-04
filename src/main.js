@@ -5,6 +5,7 @@ import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createPowerWatch } from './power.js'
 import { createReadout } from './readout.js'
+import { createSiteLine, SITE_HOST } from './site-line.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
@@ -170,6 +171,12 @@ app.on('window-all-closed', () => {});
           click: () => beacon.set(id),
         })),
       },
+      {
+        label: `Include ${SITE_HOST} in copies`,
+        type: 'checkbox',
+        checked: siteLine.isEnabled(),
+        click: () => siteLine.set(!siteLine.isEnabled()),
+      },
       { type: 'separator' },
       {
         label: 'Start at login',
@@ -203,7 +210,11 @@ app.on('window-all-closed', () => {});
     coach.setBeacon(id)
     renderMenu()
   })
-  const coach = createCoach(() => state, beacon.get)
+  const siteLine = createSiteLine(() => {
+    coach.setSiteLine(siteLine.text())
+    renderMenu()
+  })
+  const coach = createCoach(() => state, beacon.get, siteLine.text)
   const chargerPlaces = createChargerPlaces(() => renderMenu())
   const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
 

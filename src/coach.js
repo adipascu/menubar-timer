@@ -129,7 +129,7 @@ const exportPool = () => {
   return file
 }
 
-export const createCoach = (getState, getBeacon) => {
+export const createCoach = (getState, getBeacon, getSiteLine) => {
   rememberSourcePath()
   const feedback = createFeedback()
   const tipsFile = join(app.getPath('userData'), 'tips-personal.json')
@@ -208,8 +208,8 @@ export const createCoach = (getState, getBeacon) => {
     })
     window.webContents.on('did-finish-load', async () => {
       const loud = await loudMusic
-      const tipWithBeacon = { ...tip, beacon: getBeacon(), loudMusic: loud }
-      if (!window.isDestroyed()) window.webContents.send('tip', tipWithBeacon)
+      const card = { ...tip, beacon: getBeacon(), siteLine: getSiteLine(), loudMusic: loud }
+      if (!window.isDestroyed()) window.webContents.send('tip', card)
     })
     window.loadFile(join(here, 'popup.html'))
   }
@@ -295,6 +295,9 @@ export const createCoach = (getState, getBeacon) => {
     quiz: () => openClaudeSession(quizCard({ poolFile, tipsFile, feedbackFile: feedback.file, quizFile })),
     setBeacon: (id) => {
       if (popup && !popup.isDestroyed()) popup.webContents.send('beacon', id)
+    },
+    setSiteLine: (text) => {
+      if (popup && !popup.isDestroyed()) popup.webContents.send('site-line', text)
     },
     refresh: () => {
       if (tipsAreAllowed()) schedule(randomGap())
