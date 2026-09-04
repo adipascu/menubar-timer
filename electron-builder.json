@@ -2,6 +2,7 @@
   "appId": "be.pascu.timerbar",
   "productName": "TimerBar",
   "executableName": "TimerBar",
+  "artifactName": "${productName}.${ext}",
   "files": [
     "src/**/*",
     "package.json"

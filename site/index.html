@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TimerBar</title>
+    <meta name="description" content="A macOS menu bar timer with two modes and a coach that only talks when you are not working." />
+    <meta property="og:title" content="TimerBar" />
+    <meta property="og:description" content="A macOS menu bar timer with two modes and a coach that only talks when you are not working." />
+    <meta property="og:image" content="https://timerbar.pages.dev/card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#b8860b" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --page: #f6f1e3;
+        --card: #fffdf3;
+        --border: #d8cfae;
+        --ink: #1c1a14;
+        --muted: #6f6852;
+        --accent: #856208;
+        --shadow: rgba(0, 0, 0, 0.12);
+        color-scheme: light dark;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page: #17160f;
+          --card: #23211c;
+          --border: #4a4536;
+          --ink: #f2eee0;
+          --muted: #a9a189;
+          --accent: #e3b341;
+          --shadow: rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      }
+
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 18px;
+        align-items: start;
+        margin-bottom: 40px;
+      }
+
+      header svg {
+        width: 56px;
+        height: 72px;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 40px;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+      }
+
+      .tagline {
+        margin: 0 0 18px;
+        font-size: 20px;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: var(--card);
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      .button.quiet {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--border);
+      }
+
+      .note {
+        flex-basis: 100%;
+        margin: 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      h2 {
+        margin: 40px 0 12px;
+        font-size: 22px;
+        letter-spacing: -0.2px;
+      }
+
+      p {
+        margin: 0 0 14px;
+      }
+
+      .modes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .card {
+        padding: 18px 18px 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 10px 28px var(--shadow);
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 17px;
+      }
+
+      .card p {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      figure {
+        margin: 24px 0 0;
+      }
+
+      figure img {
+        display: block;
+        width: 100%;
+        max-width: 380px;
+        height: auto;
+        margin: 0 auto;
+      }
+
+      figcaption {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      ul {
+        padding-left: 20px;
+        margin: 0 0 14px;
+      }
+
+      li {
+        margin-bottom: 6px;
+      }
+
+      code {
+        font: 14px/1.5 ui-monospace, Menlo, Monaco, monospace;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 1px 6px;
+      }
+
+      pre {
+        overflow-x: auto;
+        margin: 0 0 14px;
+        padding: 12px 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      pre code {
+        border: 0;
+        padding: 0;
+        background: transparent;
+      }
+
+      footer {
+        margin-top: 48px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 560px) {
+        h1 {
+          font-size: 32px;
+        }
+
+        .modes {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <svg viewBox="0 0 34 44" fill="none" aria-hidden="true">
+          <path
+            d="M24 13v18a8 8 0 0 1-16 0V11a5 5 0 0 1 10 0v18a2.5 2.5 0 0 1-5 0V14"
+            stroke="var(--accent)"
+            stroke-width="3.2"
+            stroke-linecap="round"
+          />
+          <circle cx="13.5" cy="17" r="1.9" fill="var(--ink)" />
+          <circle cx="21" cy="17" r="1.9" fill="var(--ink)" />
+        </svg>
+        <div>
+          <h1>TimerBar</h1>
+          <p class="tagline">A macOS menu bar timer with two modes and a coach that only talks when you are not working.</p>
+          <div class="actions">
+            <a class="button" href="https://github.com/adipascu/menubar-timer/releases/latest/download/TimerBar.dmg">Download for Mac</a>
+            <a class="button quiet" href="https://github.com/adipascu/menubar-timer">Source on GitHub</a>
+            <p class="note">Apple silicon, macOS 11 or later. Free and open source under the MIT licence.</p>
+          </div>
+        </div>
+      </header>
+
+      <h2>Two modes</h2>
+      <div class="modes">
+        <div class="card">
+          <h3>Timer running</h3>
+          <p>Pick five minutes to ninety from the menu, say what you are working on, and it counts down next to that label in the menu bar. It flashes at zero. No tips interrupt you while the clock runs.</p>
+        </div>
+        <div class="card">
+          <h3>Freebasing</h3>
+          <p>No timer and no goal you are held to. Every four to twelve minutes a card slides into the corner with one idea and stays above every window and every Space until you deal with it.</p>
+        </div>
+      </div>
+
+      <figure>
+        <img src="card.png" width="380" height="300" alt="A coach card: a gold paperclip, a title, a short body, a source link and five buttons" />
+        <figcaption>One card. The title, the body and the source can be selected and copied in one drag.</figcaption>
+      </figure>
+
+      <h2>What the coach knows</h2>
+      <p>366 cards distilled from free sources, a third each on building a SaaS, on the psychology of attention, motivation and habit, and on the psychiatry around working with your own head. Every card names its source and links back, so the provenance is checkable rather than invented.</p>
+      <ul>
+        <li><strong>Talk it through</strong> opens a Claude Code session seeded with the card so you can argue with it.</li>
+        <li><strong>Already know this</strong> and <strong>Not interested</strong> retire a card for good. <strong>More like this</strong> keeps it in play and counts as a vote for more in that direction.</li>
+        <li>Once a week a tune-up card reads what you have been working on, interviews you, and rewrites the personal cards around your situation.</li>
+        <li><strong>Quiz me…</strong> in the menu tests you on the cards you have seen, retires what you clearly know, and writes new cards around the gaps.</li>
+      </ul>
+
+      <h2>Power draw</h2>
+      <p>On battery the menu bar shows the median draw over the last five minutes. Over 22 W a flame flashes in its place, and at places you have marked as having a charger within reach a card asks you to plug in.</p>
+
+      <h2>Install</h2>
+      <p>Download the dmg, drag TimerBar into Applications, and open it. The build is signed ad hoc rather than notarised, so macOS refuses the first launch. Open System Settings, Privacy &amp; Security, and choose Open Anyway next to the TimerBar message, or clear the quarantine flag and launch again:</p>
+      <pre><code>xattr -d com.apple.quarantine /Applications/TimerBar.app</code></pre>
+      <p>The app lives in the menu bar and has no Dock icon. It offers to start at login once, on first run. The card that warns about a hidden timer needs Accessibility access, which is optional and asked for in the log rather than with a dialog.</p>
+
+      <h2>How it was built</h2>
+      <p>By prompting. The <a href="https://github.com/adipascu/menubar-timer#how-this-was-built">README</a> keeps every prompt of the session that produced the app, verbatim and in order, with the count of lines a human wrote: none.</p>
+
+      <footer>Made by <a href="https://pascu.be">Adrian Pascu</a>. Source and issues on <a href="https://github.com/adipascu/menubar-timer">GitHub</a>.</footer>
+    </main>
+  </body>
+</html>

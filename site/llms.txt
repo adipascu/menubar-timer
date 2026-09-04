@@ -1,0 +1,9 @@
+# TimerBar
+
+> A macOS menu bar timer with two modes and a coach that only talks when you are not working.
+
+TimerBar counts down next to a label in the menu bar while you work. When the timer is off, a coach slides a card into the corner every few minutes with one idea from 366 cards on building a SaaS, the psychology of attention and habit, and the psychiatry of working with your own head. Every card names its source.
+
+- [Source on GitHub](https://github.com/adipascu/menubar-timer)
+- [Download the latest dmg](https://github.com/adipascu/menubar-timer/releases/latest/download/TimerBar.dmg)
+- [How it was built, every prompt of the session](https://github.com/adipascu/menubar-timer#how-this-was-built)
