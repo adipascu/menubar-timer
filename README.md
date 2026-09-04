@@ -64,6 +64,10 @@ That has a measurable failure mode. When another app is fullscreen the menu bar 
 
 ## Install
 
+The landing page at [timerbar.pascu.be](https://timerbar.pascu.be), served from Cloudflare Pages where it also answers as [timerbar.pages.dev](https://timerbar.pages.dev), links the latest dmg and walks through the first launch, which macOS refuses until you allow the ad-hoc signed build in Privacy & Security or clear its quarantine flag. The page is `site/index.html`, with its favicon, `robots.txt` and `llms.txt` beside it, and `pnpm site:deploy` stages them with the card screenshot and publishes through a `wrangler` you have installed and logged in. The build names the dmg `TimerBar.dmg`, without a version, so the page's download link stays the same across releases.
+
+To build from source:
+
 ```bash
 corepack enable
 pnpm install
