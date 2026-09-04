@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>The book</title>
+    <style>
+      :root {
+        --card: #fffdf3;
+        --border: #d8cfae;
+        --ink: #1c1a14;
+        --muted: #6f6852;
+        --accent: #b8860b;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --card: #23211c;
+          --border: #4a4536;
+          --ink: #f2eee0;
+          --muted: #a9a189;
+          --accent: #e3b341;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--card);
+        color: var(--ink);
+        -webkit-user-select: none;
+        cursor: default;
+        font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        -webkit-app-region: drag;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 20px 12px 84px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      header > div {
+        flex: 1 1 200px;
+        min-width: 160px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 650;
+        letter-spacing: -0.1px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+      }
+
+      #meta {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .controls {
+        -webkit-app-region: no-drag;
+        flex: 0 1 auto;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #editions {
+        min-width: 0;
+      }
+
+      select {
+        font: inherit;
+        font-size: 12px;
+        color: var(--ink);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 4px 8px;
+        max-width: 240px;
+      }
+
+      button {
+        flex: none;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+        padding: 4px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: transparent;
+      }
+
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+      }
+
+      button:disabled {
+        opacity: 0.4;
+      }
+
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--card);
+      }
+
+      button.primary:hover {
+        filter: brightness(1.12);
+      }
+
+      button[aria-pressed="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--card);
+      }
+
+      #status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        padding: 8px 20px;
+        font-size: 12px;
+        background: color-mix(in srgb, var(--accent) 12%, transparent);
+        border-bottom: 1px solid var(--border);
+      }
+
+      #status span {
+        flex: 1;
+      }
+
+      #empty {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 40px;
+        text-align: center;
+      }
+
+      #empty h2 {
+        margin: 0;
+      }
+
+      #empty p {
+        max-width: 440px;
+        margin: 0;
+        color: var(--muted);
+      }
+
+      main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 28px 36px;
+        -webkit-user-select: text;
+        cursor: auto;
+      }
+
+      .page {
+        max-width: 580px;
+        margin: 0 auto;
+      }
+
+      .topic {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      h2 {
+        margin: 2px 0 20px;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .section {
+        margin: 0 0 14px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--border);
+        border-radius: 10px;
+      }
+
+      .section.highlighted {
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 9%, transparent);
+      }
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 650;
+      }
+
+      .body {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .body p {
+        margin: 0 0 10px;
+      }
+
+      .source {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .source a {
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .source a:hover {
+        color: var(--accent);
+      }
+
+      .marks {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        -webkit-user-select: none;
+      }
+
+      textarea {
+        display: block;
+        width: 100%;
+        min-height: 64px;
+        margin-top: 10px;
+        padding: 8px 10px;
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        resize: vertical;
+        -webkit-user-select: text;
+      }
+
+      footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        border-top: 1px solid var(--border);
+      }
+
+      footer select {
+        flex: 1;
+        min-width: 0;
+        max-width: none;
+      }
+
+      #position {
+        color: var(--muted);
+        font-size: 11px;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1 id="title">The book</h1>
+        <p id="meta"></p>
+      </div>
+      <div class="controls">
+        <select id="editions" title="Every edition so far, each with the notes you left on it"></select>
+        <button id="write" class="primary" title="Open a Claude Code session that writes a new set of cards and a new book">Write a new edition</button>
+      </div>
+    </header>
+    <p id="status" hidden>
+      <span role="status">A Claude Code session is writing the next edition in Terminal. It shows up here when it lands.</span>
+      <button id="dismiss-status">Dismiss</button>
+    </p>
+    <section id="empty" hidden>
+      <h2 id="empty-heading">No book yet</h2>
+      <p id="empty-pitch">The first edition is one click away. A Claude Code session reads the cards you have seen, what you marked and what you asked for more of, asks what to lean into, then writes a new set of popups and about two hours of reading. Both land here.</p>
+      <button id="write-first" class="primary">Write the first edition</button>
+    </section>
+    <main id="main" hidden>
+      <div id="page" class="page"></div>
+    </main>
+    <footer id="pager" hidden>
+      <button id="prev" title="Previous chapter, or the left arrow key">Previous</button>
+      <select id="contents" title="Contents"></select>
+      <span id="position"></span>
+      <button id="next">Next</button>
+    </footer>
+
+    <script>
+      const byId = (id) => document.getElementById(id)
+      const title = byId('title')
+      const meta = byId('meta')
+      const editions = byId('editions')
+      const writeButton = byId('write')
+      const status = byId('status')
+      const empty = byId('empty')
+      const emptyHeading = byId('empty-heading')
+      const emptyPitch = byId('empty-pitch')
+      const writeFirst = byId('write-first')
+      const main = byId('main')
+      const page = byId('page')
+      const pager = byId('pager')
+      const prev = byId('prev')
+      const contents = byId('contents')
+      const position = byId('position')
+      const next = byId('next')
+
+      const SAVE_DELAY_MS = 400
+
+      let shelf = []
+      let edition = null
+      let book = null
+      let notes = {}
+      let finished = new Set()
+      let chapter = 0
+
+      const chapters = () => book?.chapters ?? []
+      const sectionsOf = (index) => chapters()[index].sections
+      const count = (amount, noun) => `${amount} ${noun}${amount === 1 ? '' : 's'}`
+      const formatDate = (ms) => new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+      const paragraphs = (text) =>
+        String(text ?? '')
+          .split(/\n\s*\n/)
+          .map((paragraph) => paragraph.trim())
+          .filter(Boolean)
+
+      const element = (tag, className, text) => {
+        const node = document.createElement(tag)
+        if (className) node.className = className
+        if (text !== undefined) node.textContent = text
+        return node
+      }
+
+      const option = (value, label, selected) => {
+        const node = element('option', '', label)
+        node.value = value
+        node.selected = selected
+        return node
+      }
+
+      const saveNote = async (owner, key, patch) => {
+        const saved = await window.reader.note(owner, key, patch)
+        if (owner !== edition) return
+        if (saved) notes[key] = saved
+        else delete notes[key]
+        renderMeta()
+      }
+
+      const renderMeta = () => {
+        const highlights = Object.values(notes).filter((note) => note.highlighted).length
+        const comments = Object.values(notes).filter((note) => note.comment).length
+        const read = [...finished].filter((index) => index < chapters().length).length
+        title.textContent = book.title
+        meta.textContent = [
+          `${read} of ${count(chapters().length, 'chapter')} read`,
+          count(highlights, 'highlight'),
+          count(comments, 'comment'),
+        ].join(' · ')
+      }
+
+      const setAwaiting = (awaiting) => {
+        status.hidden = !awaiting
+        writeButton.disabled = awaiting
+        writeFirst.disabled = awaiting
+      }
+
+      const markFinished = (index) => {
+        if (finished.has(index)) return
+        finished.add(index)
+        window.reader.markFinished(edition, index)
+        renderMeta()
+      }
+
+      const renderShelf = () => {
+        editions.replaceChildren(
+          ...shelf.map((entry) =>
+            option(entry.edition, `Edition ${entry.edition} · ${formatDate(entry.writtenAt)}`, entry.edition === edition),
+          ),
+        )
+      }
+
+      const renderSection = (section, index) => {
+        const owner = edition
+        const key = `${chapter}.${index}`
+        const note = notes[key] ?? {}
+        const article = element('article', note.highlighted ? 'section highlighted' : 'section')
+        article.append(element('h3', '', section.heading))
+
+        const body = element('div', 'body')
+        body.append(...paragraphs(section.body).map((text) => element('p', '', text)))
+        article.append(body)
+
+        if (section.source || section.url) {
+          const source = element('p', 'source')
+          if (section.url) {
+            const link = element('a', '', section.source || section.url)
+            link.href = section.url
+            link.addEventListener('click', (event) => {
+              event.preventDefault()
+              window.reader.openSource(section.url)
+            })
+            source.append(link)
+          } else {
+            source.textContent = section.source
+          }
+          article.append(source)
+        }
+
+        const highlight = element('button', '', 'Highlight')
+        highlight.title = 'Ask the next edition for more in this direction'
+        highlight.setAttribute('aria-pressed', String(Boolean(note.highlighted)))
+        const comment = element('button', '', note.comment ? 'Edit comment' : 'Comment')
+        comment.title = 'Tell the next edition what to do with this'
+        comment.setAttribute('aria-expanded', String(Boolean(note.comment)))
+        const marks = element('div', 'marks')
+        marks.append(highlight, comment)
+        article.append(marks)
+
+        const box = element('textarea')
+        box.id = `comment-${chapter}-${index}`
+        box.placeholder = 'What should the next edition do with this?'
+        box.setAttribute('aria-label', 'Comment for the next edition')
+        comment.setAttribute('aria-controls', box.id)
+        box.value = note.comment ?? ''
+        box.hidden = !note.comment
+        article.append(box)
+
+        highlight.addEventListener('click', () => {
+          const highlighted = highlight.getAttribute('aria-pressed') !== 'true'
+          highlight.setAttribute('aria-pressed', String(highlighted))
+          article.classList.toggle('highlighted', highlighted)
+          saveNote(owner, key, { highlighted })
+        })
+
+        comment.addEventListener('click', () => {
+          box.hidden = false
+          comment.setAttribute('aria-expanded', 'true')
+          box.focus()
+        })
+
+        let pending = null
+        const flush = () => {
+          clearTimeout(pending)
+          pending = null
+          saveNote(owner, key, { comment: box.value })
+          comment.textContent = box.value.trim() ? 'Edit comment' : 'Comment'
+        }
+        box.addEventListener('input', () => {
+          clearTimeout(pending)
+          pending = setTimeout(flush, SAVE_DELAY_MS)
+        })
+        box.addEventListener('blur', () => {
+          if (pending) flush()
+          if (box.value.trim()) return
+          box.hidden = true
+          comment.setAttribute('aria-expanded', 'false')
+        })
+
+        return article
+      }
+
+      const renderPage = () => {
+        const current = chapters()[chapter]
+        const heading = element('h2', '', current.title)
+        heading.tabIndex = -1
+        page.replaceChildren(element('p', 'topic', current.topic ?? ''), heading, ...sectionsOf(chapter).map(renderSection))
+        contents.replaceChildren(
+          ...chapters().map((entry, index) =>
+            option(index, `${finished.has(index) ? '✓ ' : ''}${index + 1}. ${entry.title}`, index === chapter),
+          ),
+        )
+        position.textContent = `Chapter ${chapter + 1} of ${chapters().length}`
+        prev.disabled = chapter === 0
+        const last = chapters().length - 1
+        if (chapter < last) {
+          next.textContent = 'Next'
+          next.title = 'Next chapter, or the right arrow key. A chapter counts as read once you page past it'
+          next.disabled = false
+        } else if (finished.has(last)) {
+          next.textContent = 'Finished'
+          next.title = 'Every chapter counts as read'
+          next.disabled = true
+        } else {
+          next.textContent = 'Finish the book'
+          next.title = 'Count the last chapter as read, or the right arrow key'
+          next.disabled = false
+        }
+      }
+
+      const render = () => {
+        const readable = chapters().length > 0
+        empty.hidden = readable
+        main.hidden = !readable
+        pager.hidden = !readable
+        writeButton.hidden = !readable
+        editions.hidden = shelf.length === 0
+        renderShelf()
+        if (!readable) {
+          const firstEver = shelf.length === 0
+          title.textContent = 'The book'
+          meta.textContent = firstEver ? 'Nothing written yet' : 'This edition has no chapters in it'
+          emptyHeading.textContent = firstEver ? 'No book yet' : 'Nothing to read in this edition'
+          emptyPitch.hidden = !firstEver
+          writeFirst.textContent = firstEver ? 'Write the first edition' : 'Write a new edition'
+          return
+        }
+        renderMeta()
+        renderPage()
+      }
+
+      const firstUnfinished = () => {
+        const index = chapters().findIndex((_, candidate) => !finished.has(candidate))
+        return index === -1 ? 0 : index
+      }
+
+      const goTo = (index) => {
+        const target = Math.max(0, Math.min(index, chapters().length - 1))
+        if (target > chapter) markFinished(chapter)
+        chapter = target
+        renderPage()
+        main.scrollTop = 0
+        page.querySelector('h2').focus()
+      }
+
+      const forward = () => {
+        if (chapter < chapters().length - 1) {
+          goTo(chapter + 1)
+          return
+        }
+        markFinished(chapter)
+        renderPage()
+      }
+
+      const writtenAtOf = (entries) => entries.find((entry) => entry.edition === edition)?.writtenAt
+
+      const apply = (result) => {
+        const changed = result.edition !== edition
+        if (changed || result.shelf.length > shelf.length) setAwaiting(false)
+        shelf = result.shelf
+        edition = result.edition
+        book = result.book
+        notes = result.notes
+        finished = new Set(result.finished)
+        chapter = changed ? firstUnfinished() : Math.max(0, Math.min(chapter, chapters().length - 1))
+        render()
+        if (changed) main.scrollTop = 0
+      }
+
+      const load = async (wanted) => apply(await window.reader.open(wanted))
+
+      const refresh = async () => {
+        const followLatest = edition === shelf.at(-1)?.edition
+        const result = await window.reader.open(followLatest ? undefined : edition)
+        const sameBook = result.edition === edition && writtenAtOf(result.shelf) === writtenAtOf(shelf)
+        if (sameBook && result.shelf.length === shelf.length) return
+        if (sameBook) {
+          shelf = result.shelf
+          setAwaiting(false)
+          renderShelf()
+          return
+        }
+        apply(result)
+      }
+
+      const write = () => {
+        window.reader.write()
+        setAwaiting(true)
+      }
+
+      writeButton.addEventListener('click', write)
+      writeFirst.addEventListener('click', write)
+      byId('dismiss-status').addEventListener('click', () => setAwaiting(false))
+      prev.addEventListener('click', () => goTo(chapter - 1))
+      next.addEventListener('click', forward)
+      contents.addEventListener('change', () => goTo(Number(contents.value)))
+      editions.addEventListener('change', () => load(Number(editions.value)))
+      document.addEventListener('keydown', (event) => {
+        if (main.hidden || event.target.matches('textarea, select, input')) return
+        if (event.key === 'ArrowLeft') goTo(chapter - 1)
+        if (event.key === 'ArrowRight') forward()
+      })
+
+      window.reader.onRefresh(refresh)
+      load()
+    </script>
+  </body>
+</html>

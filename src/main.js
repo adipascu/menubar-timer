@@ -2,7 +2,9 @@ import { app, Tray, Menu } from 'electron'
 import ansiStyles from 'ansi-styles';
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
+import { createLibrary } from './library.js'
 import { createPowerWatch } from './power.js'
+import { createReader } from './reader.js'
 import { createReadout } from './readout.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
@@ -160,6 +162,7 @@ app.on('window-all-closed', () => {});
         enabled: false,
       },
       { label: 'Quiz me…', click: () => coach.quiz() },
+      { label: 'Read the book…', click: () => reader.show() },
       { type: 'separator' },
       {
         label: 'Start at login',
@@ -189,7 +192,9 @@ app.on('window-all-closed', () => {});
     renderTitle()
     renderMenu()
   })
-  const coach = createCoach(() => state)
+  const library = createLibrary()
+  const coach = createCoach(() => state, library)
+  const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => renderMenu())
   const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
 

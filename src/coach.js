@@ -4,6 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCalibration } from './calibration.js'
+import { editionCard } from './edition.js'
 import { createFeedback } from './feedback.js'
 import { menuBarIsCovered } from './fullscreen.js'
 import { log } from './log.js'
@@ -104,7 +105,7 @@ const discussionPrompt = (tip) => [
 
 const openClaudeSession = (tip) => {
   const promptFile = join(app.getPath('temp'), `timerbar-prompt-${Date.now()}.txt`)
-  writeFileSync(promptFile, `${tip.prompt ?? discussionPrompt(tip)}\n\n${ownSourceNote()}`)
+  writeFileSync(promptFile, `${tip.prompt?.() ?? discussionPrompt(tip)}\n\n${ownSourceNote()}`)
 
   const command = `cd ${SCRATCH_DIR} && claude "$(cat ${JSON.stringify(promptFile)})"`
   execFile('osascript', [
@@ -129,14 +130,14 @@ const exportPool = () => {
   return file
 }
 
-export const createCoach = (getState) => {
+export const createCoach = (getState, library) => {
   rememberSourcePath()
   const feedback = createFeedback()
-  const tipsFile = join(app.getPath('userData'), 'tips-personal.json')
   const quizFile = join(app.getPath('userData'), 'quiz.json')
   const poolFile = exportPool()
-  const calibration = createCalibration(tipsFile, feedback.file)
-  const allTips = () => [...tips, ...calibration.personalTips().map((tip) => ({ ...tip, personal: true }))]
+  const editionSources = { poolFile, feedbackFile: feedback.file, quizFile, library }
+  const calibration = createCalibration(feedback.file, library)
+  const allTips = () => [...tips, ...library.cards().map((tip) => ({ ...tip, personal: true }))]
   const nextTip = createTipQueue(allTips, feedback.retiredTitles)
   let timer = null
   let popup = null
@@ -188,7 +189,9 @@ export const createCoach = (getState) => {
     const window = popup
     window.on('blur', () => window.setFocusable(false))
     window.on('close', () => {
-      if (window.isFocused()) app.hide()
+      if (!window.isFocused()) return
+      const othersShowing = BrowserWindow.getAllWindows().some((other) => other !== window && other.isVisible())
+      if (!othersShowing) app.hide()
     })
     const whileOpen = (action) => () => {
       if (!window.isDestroyed()) action()
@@ -207,7 +210,8 @@ export const createCoach = (getState) => {
       ]).popup({ window })
     })
     window.webContents.on('did-finish-load', async () => {
-      const tipWithBeacon = { ...tip, loudMusic: await loudMusic }
+      const { prompt, ...shown } = tip
+      const tipWithBeacon = { ...shown, loudMusic: await loudMusic }
       if (!window.isDestroyed()) window.webContents.send('tip', tipWithBeacon)
     })
     window.loadFile(join(here, 'popup.html'))
@@ -291,7 +295,8 @@ export const createCoach = (getState) => {
       closePopup()
       show(card)
     },
-    quiz: () => openClaudeSession(quizCard({ poolFile, tipsFile, feedbackFile: feedback.file, quizFile })),
+    quiz: () => openClaudeSession(quizCard(editionSources)),
+    edition: () => openClaudeSession(editionCard(editionSources)),
     refresh: () => {
       if (tipsAreAllowed()) schedule(randomGap())
       else closePopup()
