@@ -92,10 +92,14 @@
         background: transparent;
       }
 
-      button:hover {
+      button:not(:disabled):hover {
         background: var(--accent);
         border-color: var(--accent);
         color: var(--card);
+      }
+
+      button:disabled {
+        opacity: 0.4;
       }
     </style>
   </head>
@@ -105,6 +109,7 @@
       <input id="label" type="text" maxlength="40" placeholder="Shipping the billing page" />
       <footer>
         <span id="hint">Shown in the menu bar next to the time.</span>
+        <button id="revert" title="Put back what you are working on now">Revert</button>
         <button id="clear">Clear</button>
         <button id="save">Save</button>
       </footer>
@@ -112,20 +117,55 @@
 
     <script>
       const field = document.getElementById('label')
+      const revert = document.getElementById('revert')
+      let saved = ''
+      let finished = false
 
-      window.task.onLabel((label) => {
-        field.value = label
+      const syncRevert = () => {
+        revert.disabled = field.value.trim() === saved
+      }
+
+      const sendDraft = (value) => {
+        if (!finished) window.task.draft(value)
+      }
+
+      const fill = (value) => {
+        field.value = value
+        syncRevert()
         field.focus()
         field.select()
+      }
+
+      const finish = (send) => {
+        if (finished) return
+        finished = true
+        send()
+      }
+
+      const save = (label) => finish(() => window.task.save(label))
+      const cancel = () => finish(() => window.task.cancel())
+
+      window.task.onLabel((label, draft) => {
+        saved = label
+        fill(draft ?? label)
       })
 
-      const save = () => window.task.save(field.value)
+      field.addEventListener('input', () => {
+        sendDraft(field.value)
+        syncRevert()
+      })
 
-      document.getElementById('save').addEventListener('click', save)
-      document.getElementById('clear').addEventListener('click', () => window.task.save(''))
+      revert.addEventListener('click', () => {
+        sendDraft(saved)
+        fill(saved)
+      })
+
+      document.getElementById('save').addEventListener('click', () => save(field.value))
+      document.getElementById('clear').addEventListener('click', () => save(''))
       document.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') save()
-        if (event.key === 'Escape') window.task.cancel()
+        if (event.isComposing) return
+        if (event.key === 'Enter' && !(event.target instanceof HTMLButtonElement)) save(field.value)
+        if (event.key === 'Escape') cancel()
       })
     </script>
   </body>
