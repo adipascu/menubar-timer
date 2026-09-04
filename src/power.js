@@ -55,13 +55,14 @@ const heavyLoadCard = (watts, reading) => ({
   title: `Plug in, you are pulling ${watts.toFixed(0)} W`,
   body: `Sustained ${watts.toFixed(1)} W on battery for the last five minutes, over the ${HEAVY_LOAD_WATTS} W limit. Battery is at ${reading.percent}%${describeRemaining(reading.minutesRemaining)}.`,
   source: 'Power draw',
-  prompt: [
-    `My Mac has been drawing a sustained ${watts.toFixed(1)} W on battery for the last five minutes, with the battery at ${reading.percent}%. That is over the ${HEAVY_LOAD_WATTS} W limit.`,
-    '',
-    'Help me find what is responsible. Suggest what to run, read the output with me, and tell me whether it is worth killing something or whether I should just plug in.',
-    '',
-    TUNABLES,
-  ].join('\n'),
+  prompt: () =>
+    [
+      `My Mac has been drawing a sustained ${watts.toFixed(1)} W on battery for the last five minutes, with the battery at ${reading.percent}%. That is over the ${HEAVY_LOAD_WATTS} W limit.`,
+      '',
+      'Help me find what is responsible. Suggest what to run, read the output with me, and tell me whether it is worth killing something or whether I should just plug in.',
+      '',
+      TUNABLES,
+    ].join('\n'),
 })
 
 const lowBatteryCard = (reading) => ({
@@ -69,13 +70,14 @@ const lowBatteryCard = (reading) => ({
   title: `Battery at ${reading.percent}%`,
   body: `Running on battery at ${reading.percent}%, currently drawing ${reading.watts.toFixed(0)} W${describeRemaining(reading.minutesRemaining)}. Worth plugging in.`,
   source: 'Battery level',
-  prompt: [
-    `My Mac is on battery at ${reading.percent}%, drawing ${reading.watts.toFixed(0)} W right now.`,
-    '',
-    'Tell me whether that draw is reasonable for what I am doing, and what I could turn off to stretch the remaining charge.',
-    '',
-    TUNABLES,
-  ].join('\n'),
+  prompt: () =>
+    [
+      `My Mac is on battery at ${reading.percent}%, drawing ${reading.watts.toFixed(0)} W right now.`,
+      '',
+      'Tell me whether that draw is reasonable for what I am doing, and what I could turn off to stretch the remaining charge.',
+      '',
+      TUNABLES,
+    ].join('\n'),
 })
 
 export const createPowerWatch = (onAlert, onDraw = () => {}, chargerNearby = () => true) => {
