@@ -124,6 +124,7 @@
       document.getElementById('save').addEventListener('click', save)
       document.getElementById('clear').addEventListener('click', () => window.task.save(''))
       document.addEventListener('keydown', (event) => {
+        if (event.isComposing) return
         if (event.key === 'Enter' && !(event.target instanceof HTMLButtonElement)) save()
         if (event.key === 'Escape') window.task.cancel()
       })
