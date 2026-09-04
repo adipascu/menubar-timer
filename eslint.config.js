@@ -17,6 +17,10 @@ export default [
     languageOptions: { sourceType: 'commonjs', globals: globals.node },
   },
   {
+    files: ['src/beacons.js'],
+    languageOptions: { sourceType: 'script', globals: globals.browser },
+  },
+  {
     files: ['src/**/*.html'],
     plugins: { html },
     languageOptions: { sourceType: 'script', globals: globals.browser },

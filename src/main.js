@@ -1,5 +1,6 @@
 import { app, Menu, shell, Tray } from 'electron'
 import ansiStyles from 'ansi-styles'
+import { BEACON_PRESETS, createBeaconPreset } from './beacon.js'
 import { batteryMenuItem } from './battery.js'
 import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
@@ -317,6 +318,15 @@ app.on('window-all-closed', () => {})
       },
       { label: 'Quiz me…', click: () => coach.quiz() },
       { label: 'Read the book…', click: () => reader.show() },
+      {
+        label: `Beacon: ${BEACON_PRESETS.find(({ id }) => id === beacon.get()).name}`,
+        submenu: BEACON_PRESETS.map(({ id, name }) => ({
+          label: name,
+          type: 'radio',
+          checked: beacon.get() === id,
+          click: () => beacon.set(id),
+        })),
+      },
       { type: 'separator' },
       {
         label: 'Start at login',
@@ -375,8 +385,12 @@ app.on('window-all-closed', () => {})
   }
   const task = createTaskField(refresh)
   const categories = createCategories(refresh)
+  const beacon = createBeaconPreset((id) => {
+    coach.setBeacon(id)
+    renderMenu()
+  })
   const library = createLibrary()
-  const coach = createCoach(() => state, library)
+  const coach = createCoach(() => state, library, beacon.get)
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {
     renderMenu()
