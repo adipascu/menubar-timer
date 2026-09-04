@@ -15,6 +15,7 @@ import { createPowerWatch } from './power.js'
 import { createReader } from './reader.js'
 import { createReadout } from './readout.js'
 import { createSettings } from './settings.js'
+import { createSiteLine, SITE_HOST } from './site-line.js'
 import { swatchImage } from './swatch.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
@@ -327,6 +328,12 @@ app.on('window-all-closed', () => {})
           click: () => beacon.set(id),
         })),
       },
+      {
+        label: `Include ${SITE_HOST} in copies`,
+        type: 'checkbox',
+        checked: siteLine.isEnabled(),
+        click: () => siteLine.set(!siteLine.isEnabled()),
+      },
       { type: 'separator' },
       {
         label: 'Start at login',
@@ -389,8 +396,12 @@ app.on('window-all-closed', () => {})
     coach.setBeacon(id)
     renderMenu()
   })
+  const siteLine = createSiteLine(() => {
+    coach.setSiteLine(siteLine.text())
+    renderMenu()
+  })
   const library = createLibrary()
-  const coach = createCoach(() => state, library, beacon.get)
+  const coach = createCoach(() => state, library, beacon.get, siteLine.text)
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {
     renderMenu()
