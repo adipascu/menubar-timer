@@ -143,6 +143,16 @@
         cursor: text;
       }
 
+      #site-line {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        -webkit-user-select: text;
+      }
+
       ::selection {
         background: color-mix(in srgb, var(--accent) 35%, transparent);
       }
@@ -191,6 +201,7 @@
       </svg>
       <div>
         <h1 id="title"></h1>
+        <p id="site-line" aria-hidden="true"></p>
         <p id="body"></p>
         <footer>
           <a id="source" href="#"></a>
@@ -275,6 +286,12 @@
       card.addEventListener('mouseenter', () => setCalm(true))
       card.addEventListener('mouseleave', () => setCalm(false))
 
+      const siteLine = document.getElementById('site-line')
+      const showSiteLine = (text) => {
+        siteLine.textContent = text ?? ''
+        siteLine.hidden = !text
+      }
+
       const selectedText = () => window.getSelection().toString()
 
       document.addEventListener('mouseup', () => {
@@ -293,6 +310,7 @@
 
       window.coach.onTip((tip) => {
         title.textContent = tip.title
+        showSiteLine(tip.siteLine)
         body.textContent = tip.body
         source.textContent = tip.source ?? ''
         source.href = tip.url ?? '#'
@@ -313,6 +331,8 @@
         runner = BEACONS.start(beacon, preset, loudMusic)
         resume()
       })
+
+      window.coach.onSiteLine(showSiteLine)
 
       source.addEventListener('click', (event) => {
         event.preventDefault()
