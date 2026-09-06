@@ -49,7 +49,8 @@ app.on('window-all-closed', () => {})
   let state = 'idle'
   let status = IDLE_STATUS
   let sessionMinutes = null
-  let reading = null
+  let draw = null
+  let drawOverLimit = false
   let loadFlash = null
   let flameShowing = false
   let menuOpen = false
@@ -79,21 +80,35 @@ app.on('window-all-closed', () => {})
     focusLog.begin(segmentDetails())
   }
 
-  const renderSlot = () => tray.setImage(flameShowing ? readout.flame : reading)
+  const shownDraw = () => (chargerPlaces.isMarked() ? null : draw)
 
-  const setPowerDraw = (watts, overLimit) => {
-    reading = readout.reading(watts)
-    if (overLimit) {
+  const renderSlot = () => {
+    const watts = shownDraw()
+    tray.setImage(watts !== null && flameShowing ? readout.flame : readout.reading(watts))
+  }
+
+  const updateLoadFlash = () => {
+    if (drawOverLimit && shownDraw() !== null) {
       loadFlash ??= setInterval(() => {
         flameShowing = !flameShowing
         renderSlot()
       }, FLASH_MS)
-    } else {
-      clearInterval(loadFlash)
-      loadFlash = null
-      flameShowing = false
+      return
     }
+    clearInterval(loadFlash)
+    loadFlash = null
+    flameShowing = false
+  }
+
+  const renderPowerDraw = () => {
+    updateLoadFlash()
     renderSlot()
+  }
+
+  const setPowerDraw = (watts, overLimit) => {
+    draw = watts
+    drawOverLimit = overLimit
+    renderPowerDraw()
   }
 
   const setStatus = (next) => {
@@ -354,7 +369,10 @@ app.on('window-all-closed', () => {})
   const library = createLibrary()
   const coach = createCoach(() => state, library)
   const reader = createReader(library, () => coach.edition())
-  const chargerPlaces = createChargerPlaces(() => renderMenu())
+  const chargerPlaces = createChargerPlaces(() => {
+    renderMenu()
+    renderPowerDraw()
+  })
   const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
 
   const readout = createReadout()
