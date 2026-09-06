@@ -1,5 +1,6 @@
 import { app, Menu, shell, Tray } from 'electron'
 import ansiStyles from 'ansi-styles'
+import { batteryMenuItem } from './battery.js'
 import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
@@ -57,6 +58,7 @@ app.on('window-all-closed', () => {})
   let menuStale = false
   let menuDay = null
   let goalCardShownAt = null
+  let batteryItem = null
 
   const renderTitle = () => {
     const label = state === 'idle' ? '' : task.get()
@@ -103,12 +105,24 @@ app.on('window-all-closed', () => {})
   const renderPowerDraw = () => {
     updateLoadFlash()
     renderSlot()
+
+    const battery = batteryMenuItem(sample)
+    if (battery?.label !== batteryItem?.label) {
+      batteryItem = battery
+      renderMenu()
+    }
   }
 
-  const setPowerDraw = (watts, overLimit) => {
+  const setPowerSample = (watts, overLimit, sample) => {
     draw = watts
     drawOverLimit = overLimit
     renderPowerDraw()
+
+    const battery = batteryMenuItem(sample)
+    if (battery?.label !== batteryItem?.label) {
+      batteryItem = battery
+      renderMenu()
+    }
   }
 
   const setStatus = (next) => {
@@ -290,6 +304,7 @@ app.on('window-all-closed', () => {})
       { label: 'Edit categories…', click: () => categories.edit() },
       { label: 'Focus time', submenu: focusMenu(now) },
       { type: 'separator' },
+      ...(batteryItem ? [batteryItem] : []),
       {
         label: chargerPlaces.networkLabel()
           ? `Charger available at ${chargerPlaces.networkLabel()}`
@@ -373,7 +388,7 @@ app.on('window-all-closed', () => {})
     renderMenu()
     renderPowerDraw()
   })
-  const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerDraw, chargerPlaces.shouldAlert)
+  const powerWatch = createPowerWatch((card) => coach.alert(card), setPowerSample, chargerPlaces.shouldAlert)
 
   const readout = createReadout()
   const tray = new Tray(readout.reading(null))

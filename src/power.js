@@ -35,6 +35,7 @@ const readPower = () =>
       }
       resolve({
         onBattery: flag(stdout, 'ExternalConnected') === false,
+        charging: flag(stdout, 'IsCharging') === true,
         percent: number(stdout, 'CurrentCapacity'),
         minutesRemaining: number(stdout, 'TimeRemaining'),
         watts: Math.abs(number(stdout, 'InstantAmperage') * number(stdout, 'Voltage')) / 1e6,
@@ -78,19 +79,19 @@ const lowBatteryCard = (reading) => ({
     ].join('\n'),
 })
 
-export const createPowerWatch = (onAlert, onDraw = () => {}, chargerNearby = () => true) => {
+export const createPowerWatch = (onAlert, onSample = () => {}, chargerNearby = () => true) => {
   const watts = []
   let lastAlertAt = 0
   let lastSuppressedLogAt = 0
   let timer = null
   let wasOverLimit = false
 
-  const report = (sustained, overLimit) => {
+  const report = (sustained, overLimit, reading) => {
     if (overLimit !== wasOverLimit) {
       wasOverLimit = overLimit
       log(`draw over ${HEAVY_LOAD_WATTS} W on battery ${overLimit ? 'started' : 'ended'}`)
     }
-    onDraw(sustained, overLimit)
+    onSample(sustained, overLimit, reading)
   }
 
   const check = async () => {
@@ -102,7 +103,7 @@ export const createPowerWatch = (onAlert, onDraw = () => {}, chargerNearby = () 
     if (!reading) return
     if (!reading.onBattery) {
       watts.length = 0
-      report(null, false)
+      report(null, false, reading)
       return
     }
 
@@ -112,7 +113,7 @@ export const createPowerWatch = (onAlert, onDraw = () => {}, chargerNearby = () 
     const sustained = Math.round(median(watts) * 10) / 10
     const overLimit = sustained > HEAVY_LOAD_WATTS
     const overheating = overLimit && watts.length === WINDOW_SAMPLES
-    report(sustained, overLimit)
+    report(sustained, overLimit, reading)
 
     if (Date.now() - lastAlertAt < ALERT_GAP_MS) return
     const card = overheating
