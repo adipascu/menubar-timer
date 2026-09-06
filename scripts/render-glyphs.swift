@@ -4,10 +4,10 @@ let font = NSFont.monospacedDigitSystemFont(ofSize: 0, weight: .regular)
 let glyphs: [(name: String, text: String)] = [
   ("0", "0"), ("1", "1"), ("2", "2"), ("3", "3"), ("4", "4"),
   ("5", "5"), ("6", "6"), ("7", "7"), ("8", "8"), ("9", "9"),
-  ("dot", "."), ("space", " "), ("W", "W"),
+  ("dot", "."),
 ]
 let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: NSColor.black]
-let cellHeight = ceil(NSAttributedString(string: "0123456789.W", attributes: attributes).size().height)
+let cellHeight = ceil(NSAttributedString(string: "0123456789.", attributes: attributes).size().height)
 let outputDir = URL(fileURLWithPath: #filePath)
   .deletingLastPathComponent()
   .deletingLastPathComponent()
