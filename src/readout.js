@@ -4,9 +4,8 @@ import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const SCALES = [1, 2]
-const WIDEST_NUMBER = '00.0'
-const WIDEST_READING = `${WIDEST_NUMBER} W`
-const GLYPH_FILES = { '.': 'dot', ' ': 'space' }
+const WIDEST_READING = '00.0'
+const GLYPH_FILES = { '.': 'dot' }
 
 const loadImage = (...path) => nativeImage.createFromPath(join(here, ...path))
 
@@ -39,12 +38,12 @@ const composeImage = (slot, placements) => {
 
 const readingText = (watts) => {
   const fixed = watts.toFixed(1)
-  return `${fixed.length > WIDEST_NUMBER.length ? watts.toFixed(0) : fixed} W`
+  return fixed.length > WIDEST_READING.length ? watts.toFixed(0) : fixed
 }
 
 export const createReadout = () => {
   const glyphs = Object.fromEntries(
-    [...'0123456789. W'].map((char) => [char, loadImage('glyphs', `${GLYPH_FILES[char] ?? char}.png`)]),
+    [...'0123456789.'].map((char) => [char, loadImage('glyphs', `${GLYPH_FILES[char] ?? char}.png`)]),
   )
   const flame = loadImage('flame.png')
   const flameSize = flame.getSize()
