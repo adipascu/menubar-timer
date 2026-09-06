@@ -38,7 +38,7 @@ const crossings = (polygon, atY) => {
   const found = []
   polygon.forEach(([x, y], index) => {
     const [nextX, nextY] = polygon[(index + 1) % polygon.length]
-    if ((y <= atY) === (nextY <= atY)) return
+    if (y <= atY === nextY <= atY) return
     found.push(x + ((atY - y) * (nextX - x)) / (nextY - y))
   })
   return found.sort((a, b) => a - b)

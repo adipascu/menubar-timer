@@ -105,12 +105,6 @@ app.on('window-all-closed', () => {})
   const renderPowerDraw = () => {
     updateLoadFlash()
     renderSlot()
-
-    const battery = batteryMenuItem(sample)
-    if (battery?.label !== batteryItem?.label) {
-      batteryItem = battery
-      renderMenu()
-    }
   }
 
   const setPowerSample = (watts, overLimit, sample) => {
