@@ -19,6 +19,7 @@ export const createTaskField = (onChange) => {
     if (window && !window.isDestroyed()) window.close()
     window = null
     onLabelled = null
+    onChange()
   }
 
   const discard = () => {
@@ -29,7 +30,6 @@ export const createTaskField = (onChange) => {
   const store = (next) => {
     label = next.trim()
     writeFileSync(file, JSON.stringify({ label }))
-    onChange()
     const continuation = label ? onLabelled : null
     discard()
     if (continuation) continuation()
@@ -43,6 +43,8 @@ export const createTaskField = (onChange) => {
 
   return {
     get: () => label,
+    set: (next) => store(next),
+    pending: () => onLabelled !== null,
     cancelPending: () => {
       if (onLabelled) close()
     },

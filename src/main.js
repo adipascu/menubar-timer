@@ -2,6 +2,7 @@ import { app, Menu, shell, Tray } from 'electron'
 import ansiStyles from 'ansi-styles'
 import { BEACON_PRESETS, createBeaconPreset } from './beacon.js'
 import { batteryMenuItem } from './battery.js'
+import { createBridge } from './bridge.js'
 import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
@@ -52,6 +53,7 @@ app.on('window-all-closed', () => {})
   let state = 'idle'
   let status = IDLE_STATUS
   let sessionMinutes = null
+  let endTime = null
   let draw = null
   let drawOverLimit = false
   let loadFlash = null
@@ -144,7 +146,20 @@ app.on('window-all-closed', () => {})
     renderTitle()
     coach.refresh()
     renderMenu()
+    bridge.publish()
   }
+
+  const secondsLeft = () => Math.max(0, Math.round((endTime - Date.now()) / 1000))
+
+  const snapshot = () => ({
+    state,
+    label: task.get(),
+    labelPending: task.pending(),
+    minutes: state === 'idle' && !task.pending() ? null : sessionMinutes,
+    remaining: state === 'running' ? secondsLeft() : null,
+    durations: DURATIONS.map(({ minutes }) => minutes),
+    hints: DURATIONS.map(({ hint }) => hint),
+  })
 
   const resetTimer = (minutes) => {
     clearInterval(interval)
@@ -152,11 +167,10 @@ app.on('window-all-closed', () => {})
     focusLog.end('restarted')
     focusLog.begin(segmentDetails())
 
-    const endTime = Date.now() + minutes * 60 * 1000
+    endTime = Date.now() + minutes * 60 * 1000
 
     const updateTimer = () => {
-      const currentTime = Date.now()
-      const timeLeft = Math.max(0, Math.round((endTime - currentTime) / 1000))
+      const timeLeft = secondsLeft()
 
       if (timeLeft <= 0) {
         clearInterval(interval)
@@ -181,8 +195,10 @@ app.on('window-all-closed', () => {})
       resetTimer(minutes)
       return
     }
+    sessionMinutes = minutes
     task.prompt(() => resetTimer(minutes))
     renderMenu()
+    bridge.publish()
   }
 
   const stopTimer = () => {
@@ -317,6 +333,10 @@ app.on('window-all-closed', () => {})
         label: state === 'running' ? 'Tips: paused until the timer ends' : 'Tips: on',
         enabled: false,
       },
+      {
+        label: bridge.phones() > 0 ? 'Pebble: connected' : `Pebble: pairing code ${bridge.code}`,
+        enabled: false,
+      },
       { label: 'Quiz me…', click: () => coach.quiz() },
       { label: 'Read the book…', click: () => reader.show() },
       {
@@ -389,6 +409,7 @@ app.on('window-all-closed', () => {})
     resegment()
     renderTitle()
     renderMenu()
+    bridge.publish()
   }
   const task = createTaskField(refresh)
   const categories = createCategories(refresh)
@@ -400,6 +421,14 @@ app.on('window-all-closed', () => {})
     coach.setSiteLine(siteLine.text())
     renderMenu()
   })
+  const bridge = createBridge({
+    snapshot,
+    start: startSession,
+    stop: stopTimer,
+    setLabel: (label) => task.set(label),
+    onPhonesChanged: () => renderMenu(),
+  })
+  app.on('will-quit', () => bridge.stop())
   const library = createLibrary()
   const coach = createCoach(() => state, library, beacon.get, siteLine.text)
   const reader = createReader(library, () => coach.edition())
@@ -416,6 +445,7 @@ app.on('window-all-closed', () => {})
   coach.start()
   chargerPlaces.start()
   powerWatch.start()
+  await bridge.start()
   setInterval(refreshStaleMenu, MENU_REFRESH_MS)
   log(`ready, start at login ${loginItem.isEnabled()}`)
   await loginItem.offerOnFirstRun()

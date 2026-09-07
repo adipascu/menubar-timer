@@ -2,5 +2,5 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["src/*-preload.cjs", "src/beacons.js", "src/**/*.test.js", "scripts/*.js", "scripts/*.cjs"],
   "project": ["src/**/*.{js,cjs}", "scripts/**/*.{js,cjs}"],
-  "ignoreBinaries": ["ioreg", "osascript"]
+  "ignoreBinaries": ["ioreg", "osascript", "dns-sd"]
 }
