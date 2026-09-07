@@ -1,11 +1,16 @@
-import { app, Tray, Menu } from 'electron'
+import { app, Menu, shell, Tray } from 'electron'
 import ansiStyles from 'ansi-styles';
+import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
+import { createFocusLog } from './focus-log.js'
+import { formatDuration, formatShare, periods, splitByCategory } from './focus-stats.js'
 import { createLibrary } from './library.js'
+import { swatchOf } from './palette.js'
 import { createPowerWatch } from './power.js'
 import { createReader } from './reader.js'
 import { createReadout } from './readout.js'
+import { swatchImage } from './swatch.js'
 import { createTaskField } from './task.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
@@ -24,6 +29,7 @@ const DURATIONS = [
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
 const FLASH_MS = 500
+const MENU_REFRESH_MS = 60 * 1000
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
@@ -42,10 +48,30 @@ app.on('window-all-closed', () => {});
   let reading = null
   let loadFlash = null
   let flameShowing = false
+  let menuOpen = false
+  let menuStale = false
+  let menuDay = null
 
   const renderTitle = () => {
     const label = task.get()
-    tray.setTitle(label ? `${label} · ${status}` : status, { fontType: 'monospacedDigit' })
+    const shown = state === 'running' ? swatchOf(categories.active().color).paint(status) : status
+    tray.setTitle(label ? `${label} · ${shown}` : shown, { fontType: 'monospacedDigit' })
+  }
+
+  const segmentDetails = () => ({ category: categories.active(), task: task.get(), plannedMinutes: sessionMinutes })
+
+  const segmentChange = (current) => {
+    if (current.category.id !== categories.active().id) return 'switched'
+    if (current.task !== task.get()) return 'relabelled'
+    return null
+  }
+
+  const resegment = () => {
+    const current = focusLog.current()
+    const change = current && segmentChange(current)
+    if (!change) return
+    focusLog.end(change)
+    focusLog.begin(segmentDetails())
   }
 
   const renderSlot = () => tray.setImage(flameShowing ? readout.flame : reading)
@@ -85,6 +111,7 @@ app.on('window-all-closed', () => {});
   const setState = (next) => {
     log(`state ${state} to ${next}, tips ${next === 'running' ? 'paused' : 'on'}`)
     state = next
+    renderTitle()
     coach.refresh()
     renderMenu()
   }
@@ -92,6 +119,8 @@ app.on('window-all-closed', () => {});
   const resetTimer = (minutes) => {
     clearInterval(interval);
     sessionMinutes = minutes
+    focusLog.end('restarted')
+    focusLog.begin(segmentDetails())
 
     const endTime = Date.now() + minutes * 60 * 1000;
 
@@ -101,9 +130,10 @@ app.on('window-all-closed', () => {});
 
       if (timeLeft <= 0) {
         clearInterval(interval);
-        setStatus("Time's up!");
-        interval = flashMenuBar();
+        focusLog.end('completed')
+        status = "Time's up!"
         setState('expired');
+        interval = flashMenuBar();
       } else {
         setStatus(formatTime(timeLeft));
       }
@@ -128,13 +158,48 @@ app.on('window-all-closed', () => {});
     if (state === 'idle') return
     clearInterval(interval)
     interval = null
-    setStatus(IDLE_STATUS)
+    focusLog.end('stopped')
+    status = IDLE_STATUS
     setState('idle')
   }
 
+  const refreshStaleMenu = () => {
+    if (state === 'running' || menuDay !== periods(new Date())[0].from) renderMenu()
+  }
+
+  const focusMenu = (now) => {
+    const segments = focusLog.segments(now)
+    return [
+      ...periods(now).flatMap(({ label, from }, index) => {
+        const { total, rows } = splitByCategory(segments, from, now.getTime(), categories.all())
+        return [
+          ...(index > 0 ? [{ type: 'separator' }] : []),
+          { label: total >= 60 ? `${label} · ${formatDuration(total)}` : `${label} · nothing yet`, enabled: false },
+          ...rows.map((row) => ({
+            label: `${row.name} · ${formatDuration(row.seconds)} · ${formatShare(row.share)}`,
+            icon: swatchImage(swatchOf(row.color).hex),
+            enabled: false,
+          })),
+        ]
+      }),
+      { type: 'separator' },
+      {
+        label: 'Reveal the focus log in Finder',
+        enabled: focusLog.exists(),
+        click: () => shell.showItemInFolder(focusLog.file),
+      },
+    ]
+  }
+
   const renderMenu = () => {
+    if (menuOpen) {
+      menuStale = true
+      return
+    }
+    const now = new Date()
+    menuDay = periods(now)[0].from
     const label = task.get()
-    tray.setContextMenu(Menu.buildFromTemplate([
+    const menu = Menu.buildFromTemplate([
       { label: label ? `Working on: ${label}` : 'Set what you are working on…', click: () => task.prompt() },
       { type: 'separator' },
       { label: FREEBASING, type: 'radio', checked: state === 'idle', click: stopTimer },
@@ -144,6 +209,16 @@ app.on('window-all-closed', () => {});
         checked: state !== 'idle' && minutes === sessionMinutes,
         click: () => startSession(minutes),
       })),
+      { type: 'separator' },
+      ...categories.all().map((category) => ({
+        label: category.name,
+        type: 'radio',
+        checked: category.id === categories.active().id,
+        icon: swatchImage(swatchOf(category.color).hex),
+        click: () => categories.activate(category.id),
+      })),
+      { label: 'Edit categories…', click: () => categories.edit() },
+      { label: 'Focus time', submenu: focusMenu(now) },
       { type: 'separator' },
       {
         label: chargerPlaces.networkLabel()
@@ -174,7 +249,17 @@ app.on('window-all-closed', () => {});
         },
       },
       { role: 'quit' },
-    ]))
+    ])
+    menu.on('menu-will-show', () => {
+      menuOpen = true
+    })
+    menu.on('menu-will-close', () => {
+      menuOpen = false
+      if (!menuStale) return
+      menuStale = false
+      setTimeout(renderMenu, 0)
+    })
+    tray.setContextMenu(menu)
   }
 
   await app.whenReady()
@@ -188,10 +273,17 @@ app.on('window-all-closed', () => {});
   app.dock?.hide()
   Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'editMenu' }, { label: 'Window', submenu: [{ role: 'close' }] }]))
 
-  const task = createTaskField(() => {
+  const focusLog = createFocusLog()
+  focusLog.recover()
+  app.on('before-quit', () => focusLog.end('quit'))
+
+  const refresh = () => {
+    resegment()
     renderTitle()
     renderMenu()
-  })
+  }
+  const task = createTaskField(refresh)
+  const categories = createCategories(refresh)
   const library = createLibrary()
   const coach = createCoach(() => state, library)
   const reader = createReader(library, () => coach.edition())
@@ -205,6 +297,7 @@ app.on('window-all-closed', () => {});
   coach.start()
   chargerPlaces.start()
   powerWatch.start()
+  setInterval(refreshStaleMenu, MENU_REFRESH_MS)
   log(`ready, start at login ${loginItem.isEnabled()}`)
   await loginItem.offerOnFirstRun()
   renderMenu()
