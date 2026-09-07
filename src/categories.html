@@ -76,9 +76,28 @@
 
       li {
         display: grid;
-        grid-template-columns: auto 1fr auto auto;
+        grid-template-columns: auto 1fr auto auto auto;
         gap: 10px;
         align-items: center;
+      }
+
+      .share {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        color: var(--muted);
+      }
+
+      .percent {
+        width: 52px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .percent::-webkit-outer-spin-button,
+      .percent::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
       }
 
       .preview {
@@ -199,10 +218,14 @@
 
       #add:hover,
       #cancel:hover,
-      #save:hover {
+      #save:hover:not(:disabled) {
         background: var(--accent);
         border-color: var(--accent);
         color: var(--card);
+      }
+
+      #save:disabled {
+        opacity: 0.4;
       }
     </style>
   </head>
@@ -210,7 +233,8 @@
     <div id="card">
       <header>
         <h1>Categories</h1>
-        <p>Timers are filed under the category picked in the menu, and the countdown wears its color. Switching mid-timer starts a new segment.</p>
+        <p>Timers are filed under the category picked in the menu, and the countdown wears its color. The share is how much of your timed work you want each one to take. A category at 0% is kept for its history but stays out of the menu and the goals.</p>
+        <p id="period"></p>
       </header>
       <ul id="rows"></ul>
       <button id="add">Add category</button>
@@ -225,6 +249,10 @@
       <li>
         <span class="preview" aria-hidden="true" title="How the countdown looks in the menu bar">12:34</span>
         <input class="name" type="text" maxlength="24" placeholder="Name" aria-label="Category name" />
+        <span class="share">
+          <input class="percent" type="number" min="0" max="100" step="1" aria-label="Goal share in percent" />
+          <span class="sign" aria-hidden="true">%</span>
+        </span>
         <span class="swatches" role="radiogroup" aria-label="Color"></span>
         <button class="remove" aria-label="Remove this category" title="Remove this category">×</button>
       </li>
@@ -233,10 +261,12 @@
     <script>
       const rows = document.getElementById('rows')
       const hint = document.getElementById('hint')
+      const period = document.getElementById('period')
       const card = document.getElementById('card')
       const template = document.getElementById('row')
       const idleHint = hint.textContent
       let palette = []
+      let refused = null
 
       const reportHeight = () => window.categories.height(card.getBoundingClientRect().bottom + 10)
       const heightWatch = new ResizeObserver(reportHeight)
@@ -262,10 +292,11 @@
         for (const button of rows.querySelectorAll('.remove')) button.disabled = single
       }
 
-      const addRow = ({ id, name, color }) => {
+      const addRow = ({ id, name, color, share }) => {
         const row = template.content.firstElementChild.cloneNode(true)
         row.dataset.id = id ?? ''
         row.querySelector('.name').value = name
+        row.querySelector('.percent').value = share
         const swatches = row.querySelector('.swatches')
         for (const entry of palette) {
           const button = document.createElement('button')
@@ -291,6 +322,7 @@
         row.querySelector('.remove').addEventListener('click', () => {
           row.remove()
           refreshRemovals()
+          balance()
         })
         rows.append(row)
         paint(row, color)
@@ -308,7 +340,23 @@
           id: row.dataset.id,
           name: row.querySelector('.name').value.trim(),
           color: row.dataset.color,
+          share: Number(row.querySelector('.percent').value),
         }))
+
+      const shareOf = (row) => Math.max(0, Math.round(Number(row.querySelector('.percent').value)) || 0)
+
+      const balance = () => {
+        const claimed = [...rows.children].reduce((sum, row) => sum + shareOf(row), 0)
+        const over = claimed > 100
+        const short = 100 - claimed
+        document.getElementById('save').disabled = over
+        if (refused) return !over
+        hint.classList.toggle('warning', over)
+        if (over) hint.textContent = `The shares add up to ${claimed}%, which is ${claimed - 100} over.`
+        else if (short > 0) hint.textContent = `${short}% still unassigned. Anything left over is spread across the shares you set.`
+        else hint.textContent = idleHint
+        return !over
+      }
 
       const duplicated = () => {
         const seen = new Set()
@@ -321,14 +369,18 @@
       }
 
       const refuse = (row, message) => {
+        const field = row.querySelector('.name')
+        refused = field
         hint.textContent = message
         hint.classList.add('warning')
-        const field = row.querySelector('.name')
+        document.getElementById('save').disabled = false
         field.classList.add('missing')
         field.focus()
       }
 
       const save = () => {
+        refused = null
+        if (!balance()) return
         const missing = [...rows.children].find((row) => !row.querySelector('.name').value.trim())
         for (const input of rows.querySelectorAll('.name')) input.classList.toggle('missing', !input.value.trim())
         if (missing) {
@@ -345,8 +397,11 @@
 
       window.categories.onLoad((payload) => {
         palette = payload.palette
+        const since = new Date(payload.periodStartedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })
+        period.textContent = `Measuring against these shares since ${since}. Changing any share starts a new period from today.`
         rows.replaceChildren()
         for (const category of payload.categories) addRow(category)
+        balance()
         const active = rows.querySelector(`[data-id="${payload.active}"] .name`) ?? rows.querySelector('.name')
         active.focus()
         reportHeight()
@@ -354,15 +409,17 @@
       })
 
       document.getElementById('add').addEventListener('click', () => {
-        const row = addRow({ id: '', name: '', color: unusedColor() })
+        const claimed = [...rows.children].reduce((sum, row) => sum + shareOf(row), 0)
+        const row = addRow({ id: '', name: '', color: unusedColor(), share: Math.max(0, 100 - claimed) })
+        balance()
         row.querySelector('.name').focus()
       })
       document.getElementById('save').addEventListener('click', save)
       document.getElementById('cancel').addEventListener('click', () => window.categories.cancel())
       rows.addEventListener('input', (event) => {
         event.target.classList.remove('missing')
-        hint.textContent = idleHint
-        hint.classList.remove('warning')
+        if (refused === event.target) refused = null
+        balance()
       })
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && event.target.matches('input')) save()
