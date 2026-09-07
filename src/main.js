@@ -5,6 +5,8 @@ import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createFocusLog } from './focus-log.js'
 import { formatDuration, formatShare, periods, splitByCategory } from './focus-stats.js'
+import { goalCard } from './goal-card.js'
+import { nudge, standings, tracked } from './goals.js'
 import { createLibrary } from './library.js'
 import { swatchOf } from './palette.js'
 import { createPowerWatch } from './power.js'
@@ -51,6 +53,7 @@ app.on('window-all-closed', () => {});
   let menuOpen = false
   let menuStale = false
   let menuDay = null
+  let goalCardShownAt = null
 
   const renderTitle = () => {
     const label = task.get()
@@ -134,6 +137,7 @@ app.on('window-all-closed', () => {});
         status = "Time's up!"
         setState('expired');
         interval = flashMenuBar();
+        offerSwitch()
       } else {
         setStatus(formatTime(timeLeft));
       }
@@ -142,6 +146,7 @@ app.on('window-all-closed', () => {});
     setState('running');
     updateTimer();
     interval = setInterval(updateTimer, 1000);
+    offerSwitch()
   };
 
   const startSession = (minutes) => {
@@ -167,9 +172,49 @@ app.on('window-all-closed', () => {});
     if (state === 'running' || menuDay !== periods(new Date())[0].from) renderMenu()
   }
 
+  const periodStandings = (now) => {
+    const { startedAt } = categories.period()
+    const rows = standings(categories.all(), focusLog.segments(now), Date.parse(startedAt), now.getTime())
+    return { startedAt, rows, total: rows.reduce((sum, row) => sum + row.seconds, 0) }
+  }
+
+  const offerSwitch = () => {
+    const now = new Date()
+    const { startedAt, rows, total } = periodStandings(now)
+    const suggestion = nudge({ rows, total, activeId: categories.active().id, shownAt: goalCardShownAt, now: now.getTime() })
+    if (!suggestion) return
+    goalCardShownAt = now.getTime()
+    log(`goal nudge: ${suggestion.behind.name} is behind while working on ${suggestion.active.name}`)
+    coach.alert(goalCard({ ...suggestion, rows, total, startedAt }))
+  }
+
+  const rankedCategories = (now) => {
+    const ranking = periodStandings(now).rows.map(({ id }) => id)
+    const shown = tracked(categories.all())
+    const active = categories.active()
+    const ordered = [...shown].sort((first, second) => ranking.indexOf(first.id) - ranking.indexOf(second.id))
+    return shown.some(({ id }) => id === active.id) ? ordered : [...ordered, active]
+  }
+
+  const goalMenu = (now) => {
+    const { startedAt, rows, total } = periodStandings(now)
+    if (rows.length === 0) return [{ label: 'No goals set', enabled: false }]
+    const since = new Date(startedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+    return [
+      { label: `Goals since ${since} · ${formatDuration(total)}`, enabled: false },
+      ...rows.map((row) => ({
+        label: `${row.name} · ${formatShare(row.actual)} of ${formatShare(row.goal)}`,
+        icon: swatchImage(swatchOf(row.color).hex),
+        enabled: false,
+      })),
+    ]
+  }
+
   const focusMenu = (now) => {
     const segments = focusLog.segments(now)
     return [
+      ...goalMenu(now),
+      { type: 'separator' },
       ...periods(now).flatMap(({ label, from }, index) => {
         const { total, rows } = splitByCategory(segments, from, now.getTime(), categories.all())
         return [
@@ -210,7 +255,7 @@ app.on('window-all-closed', () => {});
         click: () => startSession(minutes),
       })),
       { type: 'separator' },
-      ...categories.all().map((category) => ({
+      ...rankedCategories(now).map((category) => ({
         label: category.name,
         type: 'radio',
         checked: category.id === categories.active().id,
