@@ -5,6 +5,7 @@
   "artifactName": "${productName}.${ext}",
   "files": [
     "src/**/*",
+    "!src/**/*.test.js",
     "package.json"
   ],
   "mac": {
