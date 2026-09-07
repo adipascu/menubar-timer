@@ -1,0 +1,373 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Categories</title>
+    <style>
+      :root {
+        --card: #fffdf3;
+        --border: #d8cfae;
+        --ink: #1c1a14;
+        --muted: #6f6852;
+        --accent: #b8860b;
+        --warning: #cd0000;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --card: #23211c;
+          --border: #4a4536;
+          --ink: #f2eee0;
+          --muted: #a9a189;
+          --accent: #e3b341;
+          --warning: #ff6b6b;
+          --shadow: rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+        font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+        color: var(--ink);
+      }
+
+      #card {
+        margin: 10px;
+        padding: 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 12px 30px var(--shadow);
+      }
+
+      header {
+        -webkit-app-region: drag;
+        cursor: default;
+      }
+
+      h1 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 650;
+      }
+
+      p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      li {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .preview {
+        min-width: 54px;
+        padding: 3px 0;
+        border-radius: 4px;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+
+      input {
+        width: 100%;
+        font: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        background: transparent;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      input.missing {
+        border-color: var(--warning);
+      }
+
+      .swatches {
+        display: flex;
+        gap: 6px;
+      }
+
+      .swatch {
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: 2px solid transparent;
+        border-radius: 50%;
+        background: var(--swatch);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+      }
+
+      .swatch:hover {
+        border-color: var(--muted);
+      }
+
+      .swatch.selected {
+        border-color: var(--ink);
+      }
+
+      .swatch:focus-visible,
+      .remove:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .remove {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .remove:hover:not(:disabled) {
+        color: var(--card);
+        background: var(--warning);
+        border-color: var(--warning);
+      }
+
+      .remove:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      #add {
+        margin-top: 10px;
+      }
+
+      footer {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #hint {
+        flex: 1;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      #hint.warning {
+        color: var(--warning);
+      }
+
+      button {
+        font: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+        padding: 4px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: transparent;
+      }
+
+      #add:hover,
+      #cancel:hover,
+      #save:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--card);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="card">
+      <header>
+        <h1>Categories</h1>
+        <p>Timers are filed under the category picked in the menu, and the countdown wears its color. Switching mid-timer starts a new segment.</p>
+      </header>
+      <ul id="rows"></ul>
+      <button id="add">Add category</button>
+      <footer>
+        <span id="hint">Enter saves, Escape cancels.</span>
+        <button id="cancel">Cancel</button>
+        <button id="save">Save</button>
+      </footer>
+    </div>
+
+    <template id="row">
+      <li>
+        <span class="preview" aria-hidden="true" title="How the countdown looks in the menu bar">12:34</span>
+        <input class="name" type="text" maxlength="24" placeholder="Name" aria-label="Category name" />
+        <span class="swatches" role="radiogroup" aria-label="Color"></span>
+        <button class="remove" aria-label="Remove this category" title="Remove this category">×</button>
+      </li>
+    </template>
+
+    <script>
+      const rows = document.getElementById('rows')
+      const hint = document.getElementById('hint')
+      const card = document.getElementById('card')
+      const template = document.getElementById('row')
+      const idleHint = hint.textContent
+      let palette = []
+
+      const reportHeight = () => window.categories.height(card.getBoundingClientRect().bottom + 10)
+      const heightWatch = new ResizeObserver(reportHeight)
+
+      const swatchOf = (key) => palette.find((entry) => entry.key === key) ?? palette[0]
+
+      const paint = (row, key) => {
+        row.dataset.color = key
+        const swatch = swatchOf(key)
+        const preview = row.querySelector('.preview')
+        preview.style.background = swatch.hex
+        preview.style.color = swatch.ink
+        for (const button of row.querySelectorAll('.swatch')) {
+          const selected = button.dataset.key === key
+          button.classList.toggle('selected', selected)
+          button.setAttribute('aria-checked', String(selected))
+          button.tabIndex = selected ? 0 : -1
+        }
+      }
+
+      const refreshRemovals = () => {
+        const single = rows.children.length === 1
+        for (const button of rows.querySelectorAll('.remove')) button.disabled = single
+      }
+
+      const addRow = ({ id, name, color }) => {
+        const row = template.content.firstElementChild.cloneNode(true)
+        row.dataset.id = id ?? ''
+        row.querySelector('.name').value = name
+        const swatches = row.querySelector('.swatches')
+        for (const entry of palette) {
+          const button = document.createElement('button')
+          button.className = 'swatch'
+          button.type = 'button'
+          button.setAttribute('role', 'radio')
+          button.dataset.key = entry.key
+          button.title = entry.label
+          button.setAttribute('aria-label', entry.label)
+          button.style.setProperty('--swatch', entry.hex)
+          button.addEventListener('click', () => paint(row, entry.key))
+          swatches.append(button)
+        }
+        swatches.addEventListener('keydown', (event) => {
+          const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key]
+          if (!step) return
+          event.preventDefault()
+          const keys = palette.map((entry) => entry.key)
+          const next = keys[(keys.indexOf(row.dataset.color) + step + keys.length) % keys.length]
+          paint(row, next)
+          swatches.querySelector(`[data-key="${next}"]`).focus()
+        })
+        row.querySelector('.remove').addEventListener('click', () => {
+          row.remove()
+          refreshRemovals()
+        })
+        rows.append(row)
+        paint(row, color)
+        refreshRemovals()
+        return row
+      }
+
+      const unusedColor = () => {
+        const used = new Set([...rows.children].map((row) => row.dataset.color))
+        return (palette.find((entry) => !used.has(entry.key)) ?? palette[rows.children.length % palette.length]).key
+      }
+
+      const collect = () =>
+        [...rows.children].map((row) => ({
+          id: row.dataset.id,
+          name: row.querySelector('.name').value.trim(),
+          color: row.dataset.color,
+        }))
+
+      const duplicated = () => {
+        const seen = new Set()
+        return [...rows.children].find((row) => {
+          const name = row.querySelector('.name').value.trim().toLowerCase()
+          if (seen.has(name)) return true
+          seen.add(name)
+          return false
+        })
+      }
+
+      const refuse = (row, message) => {
+        hint.textContent = message
+        hint.classList.add('warning')
+        const field = row.querySelector('.name')
+        field.classList.add('missing')
+        field.focus()
+      }
+
+      const save = () => {
+        const missing = [...rows.children].find((row) => !row.querySelector('.name').value.trim())
+        for (const input of rows.querySelectorAll('.name')) input.classList.toggle('missing', !input.value.trim())
+        if (missing) {
+          refuse(missing, 'Every category needs a name.')
+          return
+        }
+        const repeated = duplicated()
+        if (repeated) {
+          refuse(repeated, 'Two categories cannot share a name.')
+          return
+        }
+        window.categories.save(collect())
+      }
+
+      window.categories.onLoad((payload) => {
+        palette = payload.palette
+        rows.replaceChildren()
+        for (const category of payload.categories) addRow(category)
+        const active = rows.querySelector(`[data-id="${payload.active}"] .name`) ?? rows.querySelector('.name')
+        active.focus()
+        reportHeight()
+        heightWatch.observe(card)
+      })
+
+      document.getElementById('add').addEventListener('click', () => {
+        const row = addRow({ id: '', name: '', color: unusedColor() })
+        row.querySelector('.name').focus()
+      })
+      document.getElementById('save').addEventListener('click', save)
+      document.getElementById('cancel').addEventListener('click', () => window.categories.cancel())
+      rows.addEventListener('input', (event) => {
+        event.target.classList.remove('missing')
+        hint.textContent = idleHint
+        hint.classList.remove('warning')
+      })
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && event.target.matches('input')) save()
+        if (event.key === 'Escape') window.categories.cancel()
+      })
+    </script>
+  </body>
+</html>
