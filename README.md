@@ -84,11 +84,16 @@ To build from source:
 corepack enable
 pnpm install
 pnpm start          # run from source
-pnpm test           # unit tests over the pure modules
+pnpm lint           # eslint, including the inline scripts in src/*.html
+pnpm format:check   # prettier
+pnpm knip           # unused files, exports and dependencies
+pnpm test           # a syntax pass over src/ and scripts/, then the unit tests over the pure modules
 pnpm run build:mac  # produces a dmg in dist/
 ```
 
 Node 22.x, as pinned in the `engines` field.
+
+Every pull request runs those same checks on GitHub Actions, builds the DMG and keeps it as an artifact for a week. A push to `main` also republishes the `latest` release and then downloads it back to check the asset it just published.
 
 Start at login defaults to off. The app offers it once on first run, and it is scriptable:
 
