@@ -8,6 +8,8 @@ export const NUDGE_RULES = { behindPoints: BEHIND_POINTS, enoughHours: ENOUGH_HO
 
 export const tracked = (categories) => categories.filter(({ share }) => share > 0)
 
+export const orderedByShare = (categories) => [...categories].sort((first, second) => second.share - first.share)
+
 export const standings = (categories, segments, from, to) => {
   const wanted = tracked(categories)
   const goalTotal = wanted.reduce((sum, { share }) => sum + share, 0)

@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { orderedByShare } from './goals.js'
 import { log } from './log.js'
 import { swatchList, swatchOf } from './palette.js'
 
@@ -158,7 +159,7 @@ export const createCategories = (onChange) => {
       const target = window
       target.webContents.on('did-finish-load', () => {
         target.webContents.send('categories', {
-          categories,
+          categories: orderedByShare(categories),
           active: activeCategory().id,
           palette: swatchList(),
           periodStartedAt: periods.at(-1).startedAt,
