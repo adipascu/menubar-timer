@@ -35,7 +35,11 @@
         margin: 0;
         background: transparent;
         overflow: hidden;
-        font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+        font:
+          13px/1.4 -apple-system,
+          BlinkMacSystemFont,
+          'Helvetica Neue',
+          sans-serif;
         color: var(--ink);
       }
 
@@ -233,7 +237,11 @@
     <div id="card">
       <header>
         <h1>Categories</h1>
-        <p>Timers are filed under the category picked in the menu, and the countdown wears its color. The share is how much of your timed work you want each one to take. A category at 0% is kept for its history but stays out of the menu and the goals.</p>
+        <p>
+          Timers are filed under the category picked in the menu, and the countdown wears its color. The share is how
+          much of your timed work you want each one to take. A category at 0% is kept for its history but stays out of
+          the menu and the goals.
+        </p>
         <p id="period"></p>
       </header>
       <ul id="rows"></ul>
@@ -353,7 +361,8 @@
         if (refused) return !over
         hint.classList.toggle('warning', over)
         if (over) hint.textContent = `The shares add up to ${claimed}%, which is ${claimed - 100} over.`
-        else if (short > 0) hint.textContent = `${short}% still unassigned. Anything left over is spread across the shares you set.`
+        else if (short > 0)
+          hint.textContent = `${short}% still unassigned. Anything left over is spread across the shares you set.`
         else hint.textContent = idleHint
         return !over
       }

@@ -4,7 +4,12 @@ import { NUDGE_RULES } from './goals.js'
 const points = (gap) => `${Math.round(Math.abs(gap) * 100)} points`
 
 const ledger = (rows) =>
-  rows.map((row) => `${row.name}: ${formatShare(row.actual)} of ${formatShare(row.goal)} over ${formatDuration(row.seconds)}`).join('\n')
+  rows
+    .map(
+      (row) =>
+        `${row.name}: ${formatShare(row.actual)} of ${formatShare(row.goal)} over ${formatDuration(row.seconds)}`,
+    )
+    .join('\n')
 
 export const goalCard = ({ behind, active, rows, total, startedAt }) => ({
   kind: 'goal',

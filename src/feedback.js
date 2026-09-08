@@ -18,8 +18,7 @@ export const createFeedback = () => {
 
   return {
     file,
-    recordShown: (tip) =>
-      update(tip, (entry) => ({ shown: entry.shown + 1, lastShownAt: new Date().toISOString() })),
+    recordShown: (tip) => update(tip, (entry) => ({ shown: entry.shown + 1, lastShownAt: new Date().toISOString() })),
     mark: (tip, status) => update(tip, () => ({ status, markedAt: new Date().toISOString() })),
     markInterested: (tip) =>
       update(tip, (entry) => ({ interested: (entry.interested ?? 0) + 1, interestedAt: new Date().toISOString() })),
