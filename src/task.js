@@ -7,6 +7,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 
 const WINDOW_WIDTH = 480
 const WINDOW_HEIGHT = 148
+const LABEL_MAX = 40
 
 export const createTaskField = (onChange) => {
   const file = join(app.getPath('userData'), 'task.json')
@@ -28,7 +29,7 @@ export const createTaskField = (onChange) => {
   }
 
   const store = (next) => {
-    label = next.trim()
+    label = next.trim().slice(0, LABEL_MAX)
     writeFileSync(file, JSON.stringify({ label }))
     const continuation = label ? onLabelled : null
     discard()
