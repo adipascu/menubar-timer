@@ -6,6 +6,7 @@
     "node": "22.x"
   },
   "scripts": {
+    "prepare": "husky || true",
     "start": "electron .",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -15,6 +16,13 @@
     "build": "electron-builder --dir",
     "build:mac": "electron-builder -m --config.mac.target=dmg --publish=never",
     "site:deploy": "bash scripts/deploy-site.sh"
+  },
+  "lint-staged": {
+    "*.{js,cjs,html}": [
+      "prettier --write",
+      "eslint --fix --no-warn-ignored"
+    ],
+    "*.{json,md,yml,yaml,css}": "prettier --write --ignore-unknown"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -34,7 +42,9 @@
     "eslint": "^10.9.1",
     "eslint-plugin-html": "^8.2.0",
     "globals": "^17.12.0",
+    "husky": "^9.1.7",
     "knip": "^6.34.0",
+    "lint-staged": "^17.5.0",
     "prettier": "^3.9.6"
   },
   "description": "A macOS menu bar timer with a Freebasing mode and Clippy-style coaching popups on SaaS, psychology and psychiatry"
