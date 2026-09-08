@@ -38,7 +38,11 @@ const buildPrompt = ({ poolFile, feedbackFile, quizFile, library }) => {
     '',
     feedbackStep(2, feedbackFile),
     '',
-    quizStep(3, quizFile, 'What I got wrong still needs teaching, and the topics I keep asking for are my topics of interest.'),
+    quizStep(
+      3,
+      quizFile,
+      'What I got wrong still needs teaching, and the topics I keep asking for are my topics of interest.',
+    ),
     '',
     historyStep(4, library),
     '',

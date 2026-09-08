@@ -24,7 +24,8 @@ export const offerOnFirstRun = async () => {
   const { response } = await dialog.showMessageBox({
     type: 'question',
     message: 'Start TimerBar at login?',
-    detail: 'TimerBar lives in the menu bar and only coaches you when the timer is off. Starting it at login is the recommended setup.',
+    detail:
+      'TimerBar lives in the menu bar and only coaches you when the timer is off. Starting it at login is the recommended setup.',
     buttons: ['Start at login', 'Not now'],
     defaultId: 0,
     cancelId: 1,

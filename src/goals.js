@@ -4,7 +4,11 @@ const BEHIND_POINTS = 10
 const ENOUGH_HOURS = 8
 const CARD_GAP_MS = 60 * 60 * 1000
 
-export const NUDGE_RULES = { behindPoints: BEHIND_POINTS, enoughHours: ENOUGH_HOURS, cardGapMinutes: CARD_GAP_MS / 60000 }
+export const NUDGE_RULES = {
+  behindPoints: BEHIND_POINTS,
+  enoughHours: ENOUGH_HOURS,
+  cardGapMinutes: CARD_GAP_MS / 60000,
+}
 
 export const tracked = (categories) => categories.filter(({ share }) => share > 0)
 

@@ -38,7 +38,11 @@
         color: var(--ink);
         -webkit-user-select: none;
         cursor: default;
-        font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+        font:
+          14px/1.55 -apple-system,
+          BlinkMacSystemFont,
+          'Helvetica Neue',
+          sans-serif;
       }
 
       body {
@@ -134,7 +138,7 @@
         filter: brightness(1.12);
       }
 
-      button[aria-pressed="true"] {
+      button[aria-pressed='true'] {
         background: var(--accent);
         border-color: var(--accent);
         color: var(--card);
@@ -301,16 +305,28 @@
       </div>
       <div class="controls">
         <select id="editions" title="Every edition so far, each with the notes you left on it"></select>
-        <button id="write" class="primary" title="Open a Claude Code session that writes a new set of cards and a new book">Write a new edition</button>
+        <button
+          id="write"
+          class="primary"
+          title="Open a Claude Code session that writes a new set of cards and a new book"
+        >
+          Write a new edition
+        </button>
       </div>
     </header>
     <p id="status" hidden>
-      <span role="status">A Claude Code session is writing the next edition in Terminal. It shows up here when it lands.</span>
+      <span role="status"
+        >A Claude Code session is writing the next edition in Terminal. It shows up here when it lands.</span
+      >
       <button id="dismiss-status">Dismiss</button>
     </p>
     <section id="empty" hidden>
       <h2 id="empty-heading">No book yet</h2>
-      <p id="empty-pitch">The first edition is one click away. A Claude Code session reads the cards you have seen, what you marked and what you asked for more of, asks what to lean into, then writes a new set of popups and about two hours of reading. Both land here.</p>
+      <p id="empty-pitch">
+        The first edition is one click away. A Claude Code session reads the cards you have seen, what you marked and
+        what you asked for more of, asks what to lean into, then writes a new set of popups and about two hours of
+        reading. Both land here.
+      </p>
       <button id="write-first" class="primary">Write the first edition</button>
     </section>
     <main id="main" hidden>
@@ -329,7 +345,7 @@
       const meta = byId('meta')
       const editions = byId('editions')
       const writeButton = byId('write')
-      const status = byId('status')
+      const statusLine = byId('status')
       const empty = byId('empty')
       const emptyHeading = byId('empty-heading')
       const emptyPitch = byId('empty-pitch')
@@ -354,7 +370,8 @@
       const chapters = () => book?.chapters ?? []
       const sectionsOf = (index) => chapters()[index].sections
       const count = (amount, noun) => `${amount} ${noun}${amount === 1 ? '' : 's'}`
-      const formatDate = (ms) => new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+      const formatDate = (ms) =>
+        new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
       const paragraphs = (text) =>
         String(text ?? '')
           .split(/\n\s*\n/)
@@ -396,7 +413,7 @@
       }
 
       const setAwaiting = (awaiting) => {
-        status.hidden = !awaiting
+        statusLine.hidden = !awaiting
         writeButton.disabled = awaiting
         writeFirst.disabled = awaiting
       }
@@ -411,7 +428,11 @@
       const renderShelf = () => {
         editions.replaceChildren(
           ...shelf.map((entry) =>
-            option(entry.edition, `Edition ${entry.edition} · ${formatDate(entry.writtenAt)}`, entry.edition === edition),
+            option(
+              entry.edition,
+              `Edition ${entry.edition} · ${formatDate(entry.writtenAt)}`,
+              entry.edition === edition,
+            ),
           ),
         )
       }
@@ -500,7 +521,11 @@
         const current = chapters()[chapter]
         const heading = element('h2', '', current.title)
         heading.tabIndex = -1
-        page.replaceChildren(element('p', 'topic', current.topic ?? ''), heading, ...sectionsOf(chapter).map(renderSection))
+        page.replaceChildren(
+          element('p', 'topic', current.topic ?? ''),
+          heading,
+          ...sectionsOf(chapter).map(renderSection),
+        )
         contents.replaceChildren(
           ...chapters().map((entry, index) =>
             option(index, `${finished.has(index) ? '✓ ' : ''}${index + 1}. ${entry.title}`, index === chapter),

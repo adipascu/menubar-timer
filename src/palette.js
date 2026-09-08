@@ -11,7 +11,7 @@ const chip = (key, label, hex, background, ink) => ({
   paint: (text) => `${background.open}${ink.style.open} ${text} ${ink.style.close}${background.close}`,
 })
 
-export const PALETTE = [
+const PALETTE = [
   chip('red', 'Red', '#cd0000', ansiStyles.bgRed, WHITE_INK),
   chip('green', 'Green', '#00cd00', ansiStyles.bgGreen, BLACK_INK),
   chip('yellow', 'Yellow', '#cdcd00', ansiStyles.bgYellow, BLACK_INK),

@@ -9,7 +9,11 @@ const buildPrompt = ({ poolFile, feedbackFile, quizFile, library }) => {
     '',
     `2. Read ${feedbackFile}. It is a JSON object keyed by card title with the card's topic, how many times it has been shown, a status of "known" or "not-interested" where I marked one, and an "interested" count where I asked for more like it. Cards with a shown count are the ones I have actually seen. Leave not-interested cards out entirely, even when they also carry an interested count. Interested cards are the ones I asked for more of, so make sure they come up.`,
     '',
-    quizStep(3, quizFile, 'Cards I got wrong before come first, cards I got right are a spot check, and topics I keep asking for are my topics of interest.'),
+    quizStep(
+      3,
+      quizFile,
+      'Cards I got wrong before come first, cards I got right are a spot check, and topics I keep asking for are my topics of interest.',
+    ),
     '',
     historyStep(4, library),
     '',

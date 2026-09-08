@@ -70,10 +70,13 @@ describe('splitByCategory', () => {
   it('shows a renamed category under its current name and color', () => {
     const renamed = [{ id: 'work', name: 'Freelance', color: 'red' }]
     const { rows } = splitByCategory(segments, day.getTime(), noon.getTime(), renamed)
-    assert.deepEqual(rows.map(({ name, color }) => ({ name, color })), [
-      { name: 'Freelance', color: 'red' },
-      { name: 'Life admin', color: 'gray' },
-    ])
+    assert.deepEqual(
+      rows.map(({ name, color }) => ({ name, color })),
+      [
+        { name: 'Freelance', color: 'red' },
+        { name: 'Life admin', color: 'gray' },
+      ],
+    )
   })
 
   it('returns nothing for an empty window', () => {

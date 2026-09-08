@@ -1,5 +1,5 @@
 import { app, Menu, shell, Tray } from 'electron'
-import ansiStyles from 'ansi-styles';
+import ansiStyles from 'ansi-styles'
 import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
@@ -39,10 +39,10 @@ const formatTime = (seconds) => {
   return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`
 }
 
-app.setName('Timer App');
-app.on('window-all-closed', () => {});
+app.setName('Timer App')
+app.on('window-all-closed', () => {})
 
-(async () => {
+;(async () => {
   let interval = null
   let state = 'idle'
   let status = IDLE_STATUS
@@ -100,16 +100,16 @@ app.on('window-all-closed', () => {});
   }
 
   const flashMenuBar = () => {
-    let isGreen = true;
+    let isGreen = true
     return setInterval(() => {
       if (isGreen) {
-        setStatus(`${ansiStyles.bgGreen.open}Time's up!${ansiStyles.bgGreen.close}`);
+        setStatus(`${ansiStyles.bgGreen.open}Time's up!${ansiStyles.bgGreen.close}`)
       } else {
-        setStatus("Time's up!");
+        setStatus("Time's up!")
       }
-      isGreen = !isGreen;
-    }, 500);
-  };
+      isGreen = !isGreen
+    }, 500)
+  }
 
   const setState = (next) => {
     log(`state ${state} to ${next}, tips ${next === 'running' ? 'paused' : 'on'}`)
@@ -120,34 +120,34 @@ app.on('window-all-closed', () => {});
   }
 
   const resetTimer = (minutes) => {
-    clearInterval(interval);
+    clearInterval(interval)
     sessionMinutes = minutes
     focusLog.end('restarted')
     focusLog.begin(segmentDetails())
 
-    const endTime = Date.now() + minutes * 60 * 1000;
+    const endTime = Date.now() + minutes * 60 * 1000
 
     const updateTimer = () => {
-      const currentTime = Date.now();
-      const timeLeft = Math.max(0, Math.round((endTime - currentTime) / 1000));
+      const currentTime = Date.now()
+      const timeLeft = Math.max(0, Math.round((endTime - currentTime) / 1000))
 
       if (timeLeft <= 0) {
-        clearInterval(interval);
+        clearInterval(interval)
         focusLog.end('completed')
         status = "Time's up!"
-        setState('expired');
-        interval = flashMenuBar();
+        setState('expired')
+        interval = flashMenuBar()
         offerSwitch()
       } else {
-        setStatus(formatTime(timeLeft));
+        setStatus(formatTime(timeLeft))
       }
-    };
+    }
 
-    setState('running');
-    updateTimer();
-    interval = setInterval(updateTimer, 1000);
+    setState('running')
+    updateTimer()
+    interval = setInterval(updateTimer, 1000)
     offerSwitch()
-  };
+  }
 
   const startSession = (minutes) => {
     if (task.get()) {
@@ -181,7 +181,13 @@ app.on('window-all-closed', () => {});
   const offerSwitch = () => {
     const now = new Date()
     const { startedAt, rows, total } = periodStandings(now)
-    const suggestion = nudge({ rows, total, activeId: categories.active().id, shownAt: goalCardShownAt, now: now.getTime() })
+    const suggestion = nudge({
+      rows,
+      total,
+      activeId: categories.active().id,
+      shownAt: goalCardShownAt,
+      now: now.getTime(),
+    })
     if (!suggestion) return
     goalCardShownAt = now.getTime()
     log(`goal nudge: ${suggestion.behind.name} is behind while working on ${suggestion.active.name}`)
@@ -316,7 +322,9 @@ app.on('window-all-closed', () => {});
 
   singleInstance.claim()
   app.dock?.hide()
-  Menu.setApplicationMenu(Menu.buildFromTemplate([{ role: 'editMenu' }, { label: 'Window', submenu: [{ role: 'close' }] }]))
+  Menu.setApplicationMenu(
+    Menu.buildFromTemplate([{ role: 'editMenu' }, { label: 'Window', submenu: [{ role: 'close' }] }]),
+  )
 
   const focusLog = createFocusLog()
   focusLog.recover()

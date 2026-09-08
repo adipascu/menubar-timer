@@ -16,25 +16,37 @@ const standingsOf = (categories, segments) => standings(categories, segments, wi
 
 describe('tracked', () => {
   it('drops a category with no share', () => {
-    assert.deepEqual(tracked([category('a', 40), category('b', 0)]).map(({ id }) => id), ['a'])
+    assert.deepEqual(
+      tracked([category('a', 40), category('b', 0)]).map(({ id }) => id),
+      ['a'],
+    )
   })
 })
 
 describe('orderedByShare', () => {
   it('puts the biggest share first and a retired category last', () => {
     const listed = [category('ump', 20), category('archived', 0), category('latin', 40), category('belgabot', 10)]
-    assert.deepEqual(orderedByShare(listed).map(({ id }) => id), ['latin', 'ump', 'belgabot', 'archived'])
+    assert.deepEqual(
+      orderedByShare(listed).map(({ id }) => id),
+      ['latin', 'ump', 'belgabot', 'archived'],
+    )
   })
 
   it('keeps equal shares in the order they were given', () => {
     const listed = [category('ump', 20), category('freelance', 20), category('latin', 40)]
-    assert.deepEqual(orderedByShare(listed).map(({ id }) => id), ['latin', 'ump', 'freelance'])
+    assert.deepEqual(
+      orderedByShare(listed).map(({ id }) => id),
+      ['latin', 'ump', 'freelance'],
+    )
   })
 
   it('leaves the original list untouched', () => {
     const listed = [category('ump', 20), category('latin', 40)]
     orderedByShare(listed)
-    assert.deepEqual(listed.map(({ id }) => id), ['ump', 'latin'])
+    assert.deepEqual(
+      listed.map(({ id }) => id),
+      ['ump', 'latin'],
+    )
   })
 })
 
@@ -43,16 +55,22 @@ describe('standings', () => {
 
   it('normalizes goals over the tracked categories', () => {
     const rows = standingsOf(categories, [])
-    assert.deepEqual(rows.map(({ id, goal }) => [id, goal]), [
-      ['latin', 0.5],
-      ['freelance', 0.25],
-      ['ump', 0.25],
-    ])
+    assert.deepEqual(
+      rows.map(({ id, goal }) => [id, goal]),
+      [
+        ['latin', 0.5],
+        ['freelance', 0.25],
+        ['ump', 0.25],
+      ],
+    )
   })
 
   it('sorts the most behind first', () => {
     const rows = standingsOf(categories, [hours('freelance', 8), hours('ump', 2, 8)])
-    assert.deepEqual(rows.map(({ id }) => id), ['latin', 'ump', 'freelance'])
+    assert.deepEqual(
+      rows.map(({ id }) => id),
+      ['latin', 'ump', 'freelance'],
+    )
     assert.equal(rows[0].gap, 0.5)
     assert.equal(rows.at(-1).gap, 0.25 - 0.8)
   })
@@ -60,11 +78,17 @@ describe('standings', () => {
   it('ignores time in an untracked category', () => {
     const rows = standingsOf(categories, [hours('freelance', 1), hours('zero', 9, 1)])
     assert.equal(rows.find(({ id }) => id === 'freelance').actual, 1)
-    assert.equal(rows.reduce((sum, { seconds }) => sum + seconds, 0), 3600)
+    assert.equal(
+      rows.reduce((sum, { seconds }) => sum + seconds, 0),
+      3600,
+    )
   })
 
   it('reports every actual as zero before anything is logged', () => {
-    assert.deepEqual(standingsOf(categories, []).map(({ actual }) => actual), [0, 0, 0])
+    assert.deepEqual(
+      standingsOf(categories, []).map(({ actual }) => actual),
+      [0, 0, 0],
+    )
   })
 })
 
@@ -82,7 +106,10 @@ describe('nudge', () => {
   })
 
   it('stays quiet when nothing is far enough behind', () => {
-    const close = [{ id: 'latin', gap: 0.05 }, { id: 'ump', gap: -0.05 }]
+    const close = [
+      { id: 'latin', gap: 0.05 },
+      { id: 'ump', gap: -0.05 },
+    ]
     assert.equal(nudge({ rows: close, total: enough, activeId: 'ump', shownAt: null, now }), null)
   })
 
