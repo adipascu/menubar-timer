@@ -1,6 +1,6 @@
 import { app } from 'electron'
 import { spawn } from 'node:child_process'
-import { randomInt } from 'node:crypto'
+import { randomInt, randomUUID } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { hostname } from 'node:os'
@@ -56,12 +56,16 @@ const json = (response, status, body) => {
 
 const event = (snapshot) => `data: ${JSON.stringify(snapshot)}\n\n`
 
-export const createBridge = ({ snapshot, start, stop, setLabel, onPhonesChanged }) => {
+export const createBridge = ({ snapshot, start, stop, setLabel, setCategory, onPhonesChanged }) => {
   const code = readCode(join(app.getPath('userData'), 'companion.json'))
+  const serverId = randomUUID()
   const phones = new Set()
+  let revision = 0
   let server = null
   let advertiser = null
   let heartbeat = null
+
+  const stamped = () => ({ ...snapshot(), serverId, revision, at: Date.now() })
 
   const subscribe = (request, response) => {
     response.writeHead(200, {
@@ -69,7 +73,7 @@ export const createBridge = ({ snapshot, start, stop, setLabel, onPhonesChanged 
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
     })
-    response.write(event(snapshot()))
+    response.write(event(stamped()))
     phones.add(response)
     log(`phone connected from ${request.socket.remoteAddress}, ${phones.size} listening`)
     onPhonesChanged()
@@ -83,31 +87,39 @@ export const createBridge = ({ snapshot, start, stop, setLabel, onPhonesChanged 
   const command = async (request, response) => {
     const body = await readBody(request)
     if (body === null) return json(response, 400, { error: 'body is not JSON' })
+    const accepted = () => json(response, 200, stamped())
     if (request.url === '/timer') {
       const minutes = Number(body.minutes)
       if (!snapshot().durations.includes(minutes)) return json(response, 400, { error: 'not a timer length' })
       if (typeof body.label === 'string' && body.label.trim()) setLabel(body.label)
       log(`phone asked for ${minutes} min`)
       start(minutes)
-      return json(response, 200, snapshot())
+      return accepted()
     }
     if (request.url === '/freebasing') {
       log('phone asked for Freebasing')
       stop()
-      return json(response, 200, snapshot())
+      return accepted()
     }
     if (request.url === '/label') {
       if (typeof body.label !== 'string') return json(response, 400, { error: 'label is not a string' })
       log(`phone set the label to "${body.label.trim()}"`)
       setLabel(body.label)
-      return json(response, 200, snapshot())
+      return accepted()
+    }
+    if (request.url === '/category') {
+      const wanted = snapshot().categories.find(({ id }) => id === body.id)
+      if (!wanted) return json(response, 400, { error: 'not a category' })
+      log(`phone asked for the ${wanted.name} category`)
+      setCategory(wanted.id)
+      return accepted()
     }
     return json(response, 404, { error: 'unknown command' })
   }
 
   const handle = (request, response) => {
     if (request.headers.authorization !== `Bearer ${code}`) return json(response, 401, { error: 'pairing code' })
-    if (request.method === 'GET' && request.url === '/state') return json(response, 200, snapshot())
+    if (request.method === 'GET' && request.url === '/state') return json(response, 200, stamped())
     if (request.method === 'GET' && request.url === '/events') return subscribe(request, response)
     if (request.method === 'POST') return command(request, response)
     return json(response, 404, { error: 'unknown request' })
@@ -151,7 +163,8 @@ export const createBridge = ({ snapshot, start, stop, setLabel, onPhonesChanged 
       listen(PORT)
     },
     publish: () => {
-      const data = event(snapshot())
+      revision += 1
+      const data = event(stamped())
       phones.forEach((phone) => phone.write(data))
     },
     stop: () => {

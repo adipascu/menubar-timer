@@ -5,6 +5,7 @@ import { batteryMenuItem } from './battery.js'
 import { createBridge } from './bridge.js'
 import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
+import { companionSnapshot } from './companion-state.js'
 import { createCoach } from './coach.js'
 import { createFocusLog } from './focus-log.js'
 import { formatDuration, formatShare, periods, splitByCategory } from './focus-stats.js'
@@ -63,6 +64,7 @@ app.on('window-all-closed', () => {})
   let menuDay = null
   let goalCardShownAt = null
   let batteryItem = null
+  let batterySample = null
 
   const renderTitle = () => {
     const label = state === 'idle' ? '' : task.get()
@@ -114,7 +116,9 @@ app.on('window-all-closed', () => {})
   const setPowerSample = (watts, overLimit, sample) => {
     draw = watts
     drawOverLimit = overLimit
+    batterySample = sample
     renderPowerDraw()
+    bridge.publish()
 
     const battery = batteryMenuItem(sample)
     if (battery?.label !== batteryItem?.label) {
@@ -151,15 +155,26 @@ app.on('window-all-closed', () => {})
 
   const secondsLeft = () => Math.max(0, Math.round((endTime - Date.now()) / 1000))
 
-  const snapshot = () => ({
-    state,
-    label: task.get(),
-    labelPending: task.pending(),
-    minutes: state === 'idle' && !task.pending() ? null : sessionMinutes,
-    remaining: state === 'running' ? secondsLeft() : null,
-    durations: DURATIONS.map(({ minutes }) => minutes),
-    hints: DURATIONS.map(({ hint }) => hint),
-  })
+  const snapshot = () => {
+    const now = new Date()
+    const segments = focusLog.segments(now)
+    return companionSnapshot({
+      state,
+      label: task.get(),
+      labelPending: task.pending(),
+      minutes: state === 'idle' && !task.pending() ? null : sessionMinutes,
+      remaining: state === 'running' ? secondsLeft() : null,
+      lengths: DURATIONS,
+      categories: tracked(categories.all()),
+      active: categories.active(),
+      goal: periodStandings(now),
+      focus: periods(now).map(({ label, from }) => ({
+        label,
+        total: splitByCategory(segments, from, now.getTime(), categories.all()).total,
+      })),
+      battery: batterySample,
+    })
+  }
 
   const resetTimer = (minutes) => {
     clearInterval(interval)
@@ -426,6 +441,7 @@ app.on('window-all-closed', () => {})
     start: startSession,
     stop: stopTimer,
     setLabel: (label) => task.set(label),
+    setCategory: (id) => categories.activate(id),
     onPhonesChanged: () => renderMenu(),
   })
   app.on('will-quit', () => bridge.stop())
