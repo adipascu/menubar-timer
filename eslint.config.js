@@ -6,7 +6,10 @@ export default [
   { ignores: ['dist/', '.claude/'] },
   js.configs.recommended,
   {
-    rules: { 'no-unused-vars': ['error', { ignoreRestSiblings: true }] },
+    rules: {
+      'no-unused-vars': ['error', { ignoreRestSiblings: true }],
+      'no-console': 'error',
+    },
   },
   {
     files: ['**/*.js'],

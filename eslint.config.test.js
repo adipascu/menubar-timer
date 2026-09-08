@@ -50,12 +50,29 @@ test('renderer html is linted by the html plugin with browser globals', async ()
   assert.ok(!('process' in globals))
 })
 
+const authoredCode = [
+  'src/main.js',
+  'src/beacons.js',
+  'src/popup-preload.cjs',
+  'src/popup.html',
+  'scripts/assert-node-version.js',
+]
+
 test('unused variables are an error everywhere authored code lives', async () => {
-  for (const file of ['src/main.js', 'src/beacons.js', 'src/popup-preload.cjs', 'scripts/assert-node-version.js']) {
+  for (const file of authoredCode) {
     const { rules } = await resolve(file)
     const [severity] = rules['no-unused-vars']
 
     assert.equal(severity, 2, `expected no-unused-vars to be an error for ${file}`)
+  }
+})
+
+test('console is banned everywhere authored code lives', async () => {
+  for (const file of authoredCode) {
+    const { rules } = await resolve(file)
+    const [severity] = rules['no-console']
+
+    assert.equal(severity, 2, `expected no-console to be an error for ${file}`)
   }
 })
 
