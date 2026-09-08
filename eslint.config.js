@@ -10,6 +10,7 @@ export default [
   },
   {
     files: ['**/*.js'],
+    ignores: ['src/beacons.js'],
     languageOptions: { sourceType: 'module', globals: globals.node },
   },
   {
