@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
-import { nudge, standings, tracked } from './goals.js'
+import { nudge, orderedByShare, standings, tracked } from './goals.js'
 
 const category = (id, share) => ({ id, name: id, color: 'blue', share })
 
@@ -17,6 +17,24 @@ const standingsOf = (categories, segments) => standings(categories, segments, wi
 describe('tracked', () => {
   it('drops a category with no share', () => {
     assert.deepEqual(tracked([category('a', 40), category('b', 0)]).map(({ id }) => id), ['a'])
+  })
+})
+
+describe('orderedByShare', () => {
+  it('puts the biggest share first and a retired category last', () => {
+    const listed = [category('ump', 20), category('archived', 0), category('latin', 40), category('belgabot', 10)]
+    assert.deepEqual(orderedByShare(listed).map(({ id }) => id), ['latin', 'ump', 'belgabot', 'archived'])
+  })
+
+  it('keeps equal shares in the order they were given', () => {
+    const listed = [category('ump', 20), category('freelance', 20), category('latin', 40)]
+    assert.deepEqual(orderedByShare(listed).map(({ id }) => id), ['latin', 'ump', 'freelance'])
+  })
+
+  it('leaves the original list untouched', () => {
+    const listed = [category('ump', 20), category('latin', 40)]
+    orderedByShare(listed)
+    assert.deepEqual(listed.map(({ id }) => id), ['ump', 'latin'])
   })
 })
 
