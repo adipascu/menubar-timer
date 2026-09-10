@@ -7,7 +7,7 @@ const buildPrompt = ({ poolFile, feedbackFile, quizFile, library }) => {
     '',
     poolStep(1, poolFile, library),
     '',
-    `2. Read ${feedbackFile}. It is a JSON object keyed by card title with the card's topic, how many times it has been shown, a status of "known" or "not-interested" where I marked one, and an "interested" count where I asked for more like it. Cards with a shown count are the ones I have actually seen. Leave not-interested cards out entirely, even when they also carry an interested count. Interested cards are the ones I asked for more of, so make sure they come up.`,
+    `2. Read ${feedbackFile}. It is a JSON object keyed by card title with the card's topic, how many times it has been shown, a status of "known" or "not-interested" where I marked one, an "interested" count where I asked for more like it, and "notes" where I typed something on the card, each with its text and the time I wrote it. Cards with a shown count are the ones I have actually seen. Leave not-interested cards out entirely, even when they also carry an interested count. Interested cards are the ones I asked for more of, so make sure they come up. A note says what I wanted from a card, so honour it in the questions on that card and in the cards you write after.`,
     '',
     quizStep(
       3,

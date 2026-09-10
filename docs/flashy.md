@@ -19,6 +19,7 @@ He keeps the three subjects in strict rotation, a third each, and inside a subje
 - **Already know this.** He does not believe you, but he retires the card.
 - **Not interested.** He takes it personally, retires the card, and steers the next tune-up away from that angle.
 - **More like this.** His favourite button. It keeps the card in play and counts as a vote, and the tune-up and the quiz go deeper wherever the votes are.
+- **Add a note.** A box for what you make of the card, the abbreviation he should have spelled out, the question it left open. He reads every word and has the next edition answer it, which he counts as proof that he listens.
 
 ## When he asks for help
 
