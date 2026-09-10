@@ -13,5 +13,7 @@ contextBridge.exposeInMainWorld('coach', {
   markInterested: () => ipcRenderer.send('coach:interested'),
   addNote: (text) => ipcRenderer.send('coach:note', text),
   openSource: (url) => ipcRenderer.send('coach:open-source', url),
+  dragStart: (pointer) => ipcRenderer.send('coach:drag-start', pointer),
+  drag: (pointer) => ipcRenderer.send('coach:drag', pointer),
   focus: () => ipcRenderer.send('coach:focus'),
 })
