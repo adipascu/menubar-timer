@@ -160,7 +160,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
   }
 
   const placeBottomRight = (window) => {
-    const { workArea } = screen.getPrimaryDisplay()
+    const { workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
     const [width, height] = window.getSize()
     window.setPosition(
       workArea.x + workArea.width - width - POPUP_MARGIN,
