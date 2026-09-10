@@ -153,6 +153,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
   let timer = null
   let popup = null
   let showing = null
+  let dragOffset = null
 
   const tipsAreAllowed = () => getState() !== 'running'
   const timerIsOff = () => getState() === 'idle'
@@ -170,6 +171,21 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
       workArea.x + workArea.width - width - POPUP_MARGIN,
       workArea.y + workArea.height - height - POPUP_MARGIN,
     )
+  }
+
+  const resizeKeepingBottomEdge = (window, height) => {
+    const bounds = window.getBounds()
+    const { workArea } = screen.getDisplayMatching(bounds)
+    const y = Math.max(workArea.y, bounds.y + bounds.height - height)
+    window.setBounds({ x: bounds.x, y, width: POPUP_WIDTH, height })
+  }
+
+  const keptOnDisplayOf = (pointer, x, y, height) => {
+    const { workArea } = screen.getDisplayNearestPoint(pointer)
+    return {
+      x: Math.min(Math.max(x, workArea.x), workArea.x + workArea.width - POPUP_WIDTH),
+      y: Math.min(Math.max(y, workArea.y), workArea.y + workArea.height - height),
+    }
   }
 
   const show = (tip) => {
@@ -256,12 +272,32 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
     timer = setTimeout(tick, delay)
   }
 
-  ipcMain.on('coach:height', (event, height) => {
+  ipcMain.on('coach:height', (event, reported) => {
     const window = BrowserWindow.fromWebContents(event.sender)
     if (!window || window.isDestroyed()) return
-    window.setContentSize(POPUP_WIDTH, Math.round(height))
+    const height = Math.round(reported)
+    if (window.isVisible()) {
+      resizeKeepingBottomEdge(window, height)
+      return
+    }
+    window.setContentSize(POPUP_WIDTH, height)
     placeBottomRight(window)
-    if (!window.isVisible()) window.showInactive()
+    window.showInactive()
+  })
+
+  ipcMain.on('coach:drag-start', (event, pointer) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (!window || window.isDestroyed()) return
+    const [x, y] = window.getPosition()
+    dragOffset = { x: pointer.x - x, y: pointer.y - y }
+  })
+
+  ipcMain.on('coach:drag', (event, pointer) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (!window || window.isDestroyed() || !dragOffset) return
+    const [, height] = window.getSize()
+    const { x, y } = keptOnDisplayOf(pointer, pointer.x - dragOffset.x, pointer.y - dragOffset.y, height)
+    window.setPosition(Math.round(x), Math.round(y))
   })
 
   ipcMain.on('coach:beacon', (_event, label) => log(`beacon ${label}`))

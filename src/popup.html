@@ -84,6 +84,25 @@
         outline-offset: -1px;
       }
 
+      #grip {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        cursor: grab;
+      }
+
+      #grip:active {
+        cursor: grabbing;
+      }
+
+      #grip::after {
+        content: '';
+        width: 10px;
+        height: 15px;
+        background: radial-gradient(circle, var(--muted) 1.3px, transparent 1.7px) 0 0 / 5px 5px;
+      }
+
       #clip {
         width: 34px;
         height: 44px;
@@ -230,16 +249,18 @@
   <body>
     <div id="card">
       <canvas id="beacon" aria-hidden="true"></canvas>
-      <svg id="clip" viewBox="0 0 34 44" fill="none" aria-hidden="true">
-        <path
-          d="M24 13v18a8 8 0 0 1-16 0V11a5 5 0 0 1 10 0v18a2.5 2.5 0 0 1-5 0V14"
-          stroke="var(--accent)"
-          stroke-width="3.2"
-          stroke-linecap="round"
-        />
-        <circle cx="13.5" cy="17" r="1.9" fill="var(--ink)" />
-        <circle cx="21" cy="17" r="1.9" fill="var(--ink)" />
-      </svg>
+      <div id="grip" title="Drag to move the card">
+        <svg id="clip" viewBox="0 0 34 44" fill="none" aria-hidden="true">
+          <path
+            d="M24 13v18a8 8 0 0 1-16 0V11a5 5 0 0 1 10 0v18a2.5 2.5 0 0 1-5 0V14"
+            stroke="var(--accent)"
+            stroke-width="3.2"
+            stroke-linecap="round"
+          />
+          <circle cx="13.5" cy="17" r="1.9" fill="var(--ink)" />
+          <circle cx="21" cy="17" r="1.9" fill="var(--ink)" />
+        </svg>
+      </div>
       <div>
         <h1 id="title"></h1>
         <p id="site-line" aria-hidden="true"></p>
@@ -292,6 +313,7 @@
     <script src="beacons.js"></script>
     <script>
       const card = document.getElementById('card')
+      const grip = document.getElementById('grip')
       const beacon = document.getElementById('beacon')
       const title = document.getElementById('title')
       const body = document.getElementById('body')
@@ -362,6 +384,18 @@
 
       card.addEventListener('mouseenter', () => setCalm(true))
       card.addEventListener('mouseleave', () => setCalm(false))
+
+      const pointerOnScreen = (event) => ({ x: event.screenX, y: event.screenY })
+
+      grip.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return
+        grip.setPointerCapture(event.pointerId)
+        window.coach.dragStart(pointerOnScreen(event))
+      })
+
+      grip.addEventListener('pointermove', (event) => {
+        if (grip.hasPointerCapture(event.pointerId)) window.coach.drag(pointerOnScreen(event))
+      })
 
       const siteLine = document.getElementById('site-line')
       const showSiteLine = (text) => {
