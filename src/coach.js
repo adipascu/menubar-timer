@@ -10,13 +10,11 @@ import { menuBarIsCovered } from './fullscreen.js'
 import { log } from './log.js'
 import { musicIsLoud, shareSystemAudio } from './music.js'
 import { quizCard } from './quiz.js'
+import { createTipSchedule } from './tip-schedule.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const tips = JSON.parse(readFileSync(join(here, 'tips.json'), 'utf8'))
 
-const MIN_GAP_MS = 4 * 60 * 1000
-const MAX_GAP_MS = 12 * 60 * 1000
-const RETRY_GAP_MS = 60 * 1000
 const ACTIVE_WITHIN_SECONDS = 60
 const POPUP_WIDTH = 380
 const POPUP_MARGIN = 12
@@ -27,8 +25,6 @@ const HIDDEN_TIMER_NUDGE = {
   title: 'The timer is off',
   body: 'A fullscreen window is covering the menu bar, so the timer is out of sight. Pick a timer length from the menu when you want to focus on something.',
 }
-
-const randomGap = () => MIN_GAP_MS + Math.floor(Math.random() * (MAX_GAP_MS - MIN_GAP_MS))
 
 const shuffled = (items) => {
   const copy = [...items]
@@ -150,12 +146,13 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
   const calibration = createCalibration(feedback.file, library)
   const allTips = () => [...tips, ...library.cards().map((tip) => ({ ...tip, personal: true }))]
   const nextTip = createTipQueue(allTips, feedback.retiredTitles)
-  let timer = null
+  const schedule = createTipSchedule(() => tick())
   let popup = null
   let showing = null
 
   const tipsAreAllowed = () => getState() !== 'running'
   const timerIsOff = () => getState() === 'idle'
+  const timerHasEnded = () => getState() === 'expired'
 
   const closePopup = () => {
     if (popup && !popup.isDestroyed()) popup.close()
@@ -238,7 +235,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
 
   const tick = async () => {
     if (!(tipsAreAllowed() && userIsAtTheComputer() && popup === null)) {
-      schedule(RETRY_GAP_MS)
+      schedule.retry()
       return
     }
 
@@ -248,12 +245,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
       if (tip.topic) feedback.recordShown(tip)
       log(`showed ${tip.kind ?? 'tip'}: ${tip.title}`)
     }
-    schedule(randomGap())
-  }
-
-  const schedule = (delay) => {
-    clearTimeout(timer)
-    timer = setTimeout(tick, delay)
+    schedule.next()
   }
 
   ipcMain.on('coach:height', (event, height) => {
@@ -312,7 +304,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
   })
 
   return {
-    start: () => schedule(randomGap()),
+    start: () => schedule.next(),
     alert: (card) => {
       closePopup()
       show(card)
@@ -326,12 +318,15 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
       if (popup && !popup.isDestroyed()) popup.webContents.send('site-line', text)
     },
     refresh: () => {
-      if (tipsAreAllowed()) schedule(randomGap())
-      else closePopup()
+      if (!tipsAreAllowed()) {
+        closePopup()
+        return
+      }
+      if (timerHasEnded()) schedule.timerEnded()
+      else schedule.tipsResumed()
     },
     stop: () => {
-      clearTimeout(timer)
-      timer = null
+      schedule.stop()
       closePopup()
     },
   }
