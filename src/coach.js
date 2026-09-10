@@ -207,9 +207,11 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
     const whileOpen = (action) => () => {
       if (!window.isDestroyed()) action()
     }
-    window.webContents.on('context-menu', (_event, { selectionText, linkURL }) => {
+    window.webContents.on('context-menu', (_event, { selectionText, linkURL, isEditable }) => {
       Menu.buildFromTemplate([
+        { role: 'cut', visible: isEditable, enabled: selectionText.length > 0 },
         { label: 'Copy', enabled: selectionText.length > 0, click: whileOpen(() => window.webContents.copy()) },
+        { role: 'paste', visible: isEditable },
         { label: 'Copy Link', visible: linkURL.length > 0, click: () => clipboard.writeText(linkURL) },
         {
           label: 'Select All',
@@ -259,7 +261,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
     if (!window || window.isDestroyed()) return
     window.setContentSize(POPUP_WIDTH, Math.round(height))
     placeBottomRight(window)
-    window.showInactive()
+    if (!window.isVisible()) window.showInactive()
   })
 
   ipcMain.on('coach:beacon', (_event, label) => log(`beacon ${label}`))
@@ -286,6 +288,13 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
     }),
   )
 
+  ipcMain.on('coach:note', (_event, text) =>
+    closeAndRecord((tip) => {
+      feedback.addNote(tip, text)
+      log(`noted on "${tip.title}": ${JSON.stringify(text)}`)
+    }),
+  )
+
   ipcMain.on('coach:discuss', () => {
     const tip = showing
     closePopup()
@@ -297,7 +306,7 @@ export const createCoach = (getState, library, getBeacon, getSiteLine) => {
     closePopup()
   })
 
-  ipcMain.on('coach:selected', (event) => {
+  ipcMain.on('coach:focus', (event) => {
     const window = BrowserWindow.fromWebContents(event.sender)
     if (window) focusCard(window)
   })

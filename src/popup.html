@@ -192,6 +192,39 @@
       button.primary:hover {
         filter: brightness(1.12);
       }
+
+      button:disabled {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      #note {
+        width: 100%;
+        margin: 0;
+        padding: 6px 8px;
+        font: inherit;
+        color: var(--ink);
+        background: color-mix(in srgb, var(--card) 80%, var(--border));
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        resize: none;
+        -webkit-user-select: text;
+        cursor: text;
+      }
+
+      #note::placeholder {
+        color: var(--muted);
+      }
+
+      #note:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      #card.noting .card-action,
+      #card:not(.noting) :is(#note, .note-action) {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -213,16 +246,44 @@
         <p id="body"></p>
         <footer>
           <a id="source" href="#"></a>
+          <textarea
+            id="note"
+            rows="3"
+            aria-label="Note for the next edition"
+            placeholder="What do you make of it? The next edition answers it."
+          ></textarea>
           <div id="actions">
-            <button id="known" title="Retire this card, you have it covered">Already know this</button>
-            <button id="not-interested" title="Retire this card and steer the tune-up away from it">
+            <button id="known" class="card-action" title="Retire this card, you have it covered">
+              Already know this
+            </button>
+            <button id="not-interested" class="card-action" title="Retire this card and steer the tune-up away from it">
               Not interested
             </button>
-            <button id="more-like-this" title="Keep this card in play and steer the tune-up and the quiz toward it">
+            <button
+              id="more-like-this"
+              class="card-action"
+              title="Keep this card in play and steer the tune-up and the quiz toward it"
+            >
               More like this
             </button>
-            <button id="discuss">Talk it through</button>
-            <button id="dismiss" class="primary">Got it</button>
+            <button
+              id="add-note"
+              class="card-action"
+              title="Say what you make of this card, the next edition answers it"
+            >
+              Add a note
+            </button>
+            <button id="discuss" class="card-action">Talk it through</button>
+            <button id="dismiss" class="card-action primary">Got it</button>
+            <button id="cancel-note" class="note-action">Cancel</button>
+            <button
+              id="save-note"
+              class="note-action primary"
+              title="Keep the note and close the card, Cmd+Enter does the same"
+              disabled
+            >
+              Save note
+            </button>
           </div>
         </footer>
       </div>
@@ -238,7 +299,11 @@
       const known = document.getElementById('known')
       const notInterested = document.getElementById('not-interested')
       const moreLikeThis = document.getElementById('more-like-this')
+      const addNote = document.getElementById('add-note')
       const discuss = document.getElementById('discuss')
+      const noteBox = document.getElementById('note')
+      const cancelNote = document.getElementById('cancel-note')
+      const saveNote = document.getElementById('save-note')
 
       let calm = false
 
@@ -307,7 +372,7 @@
       const selectedText = () => window.getSelection().toString()
 
       document.addEventListener('mouseup', () => {
-        if (selectedText()) window.coach.selected()
+        if (selectedText()) window.coach.focus()
       })
 
       document.addEventListener('copy', (event) => {
@@ -316,15 +381,44 @@
         event.preventDefault()
       })
 
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') window.coach.dismiss()
-      })
-
       const reportHeight = () => {
         requestAnimationFrame(() => {
           window.coach.reportHeight(card.offsetHeight + 20)
         })
       }
+
+      const noteText = () => noteBox.value.trim()
+
+      const setNoting = (open) => {
+        card.classList.toggle('noting', open)
+        reportHeight()
+        if (open) {
+          window.coach.focus()
+          noteBox.focus()
+          return
+        }
+        noteBox.value = ''
+        saveNote.disabled = true
+      }
+
+      const submitNote = () => {
+        const text = noteText()
+        if (text) window.coach.addNote(text)
+      }
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return
+        if (card.classList.contains('noting')) setNoting(false)
+        else window.coach.dismiss()
+      })
+
+      noteBox.addEventListener('pointerdown', () => window.coach.focus())
+      noteBox.addEventListener('input', () => {
+        saveNote.disabled = !noteText()
+      })
+      noteBox.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && event.metaKey) submitNote()
+      })
 
       const startBeacon = async (preset) => {
         runner = null
@@ -345,6 +439,7 @@
         known.hidden = !tip.topic
         notInterested.hidden = !tip.topic
         moreLikeThis.hidden = !tip.topic
+        addNote.hidden = !tip.topic
         discuss.hidden = tip.kind === 'nudge'
         reportHeight()
         loudMusic = Boolean(tip.loudMusic)
@@ -366,6 +461,9 @@
       known.addEventListener('click', () => window.coach.markKnown())
       notInterested.addEventListener('click', () => window.coach.markNotInterested())
       moreLikeThis.addEventListener('click', () => window.coach.markInterested())
+      addNote.addEventListener('click', () => setNoting(true))
+      cancelNote.addEventListener('click', () => setNoting(false))
+      saveNote.addEventListener('click', submitNote)
       discuss.addEventListener('click', () => window.coach.discuss())
       document.getElementById('dismiss').addEventListener('click', () => window.coach.dismiss())
     </script>
