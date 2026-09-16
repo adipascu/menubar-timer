@@ -433,7 +433,7 @@ app.on('window-all-closed', () => {})
   app.on('will-quit', () => bridge.stop())
   const library = createLibrary()
   const ideas = createIdeas()
-  const coach = createCoach(() => state, library, beacon.get, siteLine.text)
+  const coach = createCoach(() => state, library, ideas.file, beacon.get, siteLine.text)
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {
     renderMenu()
