@@ -347,6 +347,8 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     },
     quiz: () => openClaudeSession(quizCard(editionSources)),
     edition: () => openClaudeSession(editionCard(editionSources)),
+    tuneUp: () => openClaudeSession(calibration.popup()),
+    tuneUpTiming: calibration.timing,
     setBeacon: (id) => {
       if (popup && !popup.isDestroyed()) popup.webContents.send('beacon', id)
     },

@@ -35,7 +35,7 @@ export const createLibrary = () => {
   const file = (kind, edition) => join(dir, `${kind}-${String(edition).padStart(4, '0')}.json`)
 
   const editionsOf = (kind) =>
-    readdirSync(dir)
+    (existsSync(dir) ? readdirSync(dir) : [])
       .map((name) => EDITION_FILE.exec(name))
       .filter((match) => match?.[1] === kind)
       .map((match) => Number(match[2]))
@@ -71,7 +71,7 @@ export const createLibrary = () => {
     },
     cardsWrittenAt: () => {
       const latest = latestCardsFile()
-      return latest === null ? null : statSync(latest).mtimeMs
+      return latest === null || !existsSync(latest) ? null : statSync(latest).mtimeMs
     },
     nextEdition: () => {
       reserved = Math.max(reserved, latestOf('cards') ?? 0, latestOf('book') ?? 0) + 1

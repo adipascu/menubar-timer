@@ -15,6 +15,7 @@ const SOURCES = {
   },
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000
 const LAST_TUNE_UP = Date.parse('2026-09-01T09:00:00.000Z')
 
 const stepNumbers = (prompt) =>
@@ -29,7 +30,7 @@ const counted = (length) => Array.from({ length }, (_, index) => index + 1)
 const PROMPTS = {
   'the edition': () => editionCard(SOURCES).prompt(),
   'the quiz': () => quizCard(SOURCES).prompt(),
-  'the weekly tune-up': () => tuneUpPrompt(SOURCES, LAST_TUNE_UP),
+  'the weekly tune-up': () => tuneUpPrompt(SOURCES, LAST_TUNE_UP, LAST_TUNE_UP + 7 * DAY_MS),
 }
 
 const READS = {
@@ -56,8 +57,25 @@ for (const [name, build] of Object.entries(PROMPTS)) {
   })
 }
 
-describe('the tune-up date line', () => {
-  it('is the day of the last tune-up', () => {
-    assert.ok(tuneUpPrompt(SOURCES, LAST_TUNE_UP).includes('2026-09-01'))
+describe('the tune-up opening line', () => {
+  const opening = (elapsedMs) => tuneUpPrompt(SOURCES, LAST_TUNE_UP, LAST_TUNE_UP + elapsedMs).split('\n')[0]
+
+  it('names the day of the last tune-up', () => {
+    assert.match(opening(7 * DAY_MS), /2026-09-01/)
+  })
+
+  it('says how long ago that was rather than assuming a week', () => {
+    assert.match(opening(0), /earlier today/)
+    assert.match(opening(2 * 60 * 60 * 1000), /earlier today/)
+    assert.match(opening(DAY_MS), /yesterday/)
+    assert.match(opening(3 * DAY_MS), /3 days ago/)
+    assert.match(opening(30 * DAY_MS), /30 days ago/)
+  })
+
+  it('counts those days off the same calendar the date comes from', () => {
+    const sinceLateOn = Date.parse('2026-09-15T23:00:00.000Z')
+    const justAfterMidnight = Date.parse('2026-09-16T02:00:00.000Z')
+    const line = tuneUpPrompt(SOURCES, sinceLateOn, justAfterMidnight).split('\n')[0]
+    assert.match(line, /was 2026-09-15, yesterday/)
   })
 })

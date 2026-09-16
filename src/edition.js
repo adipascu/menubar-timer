@@ -1,3 +1,5 @@
+import { daysBetween } from './tune-up.js'
+
 const CARD_SHAPE =
   'Each entry is {"topic": one of "saas", "psychology" or "psychiatry", "title": a short imperative line, "body": two or three sentences, "source": where the idea comes from, "url": a real link or omitted}.'
 
@@ -32,11 +34,19 @@ export const cardsStep = (number, cardsFile, aim) =>
 export const bookStep = (number, bookFile) =>
   `${number}. Then write my book to ${bookFile}. I read it where there is no network, on a flight or a train, so everything I need has to be in the file: write the ideas out in full rather than pointing at a link, and use the links as citations only. ${BOOK_SHAPE} Make it about two hours of reading at a normal pace, around thirty thousand words: ten to twelve chapters of five or six sections each, and every section around five hundred words that teaches one thing properly, with the reasoning and the examples, not a card. Build it from the same material as the cards: go deep on what I asked for more of, build on what I already know rather than repeating it, leave out what I marked not interested, answer every comment from the earlier editions and give every highlighted passage a sequel.`
 
-export const tuneUpPrompt = ({ feedbackFile, ideasFile, library }, since) => {
+const onDay = (at) => new Date(at).toISOString().slice(0, 10)
+
+const howLongAgo = (since, now) => {
+  const days = daysBetween(Date.parse(onDay(since)), Date.parse(onDay(now)))
+  if (days === 0) return 'earlier today'
+  return days === 1 ? 'yesterday' : `${days} days ago`
+}
+
+export const tuneUpPrompt = ({ feedbackFile, ideasFile, library }, since, now) => {
   const { cardsFile, bookFile } = library.nextEdition()
-  const lastTunedOn = new Date(since).toISOString().slice(0, 10)
+  const lastTunedOn = onDay(since)
   return [
-    `It has been a week since we last tuned my coaching. The last tune-up was ${lastTunedOn}. Work through this in order.`,
+    `Time to tune my coaching. The last tune-up was ${lastTunedOn}, ${howLongAgo(since, now)}. Work through this in order.`,
     '',
     `1. Read my Claude Code session history on disk to work out what I have actually been doing since ${lastTunedOn}. The transcripts are JSONL files under ~/.claude/projects/, one directory per project path and one .jsonl file per session. Use modification times to find the sessions active since then. They are large, so sample the most recently active ones rather than reading everything. Work out what I am building, what I keep getting stuck on, and where my time is actually going.`,
     '',
