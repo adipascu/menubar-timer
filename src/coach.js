@@ -136,14 +136,14 @@ const exportPool = () => {
   return file
 }
 
-export const createCoach = (getState, library, getBeacon, getSiteLine) => {
+export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine) => {
   rememberSourcePath()
   shareSystemAudio()
   const feedback = createFeedback()
   const quizFile = join(app.getPath('userData'), 'quiz.json')
   const poolFile = exportPool()
-  const editionSources = { poolFile, feedbackFile: feedback.file, quizFile, library }
-  const calibration = createCalibration(feedback.file, library)
+  const editionSources = { poolFile, feedbackFile: feedback.file, ideasFile, quizFile, library }
+  const calibration = createCalibration({ feedbackFile: feedback.file, ideasFile, library })
   const allTips = () => [...tips, ...library.cards().map((tip) => ({ ...tip, personal: true }))]
   const nextTip = createTipQueue(allTips, feedback.retiredTitles)
   let popup = null
