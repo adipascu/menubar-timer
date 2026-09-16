@@ -10,6 +10,7 @@ import { createFocusLog } from './focus-log.js'
 import { formatDuration, formatShare, periods, splitByCategory } from './focus-stats.js'
 import { goalCard } from './goal-card.js'
 import { nudge, standings, tracked } from './goals.js'
+import { createIdeas } from './ideas.js'
 import { createLibrary } from './library.js'
 import { swatchOf } from './palette.js'
 import { createPowerWatch } from './power.js'
@@ -337,6 +338,7 @@ app.on('window-all-closed', () => {})
         label: bridge.phones() > 0 ? 'Pebble: connected' : `Pebble: pairing code ${bridge.code}`,
         enabled: false,
       },
+      { label: 'Notes and ideas…', click: () => ideas.edit() },
       { label: 'Quiz me…', click: () => coach.quiz() },
       { label: 'Read the book…', click: () => reader.show() },
       {
@@ -430,6 +432,7 @@ app.on('window-all-closed', () => {})
   })
   app.on('will-quit', () => bridge.stop())
   const library = createLibrary()
+  const ideas = createIdeas()
   const coach = createCoach(() => state, library, beacon.get, siteLine.text)
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {

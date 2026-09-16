@@ -1,0 +1,281 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Notes and ideas</title>
+    <style>
+      :root {
+        --card: #fffdf3;
+        --border: #d8cfae;
+        --ink: #1c1a14;
+        --muted: #6f6852;
+        --accent: #b8860b;
+        --warning: #cd0000;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --card: #23211c;
+          --border: #4a4536;
+          --ink: #f2eee0;
+          --muted: #a9a189;
+          --accent: #e3b341;
+          --warning: #ff6b6b;
+          --shadow: rgba(0, 0, 0, 0.6);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+        font:
+          13px/1.4 -apple-system,
+          BlinkMacSystemFont,
+          'Helvetica Neue',
+          sans-serif;
+        color: var(--ink);
+      }
+
+      #card {
+        margin: 10px;
+        padding: 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 12px 30px var(--shadow);
+      }
+
+      header {
+        -webkit-app-region: drag;
+        cursor: default;
+      }
+
+      h1 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 650;
+      }
+
+      p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 340px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      li {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 54px;
+        resize: none;
+        overflow: hidden;
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        background: transparent;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .when {
+        grid-column: 1;
+        margin: -4px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .remove {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .remove:hover {
+        color: var(--card);
+        background: var(--warning);
+        border-color: var(--warning);
+      }
+
+      .remove:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      #empty {
+        margin: 0;
+        padding: 10px 0;
+      }
+
+      #add {
+        margin-top: 10px;
+      }
+
+      footer {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #hint {
+        flex: 1;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      button {
+        font: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+        padding: 4px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: transparent;
+      }
+
+      #add:hover,
+      #cancel:hover,
+      #save:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--card);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="card">
+      <header>
+        <h1>Notes and ideas</h1>
+        <p>
+          Anything you want the coach to know that does not belong on one card: what you are building, where you keep
+          getting stuck, an idea worth chasing. The weekly tune-up, the quiz and every new edition of the cards and the
+          book read these first and are written around them.
+        </p>
+      </header>
+      <ul id="rows"></ul>
+      <p id="empty" hidden>Nothing written down yet.</p>
+      <button id="add">Add note</button>
+      <footer>
+        <span id="hint">Cmd+Enter saves, Escape cancels.</span>
+        <button id="cancel">Cancel</button>
+        <button id="save">Save</button>
+      </footer>
+    </div>
+
+    <template id="row">
+      <li>
+        <textarea class="text" aria-label="Note" placeholder="What should the coach know?"></textarea>
+        <button class="remove" aria-label="Remove this note" title="Remove this note">×</button>
+        <span class="when"></span>
+      </li>
+    </template>
+
+    <script>
+      const rows = document.getElementById('rows')
+      const empty = document.getElementById('empty')
+      const card = document.getElementById('card')
+      const template = document.getElementById('row')
+
+      const reportHeight = () => window.ideas.height(card.getBoundingClientRect().bottom + 10)
+      const heightWatch = new ResizeObserver(reportHeight)
+
+      const fitToText = (field) => {
+        field.style.height = 'auto'
+        const borders = field.offsetHeight - field.clientHeight
+        field.style.height = `${field.scrollHeight + borders}px`
+      }
+
+      const refreshEmpty = () => {
+        empty.hidden = rows.children.length > 0
+      }
+
+      const addRow = ({ text, at }) => {
+        const row = template.content.firstElementChild.cloneNode(true)
+        row.dataset.at = at ?? ''
+        const field = row.querySelector('.text')
+        field.value = text
+        const when = row.querySelector('.when')
+        when.textContent = at
+          ? `Written ${new Date(at).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}`
+          : ''
+        when.hidden = !at
+        row.querySelector('.remove').addEventListener('click', () => {
+          row.remove()
+          refreshEmpty()
+        })
+        rows.append(row)
+        fitToText(field)
+        refreshEmpty()
+        return row
+      }
+
+      const save = () =>
+        window.ideas.save(
+          [...rows.children].map((row) => ({ text: row.querySelector('.text').value, at: row.dataset.at || null })),
+        )
+
+      window.ideas.onLoad((notes) => {
+        rows.replaceChildren()
+        for (const note of notes) addRow(note)
+        refreshEmpty()
+        const last = [...rows.querySelectorAll('.text')].at(-1)
+        if (last) last.focus()
+        rows.scrollTop = rows.scrollHeight
+        reportHeight()
+        heightWatch.observe(card)
+      })
+
+      document.getElementById('add').addEventListener('click', () => {
+        const row = addRow({ text: '', at: null })
+        row.querySelector('.text').focus()
+        rows.scrollTop = rows.scrollHeight
+      })
+      document.getElementById('save').addEventListener('click', save)
+      document.getElementById('cancel').addEventListener('click', () => window.ideas.cancel())
+      rows.addEventListener('input', (event) => fitToText(event.target))
+      document.addEventListener('keydown', (event) => {
+        if (event.isComposing) return
+        if (event.key === 'Enter' && event.metaKey) save()
+        if (event.key === 'Escape') window.ideas.cancel()
+      })
+    </script>
+  </body>
+</html>
