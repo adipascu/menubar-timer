@@ -20,6 +20,7 @@ import { createSettings } from './settings.js'
 import { createSiteLine, SITE_HOST } from './site-line.js'
 import { swatchImage } from './swatch.js'
 import { createTaskField } from './task.js'
+import { tuneUpGauge } from './tune-up-gauge.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
 import * as singleInstance from './single-instance.js'
@@ -62,6 +63,7 @@ app.on('window-all-closed', () => {})
   let menuOpen = false
   let menuStale = false
   let menuDay = null
+  let menuTuneUp = null
   let goalCardShownAt = null
   let batteryItem = null
 
@@ -213,7 +215,9 @@ app.on('window-all-closed', () => {})
   }
 
   const refreshStaleMenu = () => {
-    if (state === 'running' || menuDay !== periods(new Date())[0].from) renderMenu()
+    const stale =
+      state === 'running' || menuDay !== periods(new Date())[0].from || menuTuneUp !== coach.tuneUpTiming().label
+    if (stale) renderMenu()
   }
 
   const periodStandings = (now) => {
@@ -293,6 +297,8 @@ app.on('window-all-closed', () => {})
     }
     const now = new Date()
     menuDay = periods(now)[0].from
+    const tuneUp = coach.tuneUpTiming()
+    menuTuneUp = tuneUp.label
     const label = task.get()
     const menu = Menu.buildFromTemplate([
       state === 'idle'
@@ -339,6 +345,11 @@ app.on('window-all-closed', () => {})
         enabled: false,
       },
       { label: 'Notes and ideas…', click: () => ideas.edit() },
+      {
+        label: `Tune up the coach… · ${tuneUp.label}`,
+        icon: tuneUpGauge(tuneUp.daysElapsed),
+        click: () => coach.tuneUp(),
+      },
       { label: 'Quiz me…', click: () => coach.quiz() },
       { label: 'Read the book…', click: () => reader.show() },
       {
