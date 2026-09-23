@@ -344,6 +344,7 @@ app.on('window-all-closed', () => {})
         label: bridge.phones() > 0 ? 'Pebble: connected' : `Pebble: pairing code ${bridge.code}`,
         enabled: false,
       },
+      { label: 'Show a card now', click: () => coach.showCardNow() },
       { label: 'Notes and ideas…', click: () => ideas.edit() },
       {
         label: `Tune up the coach… · ${tuneUp.label}`,

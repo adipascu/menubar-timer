@@ -12,6 +12,8 @@ Whenever the timer is off and you are at the keyboard, he slides a card into the
 
 He keeps the three subjects in strict rotation, a third each, and inside a subject, once your personal cards are out of the way, he starts with the definitions before the finer points, so nobody can say he skipped the basics.
 
+Show a card now in the menu summons him on the spot, timer running or not. It is the same rotation the gaps between timers draw from, so the card you get is simply the next one he was going to show anyway.
+
 ## What the buttons mean to him
 
 - **Got it.** The expected answer.
