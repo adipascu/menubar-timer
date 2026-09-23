@@ -40,3 +40,30 @@ test('resolves keyed archive references the way the Wi-Fi scan record needs', ()
 test('rejects anything that is not a binary plist', () => {
   assert.throws(() => parseBinaryPlist(Buffer.from('<?xml version="1.0"?>')), /not a binary plist/)
 })
+
+const HEADER_BYTES = 8
+
+const holding = (object) => {
+  const trailer = Buffer.alloc(32)
+  trailer[6] = 1
+  trailer[7] = 1
+  trailer.writeBigUInt64BE(1n, 8)
+  trailer.writeBigUInt64BE(0n, 16)
+  trailer.writeBigUInt64BE(BigInt(HEADER_BYTES + object.length), 24)
+  return Buffer.concat([Buffer.from('bplist00', 'latin1'), object, Buffer.from([HEADER_BYTES]), trailer])
+}
+
+test('reads the fill value plutil never writes as null', () => {
+  assert.equal(parseBinaryPlist(holding(Buffer.from([0x00]))), null)
+})
+
+test('reads a four byte real, which plutil writes as eight', () => {
+  const object = Buffer.alloc(5)
+  object[0] = 0x22
+  object.writeFloatBE(0.5, 1)
+  assert.equal(parseBinaryPlist(holding(object)), 0.5)
+})
+
+test('says which object type it does not support rather than returning nothing', () => {
+  assert.throws(() => parseBinaryPlist(holding(Buffer.from([0x70]))), /unsupported binary plist object type 0x7/)
+})

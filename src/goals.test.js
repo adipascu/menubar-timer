@@ -90,6 +90,10 @@ describe('standings', () => {
       [0, 0, 0],
     )
   })
+
+  it('stands nobody up when every category has been retired, so there is no share to divide by', () => {
+    assert.deepEqual(standingsOf([category('a', 0), category('b', 0)], [hours('a', 2)]), [])
+  })
 })
 
 describe('nudge', () => {

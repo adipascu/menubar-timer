@@ -8,7 +8,10 @@ const GAP_MS = 8 * MINUTE
 const gap = () => GAP_MS
 
 beforeEach(() => mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 0 }))
-afterEach(() => mock.timers.reset())
+afterEach(() => {
+  mock.timers.reset()
+  mock.restoreAll()
+})
 
 const dueTimes = () => {
   const times = []
@@ -55,6 +58,32 @@ describe('tipsResumed', () => {
     schedule.tipsResumed()
     mock.timers.tick(MINUTE)
     assert.deepEqual(times, [11 * MINUTE])
+  })
+})
+
+describe('the gap it picks for itself', () => {
+  const dueAfter = (random) => {
+    mock.method(Math, 'random', () => random)
+    const times = []
+    const schedule = createTipSchedule(() => times.push(Date.now()))
+    schedule.next()
+    return times
+  }
+
+  it('waits four minutes at the bottom of its range', () => {
+    const times = dueAfter(0)
+    mock.timers.tick(4 * MINUTE - 1)
+    assert.deepEqual(times, [])
+    mock.timers.tick(1)
+    assert.equal(times.length, 1)
+  })
+
+  it('stops just short of twelve minutes at the top', () => {
+    const times = dueAfter(0.999999)
+    mock.timers.tick(12 * MINUTE - 2)
+    assert.deepEqual(times, [])
+    mock.timers.tick(1)
+    assert.equal(times.length, 1)
   })
 })
 

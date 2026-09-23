@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "knip": "knip",
-    "test": "node --test 'src/**/*.test.js' '*.test.js'",
+    "test": "node --test --experimental-test-coverage --test-coverage-exclude='**/*.test.js' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 'src/**/*.test.js' '*.test.js'",
     "build": "electron-builder --dir",
     "build:mac": "electron-builder -m --config.mac.target=dmg --publish=never",
     "site:deploy": "bash scripts/deploy-site.sh"

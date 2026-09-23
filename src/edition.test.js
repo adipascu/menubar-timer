@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
-import { editionCard, tuneUpPrompt } from './edition.js'
+import { editionCard, poolStep, tuneUpPrompt } from './edition.js'
 import { quizCard } from './quiz.js'
 
 const SOURCES = {
@@ -56,6 +56,18 @@ for (const [name, build] of Object.entries(PROMPTS)) {
     })
   })
 }
+
+describe('the card pool step', () => {
+  it('points at the cards written for the last edition', () => {
+    assert.ok(poolStep(1, SOURCES.poolFile, SOURCES.library).includes('/data/library/cards-0003.json'))
+  })
+
+  it('names the pool alone before any edition has been written', () => {
+    const step = poolStep(1, SOURCES.poolFile, { ...SOURCES.library, latestCardsFile: () => null })
+    assert.ok(step.includes(SOURCES.poolFile))
+    assert.ok(!step.includes('personalised cards'))
+  })
+})
 
 describe('the tune-up opening line', () => {
   const opening = (elapsedMs) => tuneUpPrompt(SOURCES, LAST_TUNE_UP, LAST_TUNE_UP + elapsedMs).split('\n')[0]
