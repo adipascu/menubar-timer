@@ -4,6 +4,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createCalibration } from './calibration.js'
+import { createCardSlot } from './card-slot.js'
 import { editionCard } from './edition.js'
 import { createFeedback } from './feedback.js'
 import { menuBarIsCovered } from './fullscreen.js'
@@ -146,18 +147,11 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   const calibration = createCalibration({ feedbackFile: feedback.file, ideasFile, library })
   const allTips = () => [...tips, ...library.cards().map((tip) => ({ ...tip, personal: true }))]
   const nextTip = createTipQueue(allTips, feedback.retiredTitles)
-  let popup = null
-  let showing = null
+  const onScreen = createCardSlot()
   let dragOffset = null
 
   const tipsAreAllowed = () => getState() !== 'running'
   const timerIsOff = () => getState() === 'idle'
-
-  const closePopup = () => {
-    if (popup && !popup.isDestroyed()) popup.close()
-    popup = null
-    showing = null
-  }
 
   const placeBottomRight = (window) => {
     const { workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
@@ -184,9 +178,8 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   }
 
   const show = (tip) => {
-    showing = tip
     const loudMusic = musicIsLoud().catch(() => false)
-    popup = new BrowserWindow({
+    const window = new BrowserWindow({
       width: POPUP_WIDTH,
       height: 200,
       show: false,
@@ -201,14 +194,10 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
       webPreferences: { preload: join(here, 'popup-preload.cjs') },
     })
 
-    popup.setAlwaysOnTop(true, 'screen-saver')
-    popup.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
-    popup.on('closed', () => {
-      popup = null
-      showing = null
-    })
-
-    const window = popup
+    onScreen.open(window, tip)
+    window.setAlwaysOnTop(true, 'screen-saver')
+    window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+    window.on('closed', () => onScreen.closed(window))
     window.on('blur', () => window.setFocusable(false))
     window.on('close', () => {
       if (!window.isFocused()) return
@@ -248,13 +237,13 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   }
 
   const tick = async () => {
-    if (!(tipsAreAllowed() && userIsAtTheComputer() && popup === null)) {
+    if (!(tipsAreAllowed() && userIsAtTheComputer() && onScreen.isEmpty())) {
       schedule.retry()
       return
     }
 
     const tip = await dueNow()
-    if (tipsAreAllowed() && popup === null) {
+    if (tipsAreAllowed() && onScreen.isEmpty()) {
       show(tip)
       if (tip.topic) feedback.recordShown(tip)
       log(`showed ${tip.kind ?? 'tip'}: ${tip.title}`)
@@ -294,11 +283,11 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
 
   ipcMain.on('coach:beacon', (_event, label) => log(`beacon ${label}`))
 
-  ipcMain.on('coach:dismiss', () => closePopup())
+  ipcMain.on('coach:dismiss', () => onScreen.close())
 
   const closeAndRecord = (record) => {
-    const tip = showing
-    closePopup()
+    const tip = onScreen.card()
+    onScreen.close()
     if (tip?.topic) record(tip)
   }
 
@@ -324,14 +313,14 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   )
 
   ipcMain.on('coach:discuss', () => {
-    const tip = showing
-    closePopup()
+    const tip = onScreen.card()
+    onScreen.close()
     if (tip) openClaudeSession(tip)
   })
 
   ipcMain.on('coach:open-source', (_event, url) => {
     shell.openExternal(url)
-    closePopup()
+    onScreen.close()
   })
 
   ipcMain.on('coach:focus', (event) => {
@@ -341,23 +330,20 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
 
   return {
     start: () => schedule.next(),
-    alert: (card) => {
-      closePopup()
-      show(card)
-    },
+    alert: (card) => show(card),
     quiz: () => openClaudeSession(quizCard(editionSources)),
     edition: () => openClaudeSession(editionCard(editionSources)),
     tuneUp: () => openClaudeSession(calibration.popup()),
     tuneUpTiming: calibration.timing,
     setBeacon: (id) => {
-      if (popup && !popup.isDestroyed()) popup.webContents.send('beacon', id)
+      onScreen.window()?.webContents.send('beacon', id)
     },
     setSiteLine: (text) => {
-      if (popup && !popup.isDestroyed()) popup.webContents.send('site-line', text)
+      onScreen.window()?.webContents.send('site-line', text)
     },
     refresh: () => {
       if (!tipsAreAllowed()) {
-        closePopup()
+        onScreen.close()
         return
       }
       if (timerIsOff()) schedule.tipsResumed()
@@ -365,7 +351,7 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     },
     stop: () => {
       schedule.stop()
-      closePopup()
+      onScreen.close()
     },
   }
 }
