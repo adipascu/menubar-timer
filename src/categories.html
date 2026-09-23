@@ -11,7 +11,6 @@
         --muted: #6f6852;
         --accent: #b8860b;
         --warning: #cd0000;
-        --shadow: rgba(0, 0, 0, 0.3);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -22,7 +21,6 @@
           --muted: #a9a189;
           --accent: #e3b341;
           --warning: #ff6b6b;
-          --shadow: rgba(0, 0, 0, 0.6);
         }
       }
 
@@ -32,8 +30,9 @@
 
       html,
       body {
+        height: 100%;
         margin: 0;
-        background: transparent;
+        background: var(--card);
         overflow: hidden;
         font:
           13px/1.4 -apple-system,
@@ -44,23 +43,24 @@
       }
 
       #card {
-        margin: 10px;
-        padding: 14px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        box-shadow: 0 12px 30px var(--shadow);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
       }
 
       header {
-        -webkit-app-region: drag;
+        padding: 14px 16px 0;
         cursor: default;
       }
 
-      h1 {
-        margin: 0 0 4px;
-        font-size: 15px;
-        font-weight: 650;
+      #scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+      }
+
+      #list {
+        padding: 4px 16px;
       }
 
       p {
@@ -80,7 +80,7 @@
 
       li {
         display: grid;
-        grid-template-columns: auto 1fr auto auto auto;
+        grid-template-columns: auto minmax(120px, 1fr) auto auto auto;
         gap: 10px;
         align-items: center;
       }
@@ -189,11 +189,12 @@
       }
 
       #add {
-        margin-top: 10px;
+        margin: 10px 0 4px;
       }
 
       footer {
-        margin-top: 12px;
+        padding: 12px 16px 14px;
+        border-top: 1px solid var(--border);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -236,7 +237,6 @@
   <body>
     <div id="card">
       <header>
-        <h1>Categories</h1>
         <p>
           Timers are filed under the category picked in the menu, and the countdown wears its color. The share is how
           much of your timed work you want each one to take. A category at 0% is kept for its history but stays out of
@@ -244,8 +244,12 @@
         </p>
         <p id="period"></p>
       </header>
-      <ul id="rows"></ul>
-      <button id="add">Add category</button>
+      <div id="scroll">
+        <div id="list">
+          <ul id="rows"></ul>
+          <button id="add">Add category</button>
+        </div>
+      </div>
       <footer>
         <span id="hint">Enter saves, Escape cancels.</span>
         <button id="cancel">Cancel</button>
@@ -270,13 +274,15 @@
       const rows = document.getElementById('rows')
       const hint = document.getElementById('hint')
       const period = document.getElementById('period')
-      const card = document.getElementById('card')
+      const header = document.querySelector('header')
+      const list = document.getElementById('list')
+      const footer = document.querySelector('footer')
       const template = document.getElementById('row')
       const idleHint = hint.textContent
       let palette = []
       let refused = null
 
-      const reportHeight = () => window.categories.height(card.getBoundingClientRect().bottom + 10)
+      const reportHeight = () => window.categories.height(header.offsetHeight + list.offsetHeight + footer.offsetHeight)
       const heightWatch = new ResizeObserver(reportHeight)
 
       const swatchOf = (key) => palette.find((entry) => entry.key === key) ?? palette[0]
@@ -414,7 +420,8 @@
         const active = rows.querySelector(`[data-id="${payload.active}"] .name`) ?? rows.querySelector('.name')
         active.focus()
         reportHeight()
-        heightWatch.observe(card)
+        heightWatch.observe(list)
+        heightWatch.observe(footer)
       })
 
       document.getElementById('add').addEventListener('click', () => {
