@@ -334,6 +334,12 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   return {
     start: () => schedule.next(),
     alert: (card) => show(card),
+    dropAlert: (kind) => {
+      const card = onScreen.card()
+      if (card?.kind !== kind) return
+      onScreen.close()
+      log(`dropped the ${kind} card: ${card.title}`)
+    },
     showCardNow: () => {
       present(nextCard(), ' on demand')
       schedule.next()
