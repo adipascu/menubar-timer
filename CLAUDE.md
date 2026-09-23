@@ -30,7 +30,7 @@ System readings degrade to `null` or an empty string and get logged. They do not
 
 `Date` is used directly, and there is no `Temporal` polyfill here. The 35 or so usages are ISO timestamps for the log and elapsed-time arithmetic, neither of which needs zone-aware types, so the dependency is not worth its bytes in a menu bar app.
 
-# CI and Hooks
+# CI
 
 `.github/workflows/ci.yml` runs lint, format, knip, `pnpm audit`, CodeQL and gitleaks, then test and build, then release from `main` only. `.github/actions/install` is the shared setup step.
 
@@ -39,6 +39,16 @@ System readings degrade to `null` or an empty string and get logged. They do not
 - The build is not in the pre-commit hook. `electron-builder` takes minutes, which is too slow for a gate that runs on every commit, so a packaging break is caught by the `build` job instead.
 - The `release` job publishes the DMG to the `latest` release and then `scripts/verify-release.sh` downloads it back, compares checksums and checks the signing identity. Merging to `main` therefore ships a public release.
 - Artifact sizes are reported into the job summary by `scripts/report-sizes.sh` and never gate anything. A build growing is a fact to read, not a verdict.
+
+# Coverage
+
+`pnpm test` fails under 100% on lines, branches and functions. The gate applies to every file the tests actually load, which is the pure logic rather than the app shell.
+
+- A module that imports `electron`, directly or through `src/log.js`, cannot be loaded by `node --test` at all, so `src/main.js`, `src/coach.js`, `src/power.js` and the rest of the shell sit outside the gate and are proved by driving a real build and reading the log.
+- Pulling a decision out of one of those files into a module with no `electron` import is how it comes under the gate, and is the reason `src/goals.js`, `src/focus-stats.js`, `src/tip-schedule.js`, `src/card-slot.js` and `src/power-window.js` are separate from their callers.
+- A branch the gate cannot reach is usually a branch that cannot happen. Delete it rather than reaching for an ignore comment: the `goalTotal > 0` guard in `standings` went that way, since only categories with a share above zero ever get that far.
+
+# Hooks
 
 `.husky/pre-commit` runs `lint-staged` (prettier then eslint with `--fix`), then knip, then the tests.
 

@@ -25,7 +25,7 @@ export const standings = (categories, segments, from, to) => {
   const total = [...seconds.values()].reduce((sum, value) => sum + value, 0)
   return wanted
     .map(({ share, ...category }) => {
-      const goal = goalTotal > 0 ? share / goalTotal : 0
+      const goal = share / goalTotal
       const actual = total > 0 ? seconds.get(category.id) / total : 0
       return { ...category, seconds: seconds.get(category.id), goal, actual, gap: goal - actual }
     })
