@@ -230,10 +230,17 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     window.loadFile(join(here, 'popup.html'))
   }
 
+  const nextCard = () => (calibration.isDue() ? calibration.popup() : (nextTip() ?? calibration.popup()))
+
   const dueNow = async () => {
-    if (calibration.isDue()) return calibration.popup()
-    if (timerIsOff() && (await menuBarIsCovered())) return HIDDEN_TIMER_NUDGE
-    return nextTip() ?? calibration.popup()
+    if (!calibration.isDue() && timerIsOff() && (await menuBarIsCovered())) return HIDDEN_TIMER_NUDGE
+    return nextCard()
+  }
+
+  const present = (tip, how = '') => {
+    show(tip)
+    if (tip.topic) feedback.recordShown(tip)
+    log(`showed ${tip.kind ?? 'tip'}${how}: ${tip.title}`)
   }
 
   const tick = async () => {
@@ -243,11 +250,7 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     }
 
     const tip = await dueNow()
-    if (tipsAreAllowed() && onScreen.isEmpty()) {
-      show(tip)
-      if (tip.topic) feedback.recordShown(tip)
-      log(`showed ${tip.kind ?? 'tip'}: ${tip.title}`)
-    }
+    if (tipsAreAllowed() && onScreen.isEmpty()) present(tip)
     schedule.next()
   }
 
@@ -331,6 +334,10 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   return {
     start: () => schedule.next(),
     alert: (card) => show(card),
+    showCardNow: () => {
+      present(nextCard(), ' on demand')
+      schedule.next()
+    },
     quiz: () => openClaudeSession(quizCard(editionSources)),
     edition: () => openClaudeSession(editionCard(editionSources)),
     tuneUp: () => openClaudeSession(calibration.popup()),
