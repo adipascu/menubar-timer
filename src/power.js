@@ -1,13 +1,16 @@
 import { execFile } from 'node:child_process'
 import { log } from './log.js'
+import {
+  ALERT_GAP_MS,
+  CHARGER_SHORTFALL_WATTS,
+  createWindow,
+  HEAVY_LOAD_WATTS,
+  LOW_BATTERY_PERCENT,
+  SAMPLE_MS,
+  STALE_AFTER_MS,
+  WINDOW_SAMPLES,
+} from './power-window.js'
 
-const SAMPLE_MS = 30 * 1000
-const WINDOW_SAMPLES = 10
-const HEAVY_LOAD_WATTS = 22
-const LOW_BATTERY_PERCENT = 40
-const CHARGER_SHORTFALL_WATTS = 5
-const ALERT_GAP_MS = 3 * 60 * 1000
-const STALE_AFTER_MS = 2 * SAMPLE_MS
 const UNKNOWN_MINUTES = 65535
 
 const number = (text, key) => {
@@ -18,29 +21,6 @@ const number = (text, key) => {
 const flag = (text, key) => {
   const match = text.match(new RegExp(`"${key}" = (Yes|No)`))
   return match ? match[1] === 'Yes' : null
-}
-
-const median = (values) => {
-  const sorted = [...values].sort((a, b) => a - b)
-  return sorted[Math.floor(sorted.length / 2)]
-}
-
-const sustainedWatts = (samples) => Math.round(median(samples) * 10) / 10
-
-const createWindow = () => {
-  const samples = []
-  return {
-    push: (watts) => {
-      samples.push(watts)
-      if (samples.length > WINDOW_SAMPLES) samples.shift()
-    },
-    clear: () => {
-      samples.length = 0
-    },
-    size: () => samples.length,
-    full: () => samples.length === WINDOW_SAMPLES,
-    sustained: () => sustainedWatts(samples),
-  }
 }
 
 const adapterWatts = (text) => {
@@ -74,7 +54,7 @@ const readPower = () =>
 
 const KNOBS = [
   'This alert comes from TimerBar itself, so if it fired at the wrong moment we can retune it.',
-  `The knobs are all at the top of src/power.js: HEAVY_LOAD_WATTS ${HEAVY_LOAD_WATTS}, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, CHARGER_SHORTFALL_WATTS ${CHARGER_SHORTFALL_WATTS}, and ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts.`,
+  `The knobs are all at the top of src/power-window.js: HEAVY_LOAD_WATTS ${HEAVY_LOAD_WATTS}, sampled every ${SAMPLE_MS / 1000}s and compared as a median over the last ${WINDOW_SAMPLES} samples, LOW_BATTERY_PERCENT ${LOW_BATTERY_PERCENT}, CHARGER_SHORTFALL_WATTS ${CHARGER_SHORTFALL_WATTS}, and ALERT_GAP_MS ${ALERT_GAP_MS / 60000} minutes between alerts.`,
 ].join(' ')
 
 const WHOLE_SYSTEM_DRAW =
