@@ -85,6 +85,7 @@ export const createPowerWatch = (onAlert, onSample = () => {}, chargerNearby = (
   let lastSuppressedLogAt = 0
   let timer = null
   let wasOverLimit = false
+  let chargerChangedAt = 0
 
   const report = (sustained, overLimit, reading) => {
     if (overLimit !== wasOverLimit) {
@@ -95,12 +96,13 @@ export const createPowerWatch = (onAlert, onSample = () => {}, chargerNearby = (
   }
 
   const check = async () => {
+    const readAt = Date.now()
     const reading = await readPower().catch((error) => {
       log(`power read failed: ${error.message.trim()}`)
       return null
     })
 
-    if (!reading) return
+    if (!reading || readAt < chargerChangedAt) return
     if (!reading.onBattery) {
       watts.length = 0
       report(null, false, reading)
@@ -143,6 +145,11 @@ export const createPowerWatch = (onAlert, onSample = () => {}, chargerNearby = (
     start: () => {
       check()
       timer = setInterval(check, SAMPLE_MS)
+    },
+    chargerArrived: () => {
+      chargerChangedAt = Date.now()
+      watts.length = 0
+      check()
     },
     stop: () => clearInterval(timer),
   }

@@ -29,7 +29,7 @@ Once a week he replaces a card with the tune-up. It opens a session that reads w
 
 Quiz me… in the menu lets him test you on the cards he has shown, mark what you clearly had as known, and rewrite the personal cards around the gaps. He keeps score in `quiz.json`.
 
-He also nags: somewhere you have said a charger is within reach, when the Mac is pulling over 22 W on battery or the battery is under 40 percent, and when a fullscreen window has hidden the menu bar he lives in while the timer is off.
+He also nags: somewhere you have said a charger is within reach, when the Mac is pulling over 22 W on battery or the battery is under 40 percent, and when a fullscreen window has hidden the menu bar he lives in while the timer is off. Plug the charger in and he takes the power card straight back, the moment macOS says the adapter is there, because the nag has been answered and he would rather not be caught still asking.
 
 ## Where he lives in the code
 

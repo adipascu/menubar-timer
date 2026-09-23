@@ -1,4 +1,4 @@
-import { app, Menu, shell, Tray } from 'electron'
+import { app, Menu, powerMonitor, shell, Tray } from 'electron'
 import ansiStyles from 'ansi-styles'
 import { BEACON_PRESETS, createBeaconPreset } from './beacon.js'
 import { batteryMenuItem } from './battery.js'
@@ -460,6 +460,11 @@ app.on('window-all-closed', () => {})
   coach.start()
   chargerPlaces.start()
   powerWatch.start()
+  powerMonitor.on('on-ac', () => {
+    log('charger connected')
+    coach.dropAlert('power')
+    powerWatch.chargerArrived()
+  })
   await bridge.start()
   setInterval(refreshStaleMenu, MENU_REFRESH_MS)
   log(`ready, start at login ${loginItem.isEnabled()}`)
