@@ -6,10 +6,12 @@ import { fileURLToPath } from 'node:url'
 import { orderedByShare } from './goals.js'
 import { log } from './log.js'
 import { swatchList, swatchOf } from './palette.js'
+import { contentHeightWithin, keptInside, openingBounds } from './window-fit.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
-const WINDOW_WIDTH = 560
+const WINDOW_WIDTH = 580
+const MINIMUM_HEIGHT = 240
 const DEFAULTS = [
   { name: 'Work', color: 'blue', share: 50 },
   { name: 'Side project', color: 'magenta', share: 30 },
@@ -76,6 +78,9 @@ export const createCategories = (onChange) => {
   const loaded = stored(file)
   let { categories, active, periods } = loaded ?? { categories: DEFAULTS.map(cleaned), active: null, periods: [] }
   let window = null
+  let resizedByHand = false
+
+  const cursorWorkArea = () => screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
 
   const persist = () => writeFileSync(file, JSON.stringify({ active, periods, categories }, null, 2))
 
@@ -110,13 +115,30 @@ export const createCategories = (onChange) => {
     close()
   })
   ipcMain.on('categories:cancel', () => close())
+
+  const fit = (target, wanted) => {
+    const shown = target.isVisible()
+    const area = shown ? screen.getDisplayMatching(target.getBounds()).workArea : cursorWorkArea()
+    const [contentWidth, contentHeight] = target.getContentSize()
+    const frameHeight = target.getSize()[1] - contentHeight
+    target.setContentSize(contentWidth, contentHeightWithin(wanted, area, frameHeight))
+    const bounds = target.getBounds()
+    target.setBounds(shown ? keptInside(bounds, area) : openingBounds(bounds, area))
+  }
+
+  const showOnCurrentSpace = (target) => {
+    const spaces = { visibleOnFullScreen: true, skipTransformProcessType: true }
+    target.setVisibleOnAllWorkspaces(true, spaces)
+    app.focus({ steal: true })
+    target.show()
+    target.setVisibleOnAllWorkspaces(false, spaces)
+  }
+
   ipcMain.on('categories:height', (event, height) => {
     const sender = BrowserWindow.fromWebContents(event.sender)
-    if (!sender || sender.isDestroyed()) return
-    sender.setContentSize(WINDOW_WIDTH, Math.round(height))
-    if (sender.isVisible()) return
-    app.focus({ steal: true })
-    sender.show()
+    if (!sender || sender.isDestroyed() || sender !== window || resizedByHand) return
+    fit(sender, height)
+    if (!sender.isVisible()) showOnCurrentSpace(sender)
   })
 
   return {
@@ -131,27 +153,27 @@ export const createCategories = (onChange) => {
     },
     edit: () => {
       if (window) {
-        window.focus()
-        app.focus({ steal: true })
+        if (window.isVisible()) showOnCurrentSpace(window)
         return
       }
 
-      const { workArea } = screen.getPrimaryDisplay()
+      resizedByHand = false
       window = new BrowserWindow({
         width: WINDOW_WIDTH,
-        height: 200,
-        x: Math.round(workArea.x + (workArea.width - WINDOW_WIDTH) / 2),
-        y: workArea.y + 90,
+        height: MINIMUM_HEIGHT,
+        minWidth: WINDOW_WIDTH,
+        minHeight: MINIMUM_HEIGHT,
         show: false,
-        frame: false,
-        transparent: true,
-        resizable: false,
+        fullscreenable: false,
+        minimizable: false,
         skipTaskbar: true,
-        hasShadow: false,
         title: 'Categories',
         webPreferences: { preload: join(here, 'categories-preload.cjs') },
       })
 
+      window.on('will-resize', () => {
+        resizedByHand = true
+      })
       window.on('closed', () => {
         window = null
       })
