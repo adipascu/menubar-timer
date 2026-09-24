@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { chargerHere, markedHere, withChargerToggled } from './charger-rules.js'
 import { log } from './log.js'
 import { run } from './shell.js'
 import { readSsid } from './wifi.js'
@@ -14,7 +15,9 @@ const normalizeMac = (raw) =>
     .map((octet) => octet.padStart(2, '0'))
     .join(':')
 
-const label = (place) => place.ssid ?? place.domain ?? place.id
+const name = (place) => place.ssid ?? place.domain ?? null
+
+const label = (place) => name(place) ?? `an unnamed network (${place.id})`
 
 const readFingerprint = async () => {
   const route = await run('route', ['-n', 'get', 'default'])
@@ -28,9 +31,9 @@ const readFingerprint = async () => {
 
   const packet = await run('ipconfig', ['getpacket', iface])
   const domain = packet.match(/domain_name \(string\): (\S+)/)?.[1] ?? null
-  const ssid = await readSsid(iface)
+  const { ssid, nameProblem } = await readSsid(iface)
 
-  return { id: normalizeMac(mac), ssid, domain }
+  return { id: normalizeMac(mac), ssid, domain, nameProblem }
 }
 
 export const createChargerPlaces = (onChange = () => {}) => {
@@ -41,7 +44,13 @@ export const createChargerPlaces = (onChange = () => {}) => {
   const places = () => (existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [])
   const save = (list) => writeFileSync(file, JSON.stringify(list, null, 2))
 
-  const isMarked = () => current !== null && places().some((place) => place.id === current.id)
+  const isMarked = () => chargerHere(places(), current?.id ?? null)
+
+  const describe = () => {
+    if (current === null) return 'no charger assumed without a network'
+    if (!places().some(({ id }) => id === current.id)) return 'charger assumed, network not marked'
+    return markedHere(places(), current.id) === false ? 'no charger here' : 'charger available'
+  }
 
   const refresh = async () => {
     const next = await readFingerprint()
@@ -49,8 +58,8 @@ export const createChargerPlaces = (onChange = () => {}) => {
     current = next
     if (changed) {
       log(
-        `network ${next ? label(next) : 'unknown'}, ` +
-          `charger ${next === null ? 'unknown' : isMarked() ? 'available' : 'not marked'}`,
+        `network ${next ? label(next) : 'unknown'}, ${describe()}` +
+          (next?.nameProblem ? `, name unreadable: ${next.nameProblem}` : ''),
       )
       onChange()
     }
@@ -62,14 +71,15 @@ export const createChargerPlaces = (onChange = () => {}) => {
       timer = setInterval(refresh, REFRESH_MS)
     },
     stop: () => clearInterval(timer),
-    networkLabel: () => (current ? label(current) : null),
+    onNetwork: () => current !== null,
+    networkName: () => (current ? name(current) : null),
     isMarked,
-    shouldAlert: () => places().length === 0 || isMarked(),
+    shouldAlert: isMarked,
     toggleHere: () => {
       if (!current) return
-      const rest = places().filter((place) => place.id !== current.id)
-      save(isMarked() ? rest : [...rest, current])
-      log(`charger ${isMarked() ? 'marked' : 'unmarked'} at ${label(current)}`)
+      const { nameProblem, ...network } = current
+      save(withChargerToggled(places(), network))
+      log(`${isMarked() ? 'charger marked available' : 'marked no charger'} at ${label(current)}`)
       onChange()
     },
   }

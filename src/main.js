@@ -405,12 +405,12 @@ app.on('window-all-closed', () => {})
       { type: 'separator' },
       ...(batteryItem ? [batteryItem] : []),
       {
-        label: chargerPlaces.networkLabel()
-          ? `Charger available at ${chargerPlaces.networkLabel()}`
-          : 'Charger available here',
+        label: chargerPlaces.networkName()
+          ? `Charger available at ${chargerPlaces.networkName()}`
+          : 'Charger available on this Wi-Fi',
         type: 'checkbox',
         checked: chargerPlaces.isMarked(),
-        enabled: chargerPlaces.networkLabel() !== null,
+        enabled: chargerPlaces.onNetwork(),
         click: () => {
           chargerPlaces.toggleHere()
           renderMenu()
