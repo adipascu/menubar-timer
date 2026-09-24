@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('categories', {
   height: (height) => ipcRenderer.send('categories:height', height),
   save: (categories) => ipcRenderer.send('categories:save', categories),
   cancel: () => ipcRenderer.send('categories:cancel'),
+  reshare: (request) => ipcRenderer.invoke('categories:reshare', request),
 })
