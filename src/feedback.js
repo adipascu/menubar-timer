@@ -22,6 +22,8 @@ export const createFeedback = () => {
     mark: (tip, status) => update(tip, () => ({ status, markedAt: new Date().toISOString() })),
     markInterested: (tip) =>
       update(tip, (entry) => ({ interested: (entry.interested ?? 0) + 1, interestedAt: new Date().toISOString() })),
+    markUseful: (tip) =>
+      update(tip, (entry) => ({ useful: (entry.useful ?? 0) + 1, usefulAt: new Date().toISOString() })),
     addNote: (tip, text) =>
       update(tip, (entry) => ({ notes: [...(entry.notes ?? []), { text, at: new Date().toISOString() }] })),
     retiredTitles: () =>
