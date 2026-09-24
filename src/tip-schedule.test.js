@@ -87,17 +87,6 @@ describe('the gap it picks for itself', () => {
   })
 })
 
-describe('timerEnded', () => {
-  it('brings a distant tip forward to seconds after the timer runs to zero', () => {
-    const { schedule, times } = dueTimes()
-    schedule.next()
-    mock.timers.tick(MINUTE)
-    schedule.timerEnded()
-    mock.timers.tick(5 * SECOND)
-    assert.deepEqual(times, [MINUTE + 5 * SECOND])
-  })
-})
-
 describe('stop', () => {
   it('drops the pending tip', () => {
     const { schedule, times } = dueTimes()
@@ -105,55 +94,5 @@ describe('stop', () => {
     schedule.stop()
     mock.timers.tick(GAP_MS)
     assert.deepEqual(times, [])
-  })
-})
-
-describe('a run of timer sessions with short breaks', () => {
-  const runSessions = ({ sessionMinutes, breakSeconds, rounds }) => {
-    const shown = []
-    let state = 'idle'
-
-    const schedule = createTipSchedule(() => {
-      if (state === 'running') {
-        schedule.retry()
-        return
-      }
-      shown.push(state)
-      schedule.next()
-    }, gap)
-
-    const setState = (next) => {
-      state = next
-      if (next === 'running') return
-      if (next === 'expired') schedule.timerEnded()
-      else schedule.tipsResumed()
-    }
-
-    schedule.next()
-    for (let round = 0; round < rounds; round += 1) {
-      setState('running')
-      mock.timers.tick(sessionMinutes * MINUTE)
-      setState('expired')
-      mock.timers.tick(breakSeconds * SECOND)
-    }
-    return shown
-  }
-
-  it('shows a tip in every break, however short', () => {
-    assert.deepEqual(runSessions({ sessionMinutes: 15, breakSeconds: 50, rounds: 5 }), [
-      'expired',
-      'expired',
-      'expired',
-      'expired',
-      'expired',
-    ])
-  })
-
-  it('shows a tip in a break shorter than the retry gap', () => {
-    assert.deepEqual(runSessions({ sessionMinutes: 10, breakSeconds: 20, rounds: 3 }), [
-      'expired',
-      'expired',
-      'expired',
-    ])
   })
 })

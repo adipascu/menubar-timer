@@ -7,7 +7,15 @@ import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createFocusLog } from './focus-log.js'
-import { formatDuration, formatShare, periods, splitByCategory, splitByMode } from './focus-stats.js'
+import {
+  expiries,
+  formatDuration,
+  formatShare,
+  formatWait,
+  periods,
+  splitByCategory,
+  splitByMode,
+} from './focus-stats.js'
 import { goalCard } from './goal-card.js'
 import { nudge, standings, tracked } from './goals.js'
 import { createIdeas } from './ideas.js'
@@ -39,10 +47,17 @@ const DURATIONS = [
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
 const MODE_OF = { running: 'timer', expired: 'expired', idle: 'freebasing' }
-const OFF_THE_CLOCK = [
-  { mode: 'expired', label: 'Timer ran out, not yet restarted' },
-  { mode: 'freebasing', label: 'Freebasing' },
-]
+const expiredLine = (seconds, ranOut) => {
+  if (ranOut.count > 0)
+    return `Timer ran out ${ranOut.count}× · ${formatWait(seconds)} after it, ${formatWait(ranOut.seconds / ranOut.count)} each`
+  return seconds >= 60 ? `After the timer ran out · ${formatDuration(seconds)}` : null
+}
+
+const offTheClock = (modes, ranOut) =>
+  [
+    expiredLine(modes.expired, ranOut),
+    modes.freebasing >= 60 ? `Freebasing · ${formatDuration(modes.freebasing)}` : null,
+  ].filter(Boolean)
 const NO_TASK = 'No task, on purpose'
 const FLASH_MS = 500
 const MENU_REFRESH_MS = 60 * 1000
@@ -198,7 +213,7 @@ app.on('window-all-closed', () => {})
         status = "Time's up!"
         setState('expired')
         interval = flashMenuBar()
-        offerSwitch()
+        popUpOnExpiry()
       } else {
         setStatus(formatTime(timeLeft))
       }
@@ -267,10 +282,18 @@ app.on('window-all-closed', () => {})
       shownAt: goalCardShownAt,
       now: now.getTime(),
     })
-    if (!suggestion) return
+    if (!suggestion) return null
     goalCardShownAt = now.getTime()
     log(`goal nudge: ${suggestion.behind.name} is behind while working on ${suggestion.active.name}`)
-    coach.alert(goalCard({ ...suggestion, rows, total, startedAt }))
+    const card = goalCard({ ...suggestion, rows, total, startedAt })
+    coach.alert(card)
+    return card
+  }
+
+  const popUpOnExpiry = () => {
+    if (away) return
+    const card = offerSwitch() ?? coach.timerExpired()
+    if (card) focusLog.note({ popup: { kind: card.kind ?? 'tip', title: card.title } })
   }
 
   const rankedCategories = (now) => {
@@ -311,10 +334,7 @@ app.on('window-all-closed', () => {})
             icon: swatchImage(swatchOf(row.color).hex),
             enabled: false,
           })),
-          ...OFF_THE_CLOCK.filter(({ mode }) => modes[mode] >= 60).map(({ mode, label }) => ({
-            label: `${label} · ${formatDuration(modes[mode])}`,
-            enabled: false,
-          })),
+          ...offTheClock(modes, expiries(segments, from, now.getTime())).map((label) => ({ label, enabled: false })),
         ]
       }),
       { type: 'separator' },

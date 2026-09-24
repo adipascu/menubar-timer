@@ -33,6 +33,23 @@ export const splitByMode = (segments, from, to) => {
   return totals
 }
 
+export const expiries = (segments, from, to) => {
+  let count = 0
+  let seconds = 0
+  let counting = false
+  segments.forEach((segment, index) => {
+    if (modeOf(segment) !== 'expired') return
+    const startsRun = index === 0 || modeOf(segments[index - 1]) !== 'expired'
+    if (startsRun) {
+      const at = Date.parse(segment.start)
+      counting = at >= from && at < to
+      if (counting) count += 1
+    }
+    if (counting) seconds += (Date.parse(segment.end) - Date.parse(segment.start)) / 1000
+  })
+  return { count, seconds }
+}
+
 export const splitByCategory = (segments, from, to, known = []) => {
   const totals = new Map()
   for (const segment of timed(segments)) {
@@ -53,5 +70,7 @@ export const formatDuration = (seconds) => {
   const hours = Math.floor(minutes / 60)
   return hours > 0 ? `${hours}h ${minutes % 60}m` : `${minutes}m`
 }
+
+export const formatWait = (seconds) => (seconds < 60 ? `${Math.round(seconds)}s` : formatDuration(seconds))
 
 export const formatShare = (share) => `${Math.round(share * 100)}%`
