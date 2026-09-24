@@ -109,7 +109,7 @@
   </head>
   <body>
     <div id="card">
-      <label for="label">What are you working on?</label>
+      <label for="label" id="question">What are you working on?</label>
       <input id="label" type="text" maxlength="40" placeholder="Shipping the billing page" />
       <footer>
         <span id="hint">Shown in the menu bar next to the time.</span>
@@ -122,6 +122,7 @@
     <script>
       const field = document.getElementById('label')
       const revert = document.getElementById('revert')
+      const question = document.getElementById('question')
       let saved = ''
       let finished = false
 
@@ -149,7 +150,8 @@
       const save = (label) => finish(() => window.task.save(label))
       const cancel = () => finish(() => window.task.cancel())
 
-      window.task.onLabel((label, draft) => {
+      window.task.onLabel((label, draft, category) => {
+        question.textContent = `What are you working on for ${category}?`
         saved = label
         fill(draft ?? label)
       })

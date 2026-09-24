@@ -20,6 +20,7 @@ import { createSettings } from './settings.js'
 import { createSiteLine, SITE_HOST } from './site-line.js'
 import { swatchImage } from './swatch.js'
 import { createTaskField } from './task.js'
+import { pickerLabel } from './task-labels.js'
 import { tuneUpGauge } from './tune-up-gauge.js'
 import { log } from './log.js'
 import * as loginItem from './login-item.js'
@@ -204,6 +205,17 @@ app.on('window-all-closed', () => {})
     bridge.publish()
   }
 
+  const switchCategory = (id) => {
+    const starting = task.pending()
+    categories.activate(id)
+    if (starting) {
+      task.cancelPending()
+      startSession(sessionMinutes)
+      return
+    }
+    if (state === 'running' && !task.get()) task.prompt()
+  }
+
   const stopTimer = () => {
     task.cancelPending()
     if (state === 'idle') return
@@ -314,11 +326,11 @@ app.on('window-all-closed', () => {})
       })),
       { type: 'separator' },
       ...rankedCategories(now).map((category) => ({
-        label: category.name,
+        label: pickerLabel(category.name, task.of(category.id)),
         type: 'radio',
         checked: category.id === categories.active().id,
         icon: swatchImage(swatchOf(category.color).hex),
-        click: () => categories.activate(category.id),
+        click: () => switchCategory(category.id),
       })),
       { label: 'Edit categories…', click: () => categories.edit() },
       { label: 'Focus time', submenu: focusMenu(now) },
@@ -425,8 +437,8 @@ app.on('window-all-closed', () => {})
     renderMenu()
     bridge.publish()
   }
-  const task = createTaskField(refresh)
   const categories = createCategories(refresh)
+  const task = createTaskField(refresh, categories.active)
   const beacon = createBeaconPreset((id) => {
     coach.setBeacon(id)
     renderMenu()
