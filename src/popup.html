@@ -280,6 +280,7 @@
             <button id="not-interested" class="card-action" title="Retire this card and steer the tune-up away from it">
               Not interested
             </button>
+            <button id="useful" class="card-action" title="You learned something useful from this card">Useful</button>
             <button
               id="more-like-this"
               class="card-action"
@@ -321,6 +322,7 @@
       const known = document.getElementById('known')
       const notInterested = document.getElementById('not-interested')
       const moreLikeThis = document.getElementById('more-like-this')
+      const useful = document.getElementById('useful')
       const addNote = document.getElementById('add-note')
       const discuss = document.getElementById('discuss')
       const noteBox = document.getElementById('note')
@@ -473,6 +475,7 @@
         known.hidden = !tip.topic
         notInterested.hidden = !tip.topic
         moreLikeThis.hidden = !tip.topic
+        useful.hidden = !tip.topic
         addNote.hidden = !tip.topic
         discuss.hidden = tip.kind === 'nudge'
         reportHeight()
@@ -495,6 +498,7 @@
       known.addEventListener('click', () => window.coach.markKnown())
       notInterested.addEventListener('click', () => window.coach.markNotInterested())
       moreLikeThis.addEventListener('click', () => window.coach.markInterested())
+      useful.addEventListener('click', () => window.coach.markUseful())
       addNote.addEventListener('click', () => setNoting(true))
       cancelNote.addEventListener('click', () => setNoting(false))
       saveNote.addEventListener('click', submitNote)

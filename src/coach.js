@@ -310,6 +310,13 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     }),
   )
 
+  ipcMain.on('coach:useful', () =>
+    closeAndRecord((tip) => {
+      feedback.markUseful(tip)
+      log(`found "${tip.title}" useful`)
+    }),
+  )
+
   ipcMain.on('coach:interested', () =>
     closeAndRecord((tip) => {
       feedback.markInterested(tip)
