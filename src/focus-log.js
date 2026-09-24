@@ -100,6 +100,11 @@ export const createFocusLog = () => {
       rmSync(openFile, { force: true })
       log(`${segment.mode} segment ${ended}: ${segment.category.name}, "${segment.task}", ${segment.seconds} s`)
     },
+    note: (fields) => {
+      if (!open || !ownsMarker()) return
+      open = { ...open, ...fields }
+      writeOpen()
+    },
     segments: (now) => (open ? [...settled, settle(open, now.toISOString(), 'open')] : settled),
   }
 }

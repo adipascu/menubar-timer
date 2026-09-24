@@ -177,7 +177,10 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     }
   }
 
+  const requestedAt = new WeakMap()
+
   const show = (tip) => {
+    requestedAt.set(tip, Date.now())
     const loudMusic = musicIsLoud().catch(() => false)
     const window = new BrowserWindow({
       width: POPUP_WIDTH,
@@ -267,6 +270,9 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     window.setContentSize(POPUP_WIDTH, height)
     placeBottomRight(window)
     window.showInactive()
+    const card = onScreen.card()
+    if (onScreen.window() === window && requestedAt.has(card))
+      log(`card on screen ${Date.now() - requestedAt.get(card)} ms after it was asked for: ${card.title}`)
   })
 
   ipcMain.on('coach:drag-start', (event, pointer) => {
@@ -334,6 +340,13 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   return {
     start: () => schedule.next(),
     alert: (card) => show(card),
+    timerExpired: () => {
+      if (!onScreen.isEmpty()) return null
+      const card = nextCard()
+      present(card, ' the moment the timer ran out')
+      schedule.next()
+      return card
+    },
     dropAlert: (kind) => {
       const card = onScreen.card()
       if (card?.kind !== kind) return
@@ -360,7 +373,6 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
         return
       }
       if (timerIsOff()) schedule.tipsResumed()
-      else schedule.timerEnded()
     },
     stop: () => {
       schedule.stop()

@@ -1,7 +1,9 @@
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
 import {
+  expiries,
   formatDuration,
+  formatWait,
   formatShare,
   overlapSeconds,
   periods,
@@ -158,5 +160,57 @@ describe('splitByCategory across modes', () => {
       rows.map(({ id }) => id),
       ['work'],
     )
+  })
+})
+
+describe('expiries', () => {
+  const at = (hour, minute = 0) => local(2026, 9, 24, hour, minute)
+  const day = local(2026, 9, 24).getTime()
+  const next = local(2026, 9, 25).getTime()
+
+  it('counts each run of time after a timer ran out once, however often it was split', () => {
+    const segments = [
+      segment(work, at(9), at(9, 25), 'timer'),
+      segment(work, at(9, 25), at(9, 28), 'expired'),
+      segment(admin, at(9, 28), at(9, 31), 'expired'),
+      segment(admin, at(9, 31), at(10), 'freebasing'),
+      segment(admin, at(10), at(10, 25), 'timer'),
+      segment(admin, at(10, 25), at(10, 26), 'expired'),
+    ]
+    assert.deepEqual(expiries(segments, day, next), { count: 2, seconds: 7 * 60 })
+  })
+
+  it('files a run under the window it began in and ignores timers logged before modes existed', () => {
+    const segments = [
+      { ...segment(work, at(7), at(7, 25)), ended: 'completed' },
+      segment(work, local(2026, 9, 23, 23, 50), at(0, 40), 'expired'),
+      segment(work, at(0, 40), at(1), 'freebasing'),
+    ]
+    assert.deepEqual(expiries(segments, day, next), { count: 0, seconds: 0 })
+  })
+
+  it('leaves a run that began after the window out entirely', () => {
+    const segments = [
+      segment(work, at(22), at(22, 10), 'expired'),
+      segment(work, at(22, 10), at(22, 30), 'timer'),
+      segment(work, local(2026, 9, 25, 0, 5), local(2026, 9, 25, 0, 10), 'expired'),
+      segment(admin, local(2026, 9, 25, 0, 10), local(2026, 9, 25, 0, 40), 'expired'),
+    ]
+    assert.deepEqual(expiries(segments, day, next), { count: 1, seconds: 10 * 60 })
+  })
+
+  it('keeps adding to a run that began before the window without counting it', () => {
+    const segments = [
+      segment(work, local(2026, 9, 23, 23, 50), at(0, 10), 'expired'),
+      segment(admin, at(0, 10), at(0, 20), 'expired'),
+    ]
+    assert.deepEqual(expiries(segments, day, next), { count: 0, seconds: 0 })
+  })
+})
+
+describe('formatWait', () => {
+  it('shows seconds under a minute so a quick restart does not read as zero', () => {
+    assert.equal(formatWait(42.4), '42s')
+    assert.equal(formatWait(125), '2m')
   })
 })
