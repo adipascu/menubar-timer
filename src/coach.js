@@ -137,6 +137,13 @@ const exportPool = () => {
   return file
 }
 
+const SHOWN_VIA = {
+  schedule: '',
+  'on-demand': ' on demand',
+  'timer-ran-out': ' the moment the timer ran out',
+  again: ' again on demand',
+}
+
 export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine, onCardShown = () => {}) => {
   rememberSourcePath()
   shareSystemAudio()
@@ -147,7 +154,12 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   const calibration = createCalibration({ feedbackFile: feedback.file, ideasFile, library })
   const allTips = () => [...tips, ...library.cards().map((tip) => ({ ...tip, personal: true }))]
   const nextTip = createTipQueue(allTips, feedback.retiredTitles)
-  const onScreen = createCardSlot()
+  const showingOf = new Map()
+  const onScreen = createCardSlot((card, reason) => {
+    if (showingOf.has(card)) feedback.recordClosed(card, showingOf.get(card), reason)
+    showingOf.delete(card)
+  })
+  app.on('before-quit', () => onScreen.close('quit'))
   let dragOffset = null
 
   const tipsAreAllowed = () => getState() !== 'running'
@@ -243,10 +255,10 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     return nextCard()
   }
 
-  const present = (tip, how = '') => {
+  const present = (tip, via = 'schedule') => {
     show(tip)
-    if (tip.topic) feedback.recordShown(tip)
-    log(`showed ${tip.kind ?? 'tip'}${how}: ${tip.title}`)
+    if (tip.topic) showingOf.set(tip, feedback.recordShown(tip, via))
+    log(`showed ${tip.kind ?? 'tip'}${SHOWN_VIA[via]}: ${tip.title}`)
   }
 
   const tick = async () => {
@@ -295,51 +307,40 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
 
   ipcMain.on('coach:beacon', (_event, label) => log(`beacon ${label}`))
 
-  ipcMain.on('coach:dismiss', () => onScreen.close())
+  ipcMain.on('coach:dismiss', (_event, how) => onScreen.close(how))
 
-  const closeAndRecord = (record) => {
+  const recordAndClose = (event, describe) => {
     const tip = onScreen.card()
-    onScreen.close()
-    if (tip?.topic) record(tip)
+    if (tip && showingOf.has(tip)) {
+      feedback.record(tip, showingOf.get(tip), event)
+      log(describe(tip.title))
+    }
+    onScreen.close(event.action)
   }
 
   ipcMain.on('coach:mark', (_event, status) =>
-    closeAndRecord((tip) => {
-      feedback.mark(tip, status)
-      log(`marked "${tip.title}" ${status}`)
-    }),
+    recordAndClose({ action: status }, (title) => `marked "${title}" ${status}`),
   )
 
-  ipcMain.on('coach:useful', () =>
-    closeAndRecord((tip) => {
-      feedback.markUseful(tip)
-      log(`found "${tip.title}" useful`)
-    }),
-  )
+  ipcMain.on('coach:useful', () => recordAndClose({ action: 'useful' }, (title) => `found "${title}" useful`))
 
   ipcMain.on('coach:interested', () =>
-    closeAndRecord((tip) => {
-      feedback.markInterested(tip)
-      log(`asked for more like "${tip.title}"`)
-    }),
+    recordAndClose({ action: 'interested' }, (title) => `asked for more like "${title}"`),
   )
 
   ipcMain.on('coach:note', (_event, text) =>
-    closeAndRecord((tip) => {
-      feedback.addNote(tip, text)
-      log(`noted on "${tip.title}": ${JSON.stringify(text)}`)
-    }),
+    recordAndClose({ action: 'note', text }, (title) => `noted on "${title}": ${JSON.stringify(text)}`),
   )
 
   ipcMain.on('coach:discuss', () => {
     const tip = onScreen.card()
-    onScreen.close()
+    onScreen.close('discuss')
     if (tip) openClaudeSession(tip)
   })
 
   ipcMain.on('coach:open-source', (_event, url) => {
     shell.openExternal(url)
-    onScreen.close()
+    onScreen.close('opened-source')
   })
 
   ipcMain.on('coach:focus', (event) => {
@@ -353,25 +354,24 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     timerExpired: () => {
       if (!onScreen.isEmpty()) return null
       const card = nextCard()
-      present(card, ' the moment the timer ran out')
+      present(card, 'timer-ran-out')
       schedule.next()
       return card
     },
     dropAlert: (kind) => {
       const card = onScreen.card()
       if (card?.kind !== kind) return
-      onScreen.close()
+      onScreen.close('dropped')
       log(`dropped the ${kind} card: ${card.title}`)
     },
     lastCard: () => lastCard,
     showLastAgain: () => {
       if (!lastCard) return
-      show(lastCard)
-      log(`showed again on demand: ${lastCard.title}`)
+      present(lastCard, 'again')
       schedule.next()
     },
     showCardNow: () => {
-      present(nextCard(), ' on demand')
+      present(nextCard(), 'on-demand')
       schedule.next()
     },
     quiz: () => openClaudeSession(quizCard(editionSources)),
@@ -386,14 +386,14 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     },
     refresh: () => {
       if (!tipsAreAllowed()) {
-        onScreen.close()
+        onScreen.close('timer-started')
         return
       }
       if (timerIsOff()) schedule.tipsResumed()
     },
     stop: () => {
       schedule.stop()
-      onScreen.close()
+      onScreen.close('stopped')
     },
   }
 }

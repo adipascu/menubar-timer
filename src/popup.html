@@ -445,7 +445,7 @@
       document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return
         if (card.classList.contains('noting')) setNoting(false)
-        else window.coach.dismiss()
+        else window.coach.dismiss('escape')
       })
 
       noteBox.addEventListener('pointerdown', () => window.coach.focus())
@@ -503,7 +503,7 @@
       cancelNote.addEventListener('click', () => setNoting(false))
       saveNote.addEventListener('click', submitNote)
       discuss.addEventListener('click', () => window.coach.discuss())
-      document.getElementById('dismiss').addEventListener('click', () => window.coach.dismiss())
+      document.getElementById('dismiss').addEventListener('click', () => window.coach.dismiss('got-it'))
     </script>
   </body>
 </html>

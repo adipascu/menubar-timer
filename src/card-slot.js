@@ -1,23 +1,25 @@
-export const createCardSlot = () => {
+export const createCardSlot = (onClosed = () => {}) => {
   let live = null
   let shown = null
 
   const alive = () => (live && !live.isDestroyed() ? live : null)
 
-  const forget = () => {
+  const forget = (reason) => {
+    const card = shown
     live = null
     shown = null
+    if (card) onClosed(card, reason)
   }
 
-  const close = () => {
+  const close = (reason) => {
     const window = alive()
-    forget()
+    forget(reason)
     window?.close()
   }
 
   return {
     open: (window, card) => {
-      close()
+      close('replaced')
       live = window
       shown = card
     },
@@ -25,7 +27,7 @@ export const createCardSlot = () => {
     card: () => shown,
     isEmpty: () => alive() === null,
     closed: (window) => {
-      if (window === live) forget()
+      if (window === live) forget('window-closed')
     },
     close,
   }

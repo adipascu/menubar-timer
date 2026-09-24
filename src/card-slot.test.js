@@ -73,6 +73,33 @@ describe('closed', () => {
   })
 })
 
+describe('the closing report', () => {
+  const recorded = () => {
+    const closings = []
+    const slot = createCardSlot((card, reason) => closings.push([card.title, reason]))
+    return { slot, closings }
+  }
+
+  it('says once why each card went away, whichever way it did', () => {
+    const { slot, closings } = recorded()
+    const first = fakeWindow()
+    const second = fakeWindow()
+    const third = fakeWindow()
+    slot.open(first, { title: 'First' })
+    slot.open(second, { title: 'Second' })
+    slot.close('got-it')
+    slot.closed(second)
+    slot.open(third, { title: 'Third' })
+    slot.closed(third)
+    slot.close('quit')
+    assert.deepEqual(closings, [
+      ['First', 'replaced'],
+      ['Second', 'got-it'],
+      ['Third', 'window-closed'],
+    ])
+  })
+})
+
 describe('window', () => {
   it('reads as empty once the window it holds is destroyed', () => {
     const slot = createCardSlot()

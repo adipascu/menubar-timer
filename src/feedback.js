@@ -1,36 +1,31 @@
 import { app } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-
-const RETIRING_STATUSES = new Set(['known', 'not-interested'])
+import { newEntry, retiredTitles, withClosing, withFeedback, withFeedbackLogs, withShowing } from './feedback-log.js'
 
 export const createFeedback = () => {
   const file = join(app.getPath('userData'), 'feedback.json')
 
-  const entries = () => (existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : {})
+  const entries = () => withFeedbackLogs(existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : {})
 
-  const update = (tip, patch) => {
+  const save = (all) => writeFileSync(file, JSON.stringify(all, null, 2))
+
+  const update = (tip, change) => {
     const all = entries()
-    const entry = all[tip.title] ?? { topic: tip.topic, shown: 0 }
-    all[tip.title] = { ...entry, ...patch(entry) }
-    writeFileSync(file, JSON.stringify(all, null, 2))
+    all[tip.title] = change(all[tip.title] ?? newEntry(tip.topic))
+    save(all)
+    return all[tip.title]
   }
+
+  const now = () => new Date().toISOString()
+
+  if (existsSync(file)) save(entries())
 
   return {
     file,
-    recordShown: (tip) => update(tip, (entry) => ({ shown: entry.shown + 1, lastShownAt: new Date().toISOString() })),
-    mark: (tip, status) => update(tip, () => ({ status, markedAt: new Date().toISOString() })),
-    markInterested: (tip) =>
-      update(tip, (entry) => ({ interested: (entry.interested ?? 0) + 1, interestedAt: new Date().toISOString() })),
-    markUseful: (tip) =>
-      update(tip, (entry) => ({ useful: (entry.useful ?? 0) + 1, usefulAt: new Date().toISOString() })),
-    addNote: (tip, text) =>
-      update(tip, (entry) => ({ notes: [...(entry.notes ?? []), { text, at: new Date().toISOString() }] })),
-    retiredTitles: () =>
-      new Set(
-        Object.entries(entries())
-          .filter(([, entry]) => RETIRING_STATUSES.has(entry.status))
-          .map(([title]) => title),
-      ),
+    recordShown: (tip, via) => update(tip, (entry) => withShowing(entry, { at: now(), via })).shown,
+    recordClosed: (tip, showing, by) => update(tip, (entry) => withClosing(entry, showing, { at: now(), by })),
+    record: (tip, showing, event) => update(tip, (entry) => withFeedback(entry, showing, { ...event, at: now() })),
+    retiredTitles: () => retiredTitles(entries()),
   }
 }
