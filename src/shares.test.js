@@ -38,26 +38,16 @@ describe('proportional', () => {
 })
 
 describe('archived', () => {
-  it('drops the category to zero and spreads its share over the others in proportion', () => {
+  it('drops the category to zero and leaves the other shares as they were', () => {
     const after = archived(mine, 'mynextjob')
-    assert.deepEqual(shares(after), { latindance: 45, hourly: 33, belgabot: 11, process: 11, mynextjob: 0 })
-    assert.equal(shareTotal(after), 100)
+    assert.deepEqual(shares(after), { latindance: 40, hourly: 30, belgabot: 10, process: 10, mynextjob: 0 })
+    assert.equal(shareTotal(after), 90)
   })
 
   it('remembers the share it had so a restore can give it back', () => {
     const gone = archived(mine, 'mynextjob').find(({ id }) => id === 'mynextjob')
     assert.equal(gone.archived, true)
     assert.equal(gone.archivedShare, 10)
-  })
-
-  it('keeps a total below 100 where it was, leaving the unassigned part unassigned', () => {
-    const partial = [category('a', 30), category('b', 30), category('c', 30)]
-    assert.equal(shareTotal(archived(partial, 'c')), 90)
-  })
-
-  it('hands the share to the others evenly when all of them sat at zero', () => {
-    const after = archived([category('only', 100), category('idle', 0), category('spare', 0)], 'only')
-    assert.deepEqual(shares(after), { only: 0, idle: 50, spare: 50 })
   })
 
   it('leaves an already archived category and the others alone', () => {
@@ -67,12 +57,17 @@ describe('archived', () => {
 })
 
 describe('restored', () => {
-  it('brings the old share back even when that takes the total over 100', () => {
+  it('brings the old share back as it was', () => {
     const back = restored(archived(mine, 'mynextjob'), 'mynextjob')
     const revived = back.find(({ id }) => id === 'mynextjob')
     assert.equal(revived.share, 10)
     assert.equal(revived.archived, false)
     assert.equal('archivedShare' in revived, false)
+    assert.equal(shareTotal(back), 100)
+  })
+
+  it('takes the total over 100 once the others were redistributed in the meantime', () => {
+    const back = restored(redistributed(archived(mine, 'mynextjob')), 'mynextjob')
     assert.equal(shareTotal(back), 110)
   })
 
@@ -87,11 +82,21 @@ describe('restored', () => {
 })
 
 describe('redistributed', () => {
+  it('scales an under 100 split up to 100 in proportion to each share', () => {
+    const fixed = redistributed(archived(mine, 'mynextjob'))
+    assert.deepEqual(shares(fixed), { latindance: 45, hourly: 33, belgabot: 11, process: 11, mynextjob: 0 })
+  })
+
   it('scales an over 100 split back to 100 in proportion to each share', () => {
-    const over = restored(archived(mine, 'mynextjob'), 'mynextjob')
+    const over = restored(redistributed(archived(mine, 'mynextjob')), 'mynextjob')
     const fixed = redistributed(over)
     assert.equal(shareTotal(fixed), 100)
     assert.deepEqual(shares(fixed), { latindance: 41, hourly: 30, belgabot: 10, process: 10, mynextjob: 9 })
+  })
+
+  it('splits evenly when every live share is zero', () => {
+    const fixed = redistributed(archived([category('only', 100), category('idle', 0), category('spare', 0)], 'only'))
+    assert.deepEqual(shares(fixed), { only: 0, idle: 50, spare: 50 })
   })
 
   it('never hands a share to an archived category', () => {

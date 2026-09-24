@@ -27,15 +27,12 @@ const rescaled = (categories, target) => {
   )
 }
 
-export const archived = (categories, id) => {
-  const before = shareTotal(categories)
-  const marked = categories.map((category) =>
+export const archived = (categories, id) =>
+  categories.map((category) =>
     category.id === id && !category.archived
       ? { ...category, archived: true, archivedShare: category.share, share: 0 }
       : category,
   )
-  return rescaled(marked, before)
-}
 
 export const restored = (categories, id) =>
   categories.map((category) => {
