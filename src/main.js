@@ -53,6 +53,14 @@ const expiredLine = (seconds, ranOut) => {
   return seconds >= 60 ? `After the timer ran out · ${formatDuration(seconds)}` : null
 }
 
+const AGAIN_TITLE_LENGTH = 40
+
+const againItem = (card, showAgain) => {
+  if (!card) return { label: 'Show the last card again', enabled: false }
+  const title = card.title.length > AGAIN_TITLE_LENGTH ? `${card.title.slice(0, AGAIN_TITLE_LENGTH - 1)}…` : card.title
+  return { label: `Show again: ${title}`, click: showAgain }
+}
+
 const offTheClock = (modes, ranOut) =>
   [
     expiredLine(modes.expired, ranOut),
@@ -425,6 +433,7 @@ app.on('window-all-closed', () => {})
         enabled: false,
       },
       { label: 'Show a card now', click: () => coach.showCardNow() },
+      againItem(coach.lastCard(), () => coach.showLastAgain()),
       { label: 'Notes and ideas…', click: () => ideas.edit() },
       {
         label: `Tune up the coach… · ${tuneUp.label}`,
@@ -538,7 +547,14 @@ app.on('window-all-closed', () => {})
   app.on('will-quit', () => bridge.stop())
   const library = createLibrary()
   const ideas = createIdeas()
-  const coach = createCoach(() => state, library, ideas.file, beacon.get, siteLine.text)
+  const coach = createCoach(
+    () => state,
+    library,
+    ideas.file,
+    beacon.get,
+    siteLine.text,
+    () => renderMenu(),
+  )
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {
     renderMenu()

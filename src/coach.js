@@ -137,7 +137,7 @@ const exportPool = () => {
   return file
 }
 
-export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine) => {
+export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine, onCardShown = () => {}) => {
   rememberSourcePath()
   shareSystemAudio()
   const feedback = createFeedback()
@@ -178,6 +178,7 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   }
 
   const requestedAt = new WeakMap()
+  let lastCard = null
 
   const show = (tip) => {
     requestedAt.set(tip, Date.now())
@@ -198,6 +199,8 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     })
 
     onScreen.open(window, tip)
+    if (tip.kind !== HIDDEN_TIMER_NUDGE.kind) lastCard = tip
+    onCardShown()
     window.setAlwaysOnTop(true, 'screen-saver')
     window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
     window.on('closed', () => onScreen.closed(window))
@@ -352,6 +355,13 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
       if (card?.kind !== kind) return
       onScreen.close()
       log(`dropped the ${kind} card: ${card.title}`)
+    },
+    lastCard: () => lastCard,
+    showLastAgain: () => {
+      if (!lastCard) return
+      show(lastCard)
+      log(`showed again on demand: ${lastCard.title}`)
+      schedule.next()
     },
     showCardNow: () => {
       present(nextCard(), ' on demand')
