@@ -296,8 +296,9 @@
         <p>
           Timers are filed under the category picked in the menu, and the countdown wears its color. The share is how
           much of your timed work you want each one to take. Archiving a category keeps its time in Focus time, takes it
-          out of the menu and the goals, and spreads its share over the others in proportion. Restoring it brings back
-          the share it had. A category left at 0% also stays out of the menu and the goals.
+          out of the menu and the goals, and leaves its share unassigned. Restoring it brings back the share it had. The
+          shares have to add up to 100% before you can save, and Redistribute to 100% scales them there in proportion. A
+          category left at 0% also stays out of the menu and the goals.
         </p>
         <p id="period"></p>
       </header>
@@ -489,17 +490,15 @@
 
       const balance = () => {
         const claimed = [...rows.children].reduce((sum, row) => sum + shareOf(row), 0)
-        const over = claimed > 100
-        const short = 100 - claimed
-        document.getElementById('save').disabled = over
-        redistribute.hidden = !over
-        if (refused) return !over
-        hint.classList.toggle('warning', over)
-        if (over) hint.textContent = `The shares add up to ${claimed}%, which is ${claimed - 100} over.`
-        else if (short > 0)
-          hint.textContent = `${short}% still unassigned. Anything left over is spread across the shares you set.`
+        const whole = claimed === 100
+        document.getElementById('save').disabled = !whole
+        redistribute.hidden = whole
+        if (refused) return whole
+        hint.classList.toggle('warning', !whole)
+        if (claimed > 100) hint.textContent = `The shares add up to ${claimed}%, which is ${claimed - 100} over.`
+        else if (claimed < 100) hint.textContent = `The shares add up to ${claimed}%, which is ${100 - claimed} short.`
         else hint.textContent = idleHint
-        return !over
+        return whole
       }
 
       const duplicated = () => {
@@ -565,7 +564,12 @@
       document.getElementById('cancel').addEventListener('click', () => window.categories.cancel())
       rows.addEventListener('input', (event) => {
         event.target.classList.remove('missing')
-        if (refused === event.target) refused = null
+        if (refused === event.target || event.target.matches('.percent')) refused = null
+        balance()
+      })
+      rows.addEventListener('change', (event) => {
+        if (!event.target.matches('.percent')) return
+        event.target.value = shareOf(event.target.closest('li'))
         balance()
       })
       document.addEventListener('keydown', (event) => {

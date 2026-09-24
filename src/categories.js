@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { orderedByShare } from './goals.js'
 import { log } from './log.js'
-import { archived, redistributed, restored } from './shares.js'
+import { archived, redistributed, restored, shareTotal } from './shares.js'
 import { swatchList, swatchOf } from './palette.js'
 import { contentHeightWithin, keptInside, openingBounds } from './window-fit.js'
 
@@ -48,10 +48,17 @@ const splitOf = (categories) =>
 
 const sameShares = (before, after) => splitOf(before) === splitOf(after)
 
-const evenlyShared = (categories) => {
-  const share = Math.floor(100 / categories.length)
-  log(`no goal shares on file, splitting evenly at ${share}% each`)
-  return categories.map((category) => ({ ...category, share }))
+const unshared = (categories) => {
+  log('no goal shares on file, splitting evenly')
+  return categories.map((category) => ({ ...category, share: 0 }))
+}
+
+const wholeSplit = (categories) => {
+  const total = shareTotal(categories)
+  if (total === 100) return categories
+  const scaled = redistributed(categories)
+  log(`shares on file added up to ${total}%, scaled to 100%`)
+  return scaled
 }
 
 const stored = (file) => {
@@ -62,7 +69,7 @@ const stored = (file) => {
     if (!kept) return null
     const fromAnEarlierRelease = !Array.isArray(periods)
     return {
-      categories: fromAnEarlierRelease ? evenlyShared(kept) : kept,
+      categories: wholeSplit(fromAnEarlierRelease ? unshared(kept) : kept),
       active,
       periods: fromAnEarlierRelease ? [] : periods,
     }
