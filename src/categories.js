@@ -5,12 +5,13 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { orderedByShare } from './goals.js'
 import { log } from './log.js'
+import { archived, redistributed, restored } from './shares.js'
 import { swatchList, swatchOf } from './palette.js'
 import { contentHeightWithin, keptInside, openingBounds } from './window-fit.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
-const WINDOW_WIDTH = 580
+const WINDOW_WIDTH = 640
 const MINIMUM_HEIGHT = 240
 const DEFAULTS = [
   { name: 'Work', color: 'blue', share: 50 },
@@ -23,17 +24,20 @@ const wholeShare = (value) => {
   return Number.isFinite(share) ? Math.min(100, Math.max(0, share)) : 0
 }
 
-const cleaned = ({ id, name, color, share }) => ({
+const cleaned = ({ id, name, color, share, archived, archivedShare }) => ({
   id: id || randomUUID(),
   name: String(name ?? '').trim(),
   color: swatchOf(color).key,
-  share: wholeShare(share),
+  share: archived ? 0 : wholeShare(share),
+  ...(archived ? { archived: true, archivedShare: wholeShare(archivedShare) } : {}),
 })
 
 const usable = (entries) => {
   const kept = (Array.isArray(entries) ? entries : []).map(cleaned).filter(({ name }) => name)
-  return kept.length > 0 ? kept : null
+  return kept.some(({ archived }) => !archived) ? kept : null
 }
+
+const RESHARES = { archive: archived, restore: restored, redistribute: redistributed }
 
 const splitOf = (categories) =>
   categories
@@ -84,7 +88,8 @@ export const createCategories = (onChange) => {
 
   const persist = () => writeFileSync(file, JSON.stringify({ active, periods, categories }, null, 2))
 
-  const activeCategory = () => categories.find(({ id }) => id === active) ?? categories[0]
+  const live = () => categories.filter(({ archived }) => !archived)
+  const activeCategory = () => live().find(({ id }) => id === active) ?? live()[0]
 
   const opening = periods.length === 0
   if (opening) periods = [openedNow(categories)]
@@ -106,7 +111,9 @@ export const createCategories = (onChange) => {
       log(`goal period opened with ${categories.map(({ name, share }) => `${name} ${share}%`).join(', ')}`)
     }
     persist()
-    log(`categories set to ${categories.map(({ name, color }) => `${name} (${color})`).join(', ')}`)
+    log(
+      `categories set to ${categories.map(({ name, color, archived }) => `${name} (${color}${archived ? ', archived' : ''})`).join(', ')}`,
+    )
     onChange()
   }
 
@@ -115,6 +122,9 @@ export const createCategories = (onChange) => {
     close()
   })
   ipcMain.on('categories:cancel', () => close())
+  ipcMain.handle('categories:reshare', (_event, { action, id, categories: rows }) =>
+    Object.hasOwn(RESHARES, action) && Array.isArray(rows) ? RESHARES[action](rows, id) : rows,
+  )
 
   const fit = (target, wanted) => {
     const shown = target.isVisible()
@@ -146,7 +156,7 @@ export const createCategories = (onChange) => {
     period: () => periods.at(-1),
     active: activeCategory,
     activate: (id) => {
-      if (!categories.some((category) => category.id === id)) return
+      if (!live().some((category) => category.id === id)) return
       active = id
       persist()
       onChange()

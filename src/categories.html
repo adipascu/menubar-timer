@@ -232,6 +232,62 @@
       #save:disabled {
         opacity: 0.4;
       }
+
+      .archive,
+      .restore {
+        white-space: nowrap;
+      }
+
+      .remove.archive {
+        width: auto;
+        height: auto;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .archive:hover:not(:disabled),
+      .restore:hover,
+      #redistribute:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--card);
+      }
+
+      .archive:disabled {
+        opacity: 0.35;
+      }
+
+      #archive {
+        margin-top: 14px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+      }
+
+      #archive h2 {
+        margin: 0 0 8px;
+        font-size: 11px;
+        font-weight: 650;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+
+      #archived li {
+        grid-template-columns: auto minmax(120px, 1fr) auto auto;
+      }
+
+      #archived .name {
+        color: var(--muted);
+      }
+
+      #archived .was {
+        color: var(--muted);
+        font-size: 11px;
+        font-variant-numeric: tabular-nums;
+      }
     </style>
   </head>
   <body>
@@ -239,8 +295,9 @@
       <header>
         <p>
           Timers are filed under the category picked in the menu, and the countdown wears its color. The share is how
-          much of your timed work you want each one to take. A category at 0% is kept for its history but stays out of
-          the menu and the goals.
+          much of your timed work you want each one to take. Archiving a category keeps its time in Focus time, takes it
+          out of the menu and the goals, and spreads its share over the others in proportion. Restoring it brings back
+          the share it had. A category left at 0% also stays out of the menu and the goals.
         </p>
         <p id="period"></p>
       </header>
@@ -248,10 +305,15 @@
         <div id="list">
           <ul id="rows"></ul>
           <button id="add">Add category</button>
+          <section id="archive" hidden>
+            <h2>Archived</h2>
+            <ul id="archived"></ul>
+          </section>
         </div>
       </div>
       <footer>
         <span id="hint">Enter saves, Escape cancels.</span>
+        <button id="redistribute" hidden>Redistribute to 100%</button>
         <button id="cancel">Cancel</button>
         <button id="save">Save</button>
       </footer>
@@ -270,6 +332,15 @@
       </li>
     </template>
 
+    <template id="archived-row">
+      <li>
+        <span class="preview" aria-hidden="true">12:34</span>
+        <span class="name"></span>
+        <span class="was"></span>
+        <button class="restore">Restore</button>
+      </li>
+    </template>
+
     <script>
       const rows = document.getElementById('rows')
       const hint = document.getElementById('hint')
@@ -278,9 +349,14 @@
       const list = document.getElementById('list')
       const footer = document.querySelector('footer')
       const template = document.getElementById('row')
+      const archivedTemplate = document.getElementById('archived-row')
+      const archiveSection = document.getElementById('archive')
+      const archivedList = document.getElementById('archived')
+      const redistribute = document.getElementById('redistribute')
       const idleHint = hint.textContent
       let palette = []
       let refused = null
+      let archivedCategories = []
 
       const reportHeight = () => window.categories.height(header.offsetHeight + list.offsetHeight + footer.offsetHeight)
       const heightWatch = new ResizeObserver(reportHeight)
@@ -304,6 +380,11 @@
       const refreshRemovals = () => {
         const single = rows.children.length === 1
         for (const button of rows.querySelectorAll('.remove')) button.disabled = single
+      }
+
+      const reshare = async (action, id) => {
+        const next = await window.categories.reshare({ action, id, categories: collect() })
+        render(next)
       }
 
       const addRow = ({ id, name, color, share }) => {
@@ -333,11 +414,25 @@
           paint(row, next)
           swatches.querySelector(`[data-key="${next}"]`).focus()
         })
-        row.querySelector('.remove').addEventListener('click', () => {
-          row.remove()
-          refreshRemovals()
-          balance()
-        })
+        const remove = row.querySelector('.remove')
+        if (id) {
+          row.dataset.name = name
+          remove.textContent = 'Archive'
+          remove.classList.add('archive')
+          remove.setAttribute('aria-label', `Archive ${name}`)
+          remove.title = 'Keep its time in Focus time and take it out of the menu and the goals'
+          remove.addEventListener('click', () => {
+            const field = row.querySelector('.name')
+            if (!field.value.trim()) field.value = row.dataset.name
+            reshare('archive', id)
+          })
+        } else {
+          remove.addEventListener('click', () => {
+            row.remove()
+            refreshRemovals()
+            balance()
+          })
+        }
         rows.append(row)
         paint(row, color)
         refreshRemovals()
@@ -349,13 +444,46 @@
         return (palette.find((entry) => !used.has(entry.key)) ?? palette[rows.children.length % palette.length]).key
       }
 
-      const collect = () =>
-        [...rows.children].map((row) => ({
+      const collect = () => [
+        ...[...rows.children].map((row) => ({
           id: row.dataset.id,
           name: row.querySelector('.name').value.trim(),
           color: row.dataset.color,
-          share: Number(row.querySelector('.percent').value),
-        }))
+          share: shareOf(row),
+        })),
+        ...archivedCategories,
+      ]
+
+      const renderArchive = () => {
+        archiveSection.hidden = archivedCategories.length === 0
+        archivedList.replaceChildren(
+          ...archivedCategories.map((category) => {
+            const row = archivedTemplate.content.firstElementChild.cloneNode(true)
+            const swatch = swatchOf(category.color)
+            const preview = row.querySelector('.preview')
+            preview.style.background = swatch.hex
+            preview.style.color = swatch.ink
+            row.querySelector('.name').textContent = category.name
+            row.querySelector('.was').textContent = `back at ${category.archivedShare ?? 0}%`
+            const restore = row.querySelector('.restore')
+            restore.setAttribute('aria-label', `Restore ${category.name}`)
+            restore.addEventListener('click', () => reshare('restore', category.id))
+            return row
+          }),
+        )
+      }
+
+      const render = (categories) => {
+        refused = null
+        const focusedId = document.activeElement?.closest('li')?.dataset.id
+        rows.replaceChildren()
+        archivedCategories = categories.filter(({ archived }) => archived)
+        for (const category of categories.filter(({ archived }) => !archived)) addRow(category)
+        renderArchive()
+        balance()
+        const focus = rows.querySelector(`[data-id="${focusedId}"] .name`) ?? rows.querySelector('.name')
+        focus.focus()
+      }
 
       const shareOf = (row) => Math.max(0, Math.round(Number(row.querySelector('.percent').value)) || 0)
 
@@ -364,6 +492,7 @@
         const over = claimed > 100
         const short = 100 - claimed
         document.getElementById('save').disabled = over
+        redistribute.hidden = !over
         if (refused) return !over
         hint.classList.toggle('warning', over)
         if (over) hint.textContent = `The shares add up to ${claimed}%, which is ${claimed - 100} over.`
@@ -374,7 +503,7 @@
       }
 
       const duplicated = () => {
-        const seen = new Set()
+        const seen = new Set(archivedCategories.map(({ name }) => name.toLowerCase()))
         return [...rows.children].find((row) => {
           const name = row.querySelector('.name').value.trim().toLowerCase()
           if (seen.has(name)) return true
@@ -404,7 +533,7 @@
         }
         const repeated = duplicated()
         if (repeated) {
-          refuse(repeated, 'Two categories cannot share a name.')
+          refuse(repeated, 'Two categories cannot share a name, archived ones included.')
           return
         }
         window.categories.save(collect())
@@ -414,9 +543,7 @@
         palette = payload.palette
         const since = new Date(payload.periodStartedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })
         period.textContent = `Measuring against these shares since ${since}. Changing any share starts a new period from today.`
-        rows.replaceChildren()
-        for (const category of payload.categories) addRow(category)
-        balance()
+        render(payload.categories)
         const active = rows.querySelector(`[data-id="${payload.active}"] .name`) ?? rows.querySelector('.name')
         active.focus()
         reportHeight()
@@ -429,6 +556,10 @@
         const row = addRow({ id: '', name: '', color: unusedColor(), share: Math.max(0, 100 - claimed) })
         balance()
         row.querySelector('.name').focus()
+      })
+      redistribute.addEventListener('click', async () => {
+        await reshare('redistribute')
+        document.getElementById('save').focus()
       })
       document.getElementById('save').addEventListener('click', save)
       document.getElementById('cancel').addEventListener('click', () => window.categories.cancel())
