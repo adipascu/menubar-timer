@@ -2,58 +2,82 @@ import { app, BrowserWindow, ipcMain, screen } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { storedLabels, withLabel } from './task-labels.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
 const WINDOW_WIDTH = 480
 const WINDOW_HEIGHT = 148
 
-export const createTaskField = (onChange) => {
+export const createTaskField = (onChange, activeCategory) => {
   const file = join(app.getPath('userData'), 'task.json')
-  let label = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')).label : ''
-  let draft = null
+  const stored = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  let labels = storedLabels(stored, activeCategory().id)
+  let drafts = {}
   let window = null
   let onLabelled = null
+  let promptedFor = null
+
+  const labelOf = (categoryId) => labels[categoryId] ?? ''
+  const persist = () => writeFileSync(file, JSON.stringify({ labels }))
+  if (stored && !stored.labels) persist()
 
   const close = () => {
     if (window && !window.isDestroyed()) window.close()
     window = null
     onLabelled = null
+    promptedFor = null
     onChange()
   }
 
   const discard = () => {
-    draft = null
+    if (promptedFor) drafts = withLabel(drafts, promptedFor, '')
     close()
   }
 
-  const store = (next) => {
-    label = next.trim()
-    writeFileSync(file, JSON.stringify({ label }))
-    const continuation = label ? onLabelled : null
+  const store = (categoryId, next) => {
+    labels = withLabel(labels, categoryId, next)
+    persist()
+    if (categoryId !== promptedFor) {
+      onChange()
+      return
+    }
+    const continuation = labelOf(categoryId) ? onLabelled : null
     discard()
     if (continuation) continuation()
   }
 
-  ipcMain.on('task:save', (_event, next) => store(next))
-  ipcMain.on('task:cancel', () => discard())
-  ipcMain.on('task:draft', (_event, next) => {
-    draft = next
+  const fromPrompt = (event) => window !== null && !window.isDestroyed() && event.sender === window.webContents
+
+  ipcMain.on('task:save', (event, next) => {
+    if (fromPrompt(event)) store(promptedFor, next)
+  })
+  ipcMain.on('task:cancel', (event) => {
+    if (fromPrompt(event)) discard()
+  })
+  ipcMain.on('task:draft', (event, next) => {
+    if (fromPrompt(event)) drafts = { ...drafts, [promptedFor]: next }
   })
 
   return {
-    get: () => label,
-    set: (next) => store(next),
+    get: () => labelOf(activeCategory().id),
+    of: labelOf,
+    set: (next) => store(activeCategory().id, next),
     pending: () => onLabelled !== null,
     cancelPending: () => {
       if (onLabelled) close()
     },
     prompt: (onSaved) => {
       onLabelled = onSaved ?? null
-      if (window) {
+      const category = activeCategory()
+      if (window && promptedFor === category.id) {
         window.focus()
         return
       }
+      const replaced = window
+      window = null
+      if (replaced && !replaced.isDestroyed()) replaced.close()
+      promptedFor = category.id
 
       const { workArea } = screen.getPrimaryDisplay()
       const opened = new BrowserWindow({
@@ -82,7 +106,7 @@ export const createTaskField = (onChange) => {
 
       opened.webContents.on('did-finish-load', () => {
         if (!isCurrent()) return
-        opened.webContents.send('label', label, draft)
+        opened.webContents.send('label', labelOf(category.id), drafts[category.id] ?? null, category.name)
         app.focus({ steal: true })
         opened.show()
       })
