@@ -1,14 +1,23 @@
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
-import { formatDuration, formatShare, overlapSeconds, periods, splitByCategory } from './focus-stats.js'
+import {
+  formatDuration,
+  formatShare,
+  overlapSeconds,
+  periods,
+  splitByCategory,
+  splitByMode,
+  timed,
+} from './focus-stats.js'
 
 const work = { id: 'work', name: 'Work', color: 'blue' }
 const admin = { id: 'admin', name: 'Life admin', color: 'gray' }
 
-const segment = (category, start, end) => ({
+const segment = (category, start, end, mode) => ({
   start: start.toISOString(),
   end: end.toISOString(),
   category,
+  ...(mode ? { mode } : {}),
 })
 
 const local = (year, month, day, hour = 0, minute = 0) => new Date(year, month - 1, day, hour, minute)
@@ -96,5 +105,58 @@ describe('formatting', () => {
   it('rounds shares to whole percents', () => {
     assert.equal(formatShare(2 / 3), '67%')
     assert.equal(formatShare(1), '100%')
+  })
+})
+
+describe('timed', () => {
+  it('keeps timer segments and the ones logged before modes existed', () => {
+    const noon = local(2026, 9, 24, 12)
+    const later = local(2026, 9, 24, 13)
+    const kept = timed([
+      segment(work, noon, later),
+      segment(work, noon, later, 'timer'),
+      segment(work, noon, later, 'expired'),
+      segment(admin, noon, later, 'freebasing'),
+    ])
+    assert.deepEqual(
+      kept.map(({ mode }) => mode ?? 'before modes'),
+      ['before modes', 'timer'],
+    )
+  })
+})
+
+describe('splitByMode', () => {
+  it('adds up the time spent in each mode inside the window', () => {
+    const day = local(2026, 9, 24)
+    const segments = [
+      segment(work, local(2026, 9, 24, 9), local(2026, 9, 24, 9, 25), 'timer'),
+      segment(work, local(2026, 9, 24, 9, 25), local(2026, 9, 24, 9, 40), 'expired'),
+      segment(work, local(2026, 9, 24, 9, 40), local(2026, 9, 24, 11), 'freebasing'),
+      segment(admin, local(2026, 9, 23, 23), local(2026, 9, 24, 0, 30), 'freebasing'),
+    ]
+    assert.deepEqual(splitByMode(segments, day.getTime(), local(2026, 9, 25).getTime()), {
+      timer: 25 * 60,
+      expired: 15 * 60,
+      freebasing: 110 * 60,
+    })
+  })
+})
+
+describe('splitByCategory across modes', () => {
+  it('counts only timed work toward a category', () => {
+    const { total, rows } = splitByCategory(
+      [
+        segment(work, local(2026, 9, 24, 9), local(2026, 9, 24, 10), 'timer'),
+        segment(work, local(2026, 9, 24, 10), local(2026, 9, 24, 11), 'expired'),
+        segment(admin, local(2026, 9, 24, 11), local(2026, 9, 24, 12), 'freebasing'),
+      ],
+      0,
+      local(2026, 9, 25).getTime(),
+    )
+    assert.equal(total, 3600)
+    assert.deepEqual(
+      rows.map(({ id }) => id),
+      ['work'],
+    )
   })
 })

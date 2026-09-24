@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, screen } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { log } from './log.js'
 import { storedLabels, withLabel } from './task-labels.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -17,6 +18,7 @@ export const createTaskField = (onChange, activeCategory) => {
   let window = null
   let onLabelled = null
   let promptedFor = null
+  let promptedName = null
 
   const labelOf = (categoryId) => labels[categoryId] ?? ''
   const persist = () => writeFileSync(file, JSON.stringify({ labels }))
@@ -27,6 +29,7 @@ export const createTaskField = (onChange, activeCategory) => {
     window = null
     onLabelled = null
     promptedFor = null
+    promptedName = null
     onChange()
   }
 
@@ -35,22 +38,25 @@ export const createTaskField = (onChange, activeCategory) => {
     close()
   }
 
-  const store = (categoryId, next) => {
+  const store = (categoryId, categoryName, next) => {
+    const before = labelOf(categoryId)
     labels = withLabel(labels, categoryId, next)
     persist()
+    const after = labelOf(categoryId)
+    if (after !== before) log(`label for ${categoryName} changed from "${before}" to "${after}"`)
     if (categoryId !== promptedFor) {
       onChange()
       return
     }
     const continuation = labelOf(categoryId) ? onLabelled : null
-    discard()
     if (continuation) continuation()
+    discard()
   }
 
   const fromPrompt = (event) => window !== null && !window.isDestroyed() && event.sender === window.webContents
 
   ipcMain.on('task:save', (event, next) => {
-    if (fromPrompt(event)) store(promptedFor, next)
+    if (fromPrompt(event)) store(promptedFor, promptedName, next)
   })
   ipcMain.on('task:cancel', (event) => {
     if (fromPrompt(event)) discard()
@@ -62,7 +68,10 @@ export const createTaskField = (onChange, activeCategory) => {
   return {
     get: () => labelOf(activeCategory().id),
     of: labelOf,
-    set: (next) => store(activeCategory().id, next),
+    set: (next) => {
+      const { id, name } = activeCategory()
+      store(id, name, next)
+    },
     pending: () => onLabelled !== null,
     cancelPending: () => {
       if (onLabelled) close()
@@ -78,6 +87,7 @@ export const createTaskField = (onChange, activeCategory) => {
       window = null
       if (replaced && !replaced.isDestroyed()) replaced.close()
       promptedFor = category.id
+      promptedName = category.name
 
       const { workArea } = screen.getPrimaryDisplay()
       const opened = new BrowserWindow({

@@ -1,4 +1,4 @@
-import { overlapSeconds } from './focus-stats.js'
+import { overlapSeconds, timed } from './focus-stats.js'
 
 const BEHIND_POINTS = 10
 const ENOUGH_HOURS = 8
@@ -18,7 +18,7 @@ export const standings = (categories, segments, from, to) => {
   const wanted = tracked(categories)
   const goalTotal = wanted.reduce((sum, { share }) => sum + share, 0)
   const seconds = new Map(wanted.map(({ id }) => [id, 0]))
-  for (const segment of segments) {
+  for (const segment of timed(segments)) {
     if (!seconds.has(segment.category.id)) continue
     seconds.set(segment.category.id, seconds.get(segment.category.id) + overlapSeconds(segment, from, to))
   }
