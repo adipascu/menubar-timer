@@ -1,13 +1,13 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { fitToContent, resizedByHand, showOnCurrentSpace } from './fitted-window.js'
 import { GOAL_RULES, orderedByShare } from './goals.js'
 import { log } from './log.js'
 import { archived, redistributed, restored, shareTotal } from './shares.js'
 import { swatchList, swatchOf } from './palette.js'
-import { contentHeightWithin, keptInside, openingBounds } from './window-fit.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
@@ -89,9 +89,7 @@ export const createCategories = (onChange) => {
   const loaded = stored(file)
   let { categories, active, periods } = loaded ?? { categories: DEFAULTS.map(cleaned), active: null, periods: [] }
   let window = null
-  let resizedByHand = false
-
-  const cursorWorkArea = () => screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea
+  let handSized = () => false
 
   const persist = () => writeFileSync(file, JSON.stringify({ active, periods, categories }, null, 2))
 
@@ -133,28 +131,10 @@ export const createCategories = (onChange) => {
     Object.hasOwn(RESHARES, action) && Array.isArray(rows) ? RESHARES[action](rows, id) : rows,
   )
 
-  const fit = (target, wanted) => {
-    const shown = target.isVisible()
-    const area = shown ? screen.getDisplayMatching(target.getBounds()).workArea : cursorWorkArea()
-    const [contentWidth, contentHeight] = target.getContentSize()
-    const frameHeight = target.getSize()[1] - contentHeight
-    target.setContentSize(contentWidth, contentHeightWithin(wanted, area, frameHeight))
-    const bounds = target.getBounds()
-    target.setBounds(shown ? keptInside(bounds, area) : openingBounds(bounds, area))
-  }
-
-  const showOnCurrentSpace = (target) => {
-    const spaces = { visibleOnFullScreen: true, skipTransformProcessType: true }
-    target.setVisibleOnAllWorkspaces(true, spaces)
-    app.focus({ steal: true })
-    target.show()
-    target.setVisibleOnAllWorkspaces(false, spaces)
-  }
-
   ipcMain.on('categories:height', (event, height) => {
     const sender = BrowserWindow.fromWebContents(event.sender)
-    if (!sender || sender.isDestroyed() || sender !== window || resizedByHand) return
-    fit(sender, height)
+    if (!sender || sender.isDestroyed() || sender !== window || handSized()) return
+    fitToContent(sender, height)
     if (!sender.isVisible()) showOnCurrentSpace(sender)
   })
 
@@ -176,7 +156,6 @@ export const createCategories = (onChange) => {
         return
       }
 
-      resizedByHand = false
       window = new BrowserWindow({
         width: WINDOW_WIDTH,
         height: MINIMUM_HEIGHT,
@@ -190,9 +169,7 @@ export const createCategories = (onChange) => {
         webPreferences: { preload: join(here, 'categories-preload.cjs') },
       })
 
-      window.on('will-resize', () => {
-        resizedByHand = true
-      })
+      handSized = resizedByHand(window)
       window.on('closed', () => {
         window = null
       })

@@ -1,6 +1,7 @@
-import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
+import { BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { placeOnCursorDisplay, showOnCurrentSpace } from './fitted-window.js'
 import { log } from './log.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -45,8 +46,7 @@ export const createReader = (library, writeEdition) => {
     show: () => {
       if (window) {
         if (window.isMinimized()) window.restore()
-        window.focus()
-        app.focus({ steal: true })
+        showOnCurrentSpace(window)
         return
       }
 
@@ -68,8 +68,8 @@ export const createReader = (library, writeEdition) => {
       target.webContents.on('will-navigate', (event) => event.preventDefault())
       target.on('focus', () => target.webContents.send('reader:refresh'))
       target.once('ready-to-show', () => {
-        app.focus({ steal: true })
-        target.show()
+        placeOnCursorDisplay(target)
+        showOnCurrentSpace(target)
       })
       target.loadFile(join(here, 'reader.html'))
     },

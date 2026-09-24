@@ -10,7 +10,6 @@
         --ink: #1c1a14;
         --muted: #6f6852;
         --accent: #b8860b;
-        --shadow: rgba(0, 0, 0, 0.3);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -20,7 +19,6 @@
           --ink: #f2eee0;
           --muted: #a9a189;
           --accent: #e3b341;
-          --shadow: rgba(0, 0, 0, 0.6);
         }
       }
 
@@ -31,7 +29,7 @@
       html,
       body {
         margin: 0;
-        background: transparent;
+        background: var(--card);
         overflow: hidden;
         font:
           13px/1.4 -apple-system,
@@ -42,12 +40,7 @@
       }
 
       #card {
-        margin: 10px;
-        padding: 14px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        box-shadow: 0 12px 30px var(--shadow);
+        padding: 14px 16px;
       }
 
       label {
@@ -152,6 +145,7 @@
 
       window.task.onLabel((label, draft, category) => {
         question.textContent = `What are you working on for ${category}?`
+        requestAnimationFrame(() => window.task.height(document.getElementById('card').offsetHeight))
         saved = label
         fill(draft ?? label)
       })
