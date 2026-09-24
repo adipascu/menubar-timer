@@ -7,7 +7,7 @@ import { createCategories } from './categories.js'
 import { createChargerPlaces } from './charger-places.js'
 import { createCoach } from './coach.js'
 import { createFocusLog } from './focus-log.js'
-import { formatDuration, formatShare, periods, splitByCategory } from './focus-stats.js'
+import { formatDuration, formatShare, periods, splitByCategory, splitByMode } from './focus-stats.js'
 import { goalCard } from './goal-card.js'
 import { nudge, standings, tracked } from './goals.js'
 import { createIdeas } from './ideas.js'
@@ -38,6 +38,11 @@ const DURATIONS = [
   { minutes: 90, hint: 'one full focus cycle' },
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
+const MODE_OF = { running: 'timer', expired: 'expired', idle: 'freebasing' }
+const OFF_THE_CLOCK = [
+  { mode: 'expired', label: 'Timer ran out, not yet restarted' },
+  { mode: 'freebasing', label: 'Freebasing' },
+]
 const NO_TASK = 'No task, on purpose'
 const FLASH_MS = 500
 const MENU_REFRESH_MS = 60 * 1000
@@ -67,6 +72,7 @@ app.on('window-all-closed', () => {})
   let menuTuneUp = null
   let goalCardShownAt = null
   let batteryItem = null
+  let away = false
 
   const renderTitle = () => {
     const label = state === 'idle' ? '' : task.get()
@@ -74,7 +80,16 @@ app.on('window-all-closed', () => {})
     tray.setTitle(label ? `${label} · ${shown}` : shown, { fontType: 'monospacedDigit' })
   }
 
-  const segmentDetails = () => ({ category: categories.active(), task: task.get(), plannedMinutes: sessionMinutes })
+  const segmentDetails = (mode = MODE_OF[state]) => ({
+    mode,
+    category: categories.active(),
+    task: task.get(),
+    plannedMinutes: mode === 'freebasing' ? null : sessionMinutes,
+  })
+
+  const openSegment = (mode) => {
+    if (!away) focusLog.begin(segmentDetails(mode))
+  }
 
   const segmentChange = (current) => {
     if (current.category.id !== categories.active().id) return 'switched'
@@ -87,7 +102,7 @@ app.on('window-all-closed', () => {})
     const change = current && segmentChange(current)
     if (!change) return
     focusLog.end(change)
-    focusLog.begin(segmentDetails())
+    openSegment()
   }
 
   const shownDraw = () => (chargerPlaces.isMarked() ? null : draw)
@@ -168,8 +183,8 @@ app.on('window-all-closed', () => {})
   const resetTimer = (minutes) => {
     clearInterval(interval)
     sessionMinutes = minutes
-    focusLog.end('restarted')
-    focusLog.begin(segmentDetails())
+    focusLog.end(state === 'idle' ? 'started' : 'restarted')
+    openSegment('timer')
 
     endTime = Date.now() + minutes * 60 * 1000
 
@@ -179,6 +194,7 @@ app.on('window-all-closed', () => {})
       if (timeLeft <= 0) {
         clearInterval(interval)
         focusLog.end('completed')
+        openSegment('expired')
         status = "Time's up!"
         setState('expired')
         interval = flashMenuBar()
@@ -222,13 +238,16 @@ app.on('window-all-closed', () => {})
     clearInterval(interval)
     interval = null
     focusLog.end('stopped')
+    openSegment('freebasing')
     status = IDLE_STATUS
     setState('idle')
   }
 
   const refreshStaleMenu = () => {
     const stale =
-      state === 'running' || menuDay !== periods(new Date())[0].from || menuTuneUp !== coach.tuneUpTiming().label
+      focusLog.current() !== null ||
+      menuDay !== periods(new Date())[0].from ||
+      menuTuneUp !== coach.tuneUpTiming().label
     if (stale) renderMenu()
   }
 
@@ -283,12 +302,17 @@ app.on('window-all-closed', () => {})
       { type: 'separator' },
       ...periods(now).flatMap(({ label, from }, index) => {
         const { total, rows } = splitByCategory(segments, from, now.getTime(), categories.all())
+        const modes = splitByMode(segments, from, now.getTime())
         return [
           ...(index > 0 ? [{ type: 'separator' }] : []),
           { label: total >= 60 ? `${label} · ${formatDuration(total)}` : `${label} · nothing yet`, enabled: false },
           ...rows.map((row) => ({
             label: `${row.name} · ${formatDuration(row.seconds)} · ${formatShare(row.share)}`,
             icon: swatchImage(swatchOf(row.color).hex),
+            enabled: false,
+          })),
+          ...OFF_THE_CLOCK.filter(({ mode }) => modes[mode] >= 60).map(({ mode, label }) => ({
+            label: `${label} · ${formatDuration(modes[mode])}`,
             enabled: false,
           })),
         ]
@@ -439,6 +463,19 @@ app.on('window-all-closed', () => {})
   }
   const categories = createCategories(refresh)
   const task = createTaskField(refresh, categories.active)
+  openSegment()
+  const stepAway = (reason) => {
+    away = true
+    focusLog.end(reason)
+  }
+  const comeBack = () => {
+    away = false
+    openSegment()
+  }
+  powerMonitor.on('suspend', () => stepAway('asleep'))
+  powerMonitor.on('lock-screen', () => stepAway('locked'))
+  powerMonitor.on('resume', comeBack)
+  powerMonitor.on('unlock-screen', comeBack)
   const beacon = createBeaconPreset((id) => {
     coach.setBeacon(id)
     renderMenu()

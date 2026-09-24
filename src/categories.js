@@ -156,7 +156,9 @@ export const createCategories = (onChange) => {
     period: () => periods.at(-1),
     active: activeCategory,
     activate: (id) => {
-      if (!live().some((category) => category.id === id)) return
+      const next = live().find((category) => category.id === id)
+      if (!next) return
+      if (next.id !== activeCategory().id) log(`active category changed from ${activeCategory().name} to ${next.name}`)
       active = id
       persist()
       onChange()

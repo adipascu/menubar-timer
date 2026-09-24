@@ -7,7 +7,7 @@ const HEARTBEAT_MS = 15 * 1000
 
 const snapshot = ({ id, name, color }) => ({ id, name, color })
 
-const settle = ({ seen, ...segment }, end, ended) => ({
+const settle = ({ seen, pid, ...segment }, end, ended) => ({
   ...segment,
   end,
   seconds: Math.round((Date.parse(end) - Date.parse(segment.start)) / 1000),
@@ -43,7 +43,20 @@ export const createFocusLog = () => {
     renameSync(staging, openFile)
   }
 
+  const ownsMarker = () => existsSync(openFile) && parsed(readFileSync(openFile, 'utf8'))[0]?.pid === process.pid
+
+  const letGo = (why) => {
+    clearInterval(heartbeat)
+    heartbeat = null
+    log(`${why}, leaving the ${open.mode} segment in ${open.category.name} to it`)
+    open = null
+  }
+
   const touch = () => {
+    if (!ownsMarker()) {
+      letGo('another instance took over the focus marker')
+      return
+    }
     open = { ...open, seen: new Date().toISOString() }
     writeOpen()
   }
@@ -61,28 +74,31 @@ export const createFocusLog = () => {
         return
       }
       append(settle(cut, cut.seen, 'lost'))
-      log(`recovered a ${cut.category.name} focus segment last seen at ${cut.seen}`)
+      log(`recovered a ${cut.mode ?? 'timer'} segment in ${cut.category.name} last seen at ${cut.seen}`)
     },
-    begin: ({ category, task, plannedMinutes }) => {
+    begin: ({ mode, category, task, plannedMinutes }) => {
+      if (open) return
       const start = new Date().toISOString()
-      open = { start, seen: start, category: snapshot(category), task, plannedMinutes }
+      open = { start, seen: start, pid: process.pid, mode, category: snapshot(category), task, plannedMinutes }
       writeOpen()
       heartbeat = setInterval(touch, HEARTBEAT_MS)
-      log(`focus segment started: ${category.name}, ${plannedMinutes} min`)
+      log(
+        `${mode} segment started: ${category.name}, "${task}"${plannedMinutes ? `, ${plannedMinutes} min timer` : ''}`,
+      )
     },
     end: (ended) => {
       if (!open) return
+      if (!ownsMarker()) {
+        letGo('another instance already closed this segment')
+        return
+      }
       clearInterval(heartbeat)
       heartbeat = null
       const segment = settle(open, new Date().toISOString(), ended)
       open = null
-      if (!existsSync(openFile)) {
-        log(`another instance already closed the ${segment.category.name} segment`)
-        return
-      }
       append(segment)
       rmSync(openFile, { force: true })
-      log(`focus segment ${ended}: ${segment.category.name}, ${segment.seconds} s`)
+      log(`${segment.mode} segment ${ended}: ${segment.category.name}, "${segment.task}", ${segment.seconds} s`)
     },
     segments: (now) => (open ? [...settled, settle(open, now.toISOString(), 'open')] : settled),
   }

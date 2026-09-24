@@ -21,9 +21,21 @@ export const overlapSeconds = (segment, from, to) => {
   return Math.max(0, (end - start) / 1000)
 }
 
+const MODES = ['timer', 'expired', 'freebasing']
+
+const modeOf = (segment) => segment.mode ?? 'timer'
+
+export const timed = (segments) => segments.filter((segment) => modeOf(segment) === 'timer')
+
+export const splitByMode = (segments, from, to) => {
+  const totals = Object.fromEntries(MODES.map((mode) => [mode, 0]))
+  for (const segment of segments) totals[modeOf(segment)] += overlapSeconds(segment, from, to)
+  return totals
+}
+
 export const splitByCategory = (segments, from, to, known = []) => {
   const totals = new Map()
-  for (const segment of segments) {
+  for (const segment of timed(segments)) {
     const seconds = overlapSeconds(segment, from, to)
     if (seconds === 0) continue
     const { id, name, color } = segment.category

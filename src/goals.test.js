@@ -14,6 +14,22 @@ const window = { from: 0, to: 1000 * 3600_000 }
 
 const standingsOf = (categories, segments) => standings(categories, segments, window.from, window.to)
 
+describe('standings across modes', () => {
+  it('leaves time after the timer ran out and freebasing out of the goals', () => {
+    const rows = standingsOf(
+      [category('a', 50), category('b', 50)],
+      [hours('a', 2), { ...hours('b', 3, 2), mode: 'expired' }, { ...hours('b', 4, 5), mode: 'freebasing' }],
+    )
+    assert.deepEqual(
+      rows.map(({ id, seconds }) => [id, seconds]),
+      [
+        ['b', 0],
+        ['a', 7200],
+      ],
+    )
+  })
+})
+
 describe('tracked', () => {
   it('drops a category with no share', () => {
     assert.deepEqual(
