@@ -17,7 +17,7 @@ import {
   splitByMode,
 } from './focus-stats.js'
 import { goalCard } from './goal-card.js'
-import { nudge, standings, tracked } from './goals.js'
+import { GOAL_RULES, nudge, periodReviews, pickOrder, recentStanding, standingText, tracked } from './goals.js'
 import { createIdeas } from './ideas.js'
 import { createLibrary } from './library.js'
 import { swatchOf } from './palette.js'
@@ -266,18 +266,13 @@ app.on('window-all-closed', () => {})
     if (stale) renderMenu()
   }
 
-  const periodStandings = (now) => {
-    const { startedAt } = categories.period()
-    const rows = standings(categories.all(), focusLog.segments(now), Date.parse(startedAt), now.getTime())
-    return { startedAt, rows, total: rows.reduce((sum, row) => sum + row.seconds, 0) }
-  }
+  const standing = (now) => recentStanding(categories.all(), focusLog.segments(now), now.getTime())
 
   const offerSwitch = () => {
     const now = new Date()
-    const { startedAt, rows, total } = periodStandings(now)
+    const current = standing(now)
     const suggestion = nudge({
-      rows,
-      total,
+      standing: current,
       activeId: categories.active().id,
       shownAt: goalCardShownAt,
       now: now.getTime(),
@@ -285,7 +280,7 @@ app.on('window-all-closed', () => {})
     if (!suggestion) return null
     goalCardShownAt = now.getTime()
     log(`goal nudge: ${suggestion.behind.name} is behind while working on ${suggestion.active.name}`)
-    const card = goalCard({ ...suggestion, rows, total, startedAt })
+    const card = goalCard({ ...suggestion, rows: current.rows, total: current.total })
     coach.alert(card)
     return card
   }
@@ -296,26 +291,54 @@ app.on('window-all-closed', () => {})
     if (card) focusLog.note({ popup: { kind: card.kind ?? 'tip', title: card.title } })
   }
 
-  const rankedCategories = (now) => {
-    const ranking = periodStandings(now).rows.map(({ id }) => id)
+  const pickerCategories = (now) => {
+    const current = standing(now)
     const shown = tracked(categories.all())
     const active = categories.active()
-    const ordered = [...shown].sort((first, second) => ranking.indexOf(first.id) - ranking.indexOf(second.id))
-    return shown.some(({ id }) => id === active.id) ? ordered : [...ordered, active]
+    const ordered = pickOrder(current, shown)
+    const listed = shown.some(({ id }) => id === active.id) ? ordered : [...ordered, active]
+    const rowOf = new Map(current.rows.map((row) => [row.id, row]))
+    return listed.map((category) => ({
+      category,
+      standing: current.enough && rowOf.has(category.id) ? standingText(rowOf.get(category.id)) : null,
+    }))
   }
 
+  const goalRow = (row, withStanding) => {
+    const live = categories.all().find(({ id }) => id === row.id)
+    return {
+      label: pickerLabel(
+        live?.name ?? row.name,
+        withStanding ? standingText(row) : null,
+        `${formatShare(row.actual)} of ${formatShare(row.goal)}`,
+      ),
+      icon: swatchImage(swatchOf(live?.color ?? row.color).hex),
+      enabled: false,
+    }
+  }
+
+  const shortDate = (at) => new Date(at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+
   const goalMenu = (now) => {
-    const { startedAt, rows, total } = periodStandings(now)
+    const { rows, total, enough } = standing(now)
     if (rows.length === 0) return [{ label: 'No goals set', enabled: false }]
-    const since = new Date(startedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
-    return [
-      { label: `Goals since ${since} · ${formatDuration(total)}`, enabled: false },
-      ...rows.map((row) => ({
-        label: `${row.name} · ${formatShare(row.actual)} of ${formatShare(row.goal)}`,
-        icon: swatchImage(swatchOf(row.color).hex),
+    const header = enough
+      ? `Goals, last ${GOAL_RULES.windowDays} days · ${formatDuration(total)}`
+      : `Goals, last ${GOAL_RULES.windowDays} days · ${formatDuration(total)} of the ${GOAL_RULES.enoughHours}h needed to judge`
+    return [{ label: header, enabled: false }, ...rows.map((row) => goalRow(row, enough))]
+  }
+
+  const goalPeriodsMenu = (now) => {
+    const reviews = periodReviews(categories.periods(), focusLog.segments(now), now.getTime())
+    if (reviews.length === 0) return [{ label: 'Nothing timed in any goal period yet', enabled: false }]
+    return reviews.flatMap((review, index) => [
+      ...(index > 0 ? [{ type: 'separator' }] : []),
+      {
+        label: `${shortDate(review.from)} to ${review.to === now.getTime() ? 'now' : shortDate(review.to)} · ${formatDuration(review.total)}`,
         enabled: false,
-      })),
-    ]
+      },
+      ...review.rows.map((row) => goalRow(row, review.enough)),
+    ])
   }
 
   const focusMenu = (now) => {
@@ -338,6 +361,7 @@ app.on('window-all-closed', () => {})
         ]
       }),
       { type: 'separator' },
+      { label: 'Goal periods', submenu: goalPeriodsMenu(now) },
       {
         label: 'Reveal the focus log in Finder',
         enabled: focusLog.exists(),
@@ -369,8 +393,8 @@ app.on('window-all-closed', () => {})
         click: () => startSession(minutes),
       })),
       { type: 'separator' },
-      ...rankedCategories(now).map((category) => ({
-        label: pickerLabel(category.name, task.of(category.id)),
+      ...pickerCategories(now).map(({ category, standing: where }) => ({
+        label: pickerLabel(category.name, where, task.of(category.id)),
         type: 'radio',
         checked: category.id === categories.active().id,
         icon: swatchImage(swatchOf(category.color).hex),

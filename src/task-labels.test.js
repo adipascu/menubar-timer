@@ -41,6 +41,14 @@ describe('pickerLabel', () => {
     assert.equal(pickerLabel('latindance.be', 'Festival page'), 'latindance.be · Festival page')
   })
 
+  it('puts the standing between the name and what you are working on', () => {
+    assert.equal(
+      pickerLabel('latindance.be', '3h behind', 'Festival page'),
+      'latindance.be · 3h behind · Festival page',
+    )
+    assert.equal(pickerLabel('Belgabot', null, ''), 'Belgabot')
+  })
+
   it('shows the bare name when nothing is set', () => {
     assert.equal(pickerLabel('Freelance', ''), 'Freelance')
   })

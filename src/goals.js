@@ -1,13 +1,22 @@
-import { overlapSeconds, timed } from './focus-stats.js'
+import { formatDuration, overlapSeconds, timed } from './focus-stats.js'
 
-const BEHIND_POINTS = 10
-const ENOUGH_HOURS = 8
+const WINDOW_DAYS = 14
+const BAND_POINTS = 5
+const ENOUGH_HOURS = 5
 const CARD_GAP_MS = 60 * 60 * 1000
+const WINDOW_MS = WINDOW_DAYS * 24 * 3600 * 1000
 
-export const NUDGE_RULES = {
-  behindPoints: BEHIND_POINTS,
+export const GOAL_RULES = {
+  windowDays: WINDOW_DAYS,
+  bandPoints: BAND_POINTS,
   enoughHours: ENOUGH_HOURS,
   cardGapMinutes: CARD_GAP_MS / 60000,
+}
+
+const statusOf = (gap) => {
+  if (gap * 100 > BAND_POINTS) return 'behind'
+  if (gap * 100 < -BAND_POINTS) return 'ahead'
+  return 'on track'
 }
 
 export const tracked = (categories) => categories.filter(({ share }) => share > 0)
@@ -27,17 +36,67 @@ export const standings = (categories, segments, from, to) => {
     .map(({ share, ...category }) => {
       const goal = share / goalTotal
       const actual = total > 0 ? seconds.get(category.id) / total : 0
-      return { ...category, seconds: seconds.get(category.id), goal, actual, gap: goal - actual }
+      const gap = goal - actual
+      return {
+        ...category,
+        seconds: seconds.get(category.id),
+        goal,
+        actual,
+        gap,
+        behind: goal * total - seconds.get(category.id),
+        status: statusOf(gap),
+      }
     })
     .sort((first, second) => second.gap - first.gap)
 }
 
-export const nudge = ({ rows, total, activeId, shownAt, now }) => {
-  if (total < ENOUGH_HOURS * 3600) return null
-  const behind = rows[0]
-  if (!behind || behind.gap * 100 < BEHIND_POINTS) return null
-  const active = rows.find(({ id }) => id === activeId)
-  if (!active || active.gap >= 0) return null
+const standingOver = (categories, segments, from, to) => {
+  const rows = standings(categories, segments, from, to)
+  const total = rows.reduce((sum, row) => sum + row.seconds, 0)
+  return { from, to, rows, total, enough: total >= ENOUGH_HOURS * 3600 }
+}
+
+export const recentStanding = (categories, segments, now) => standingOver(categories, segments, now - WINDOW_MS, now)
+
+export const periodReviews = (periods, segments, now) =>
+  periods
+    .map((period, index) =>
+      standingOver(
+        period.shares,
+        segments,
+        Date.parse(period.startedAt),
+        index + 1 < periods.length ? Date.parse(periods[index + 1].startedAt) : now,
+      ),
+    )
+    .filter(({ total }) => total >= 60)
+    .reverse()
+
+const RANK = { behind: 0, 'on track': 1, ahead: 2 }
+
+export const pickOrder = ({ rows, enough }, categories) => {
+  if (!enough) return orderedByShare(categories)
+  const rowOf = new Map(rows.map((row) => [row.id, row]))
+  return [...categories].sort((first, second) => {
+    const a = rowOf.get(first.id)
+    const b = rowOf.get(second.id)
+    const byStatus = RANK[a.status] - RANK[b.status]
+    if (byStatus !== 0) return byStatus
+    return a.status === 'on track' ? second.share - first.share : b.behind - a.behind
+  })
+}
+
+export const standingText = ({ status, behind }) => {
+  if (status === 'behind') return `${formatDuration(behind)} behind`
+  if (status === 'ahead') return `${formatDuration(-behind)} ahead`
+  return 'on track'
+}
+
+export const nudge = ({ standing, activeId, shownAt, now }) => {
+  if (!standing.enough) return null
+  const behind = standing.rows[0]
+  if (!behind || behind.status !== 'behind') return null
+  const active = standing.rows.find(({ id }) => id === activeId)
+  if (!active || active.status !== 'ahead') return null
   if (shownAt && now - shownAt < CARD_GAP_MS) return null
   return { behind, active }
 }

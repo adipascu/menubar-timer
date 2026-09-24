@@ -1,24 +1,22 @@
 import { formatDuration, formatShare } from './focus-stats.js'
-import { NUDGE_RULES } from './goals.js'
-
-const points = (gap) => `${Math.round(Math.abs(gap) * 100)} points`
+import { GOAL_RULES, standingText } from './goals.js'
 
 const ledger = (rows) =>
   rows
     .map(
       (row) =>
-        `${row.name}: ${formatShare(row.actual)} of ${formatShare(row.goal)} over ${formatDuration(row.seconds)}`,
+        `${row.name}: ${formatShare(row.actual)} of ${formatShare(row.goal)} over ${formatDuration(row.seconds)}, ${standingText(row)}`,
     )
     .join('\n')
 
-export const goalCard = ({ behind, active, rows, total, startedAt }) => ({
+export const goalCard = ({ behind, active, rows, total }) => ({
   kind: 'goal',
   title: `Switch to ${behind.name}`,
-  body: `Since ${new Date(startedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })} you have given ${behind.name} ${formatShare(behind.actual)} of your focus against a ${formatShare(behind.goal)} goal, ${points(behind.gap)} behind. ${active.name} is ${points(active.gap)} ahead of its own. Worth pointing the next session at ${behind.name}.`,
+  body: `Over the last ${GOAL_RULES.windowDays} days ${behind.name} got ${formatShare(behind.actual)} of your timed work against a ${formatShare(behind.goal)} goal, ${standingText(behind)}. ${active.name} is ${standingText(active)}. Worth pointing the next session at ${behind.name}.`,
   source: 'Goal split',
   prompt: () =>
     [
-      `My focus split since ${startedAt} across ${formatDuration(total)} of timed work:`,
+      `My focus split over the last ${GOAL_RULES.windowDays} days, across ${formatDuration(total)} of timed work:`,
       '',
       ledger(rows),
       '',
@@ -26,6 +24,6 @@ export const goalCard = ({ behind, active, rows, total, startedAt }) => ({
       '',
       'Help me work out whether the goal split is still the right one, or whether the way I am actually spending my time is telling me something the split has not caught up with. Ask what changed before you advise.',
       '',
-      `The card comes from TimerBar itself. It only fires once ${NUDGE_RULES.enoughHours} hours are logged in the goal period and something is at least ${NUDGE_RULES.behindPoints} points behind, at most once every ${NUDGE_RULES.cardGapMinutes} minutes, all tunable at the top of src/goals.js.`,
+      `The card comes from TimerBar itself. It measures the last ${GOAL_RULES.windowDays} days of timed work against the current split, calls a category behind or ahead once it is more than ${GOAL_RULES.bandPoints} points off its share, says nothing until ${GOAL_RULES.enoughHours} hours are in that window, and comes at most once every ${GOAL_RULES.cardGapMinutes} minutes, all tunable at the top of src/goals.js.`,
     ].join('\n'),
 })

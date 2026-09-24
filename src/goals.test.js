@@ -1,6 +1,16 @@
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
-import { nudge, orderedByShare, standings, tracked } from './goals.js'
+import {
+  GOAL_RULES,
+  nudge,
+  orderedByShare,
+  periodReviews,
+  pickOrder,
+  recentStanding,
+  standingText,
+  standings,
+  tracked,
+} from './goals.js'
 
 const category = (id, share) => ({ id, name: id, color: 'blue', share })
 
@@ -113,38 +123,172 @@ describe('standings', () => {
 })
 
 describe('nudge', () => {
-  const rows = [
-    { id: 'latin', name: 'latindance.be', gap: 0.3 },
-    { id: 'ump', name: 'UMP', gap: -0.1 },
-    { id: 'freelance', name: 'Freelance', gap: -0.2 },
-  ]
-  const enough = 9 * 3600
+  const row = (id, status) => ({ id, name: id, status })
+  const standing = (rows, enough = true) => ({ rows, enough })
+  const rows = [row('latin', 'behind'), row('ump', 'on track'), row('freelance', 'ahead')]
   const now = Date.parse('2026-09-08T12:00:00Z')
 
-  it('stays quiet until enough hours are logged', () => {
-    assert.equal(nudge({ rows, total: 7 * 3600, activeId: 'freelance', shownAt: null, now }), null)
+  it('stays quiet until enough hours are logged in the window', () => {
+    assert.equal(nudge({ standing: standing(rows, false), activeId: 'freelance', shownAt: null, now }), null)
   })
 
-  it('stays quiet when nothing is far enough behind', () => {
-    const close = [
-      { id: 'latin', gap: 0.05 },
-      { id: 'ump', gap: -0.05 },
-    ]
-    assert.equal(nudge({ rows: close, total: enough, activeId: 'ump', shownAt: null, now }), null)
+  it('stays quiet when nothing is outside its band on the short side', () => {
+    const close = [row('latin', 'on track'), row('freelance', 'ahead')]
+    assert.equal(nudge({ standing: standing(close), activeId: 'freelance', shownAt: null, now }), null)
   })
 
-  it('stays quiet while working on a category that is itself behind', () => {
-    assert.equal(nudge({ rows, total: enough, activeId: 'latin', shownAt: null, now }), null)
+  it('stays quiet while working on a category that is not ahead of its band', () => {
+    assert.equal(nudge({ standing: standing(rows), activeId: 'ump', shownAt: null, now }), null)
+    assert.equal(nudge({ standing: standing(rows), activeId: 'latin', shownAt: null, now }), null)
   })
 
   it('names the most behind category when working on one that is ahead', () => {
-    const suggestion = nudge({ rows, total: enough, activeId: 'freelance', shownAt: null, now })
+    const suggestion = nudge({ standing: standing(rows), activeId: 'freelance', shownAt: null, now })
     assert.equal(suggestion.behind.id, 'latin')
     assert.equal(suggestion.active.id, 'freelance')
   })
 
   it('holds off for an hour after the last card', () => {
-    assert.equal(nudge({ rows, total: enough, activeId: 'freelance', shownAt: now - 59 * 60_000, now }), null)
-    assert.ok(nudge({ rows, total: enough, activeId: 'freelance', shownAt: now - 61 * 60_000, now }))
+    assert.equal(nudge({ standing: standing(rows), activeId: 'freelance', shownAt: now - 59 * 60_000, now }), null)
+    assert.ok(nudge({ standing: standing(rows), activeId: 'freelance', shownAt: now - 61 * 60_000, now }))
+  })
+})
+
+describe('standings in hours and bands', () => {
+  it('says how many hours each category is behind or ahead of its share of the time', () => {
+    const rows = standingsOf(
+      [category('latin', 50), category('process', 50)],
+      [hours('process', 8), hours('latin', 2, 8)],
+    )
+    const latin = rows.find(({ id }) => id === 'latin')
+    assert.equal(latin.behind, 3 * 3600)
+    assert.equal(rows.find(({ id }) => id === 'process').behind, -3 * 3600)
+  })
+
+  it('calls a category on track inside the band and behind or ahead outside it', () => {
+    const rows = standingsOf(
+      [category('a', 40), category('b', 30), category('c', 30)],
+      [hours('a', 36), hours('b', 34, 36), hours('c', 30, 70)],
+    )
+    const statusOf = (id) => rows.find((row) => row.id === id).status
+    assert.equal(statusOf('a'), 'on track')
+    assert.equal(statusOf('b'), 'on track')
+    const wide = standingsOf([category('a', 50), category('b', 50)], [hours('a', 3), hours('b', 7, 3)])
+    assert.deepEqual(
+      wide.map(({ id, status }) => [id, status]),
+      [
+        ['a', 'behind'],
+        ['b', 'ahead'],
+      ],
+    )
+  })
+})
+
+describe('recentStanding', () => {
+  const day = 24 * 3600_000
+  const now = 20 * day
+
+  it(`counts only the last ${GOAL_RULES.windowDays} days, however long ago the shares changed`, () => {
+    const segments = [
+      hours('a', 10, 0),
+      hours('b', 3, (now - 10 * day) / 3600_000),
+      hours('a', 3, (now - day) / 3600_000),
+    ]
+    const { total, rows, from } = recentStanding([category('a', 50), category('b', 50)], segments, now)
+    assert.equal(from, now - 14 * day)
+    assert.equal(total, 6 * 3600)
+    assert.deepEqual(
+      rows.map(({ id, seconds }) => [id, seconds]),
+      [
+        ['a', 3 * 3600],
+        ['b', 3 * 3600],
+      ],
+    )
+  })
+
+  it(`judges nothing before ${GOAL_RULES.enoughHours} hours are in the window`, () => {
+    const under = recentStanding([category('a', 100)], [hours('a', 4.9, (now - day) / 3600_000)], now)
+    const over = recentStanding([category('a', 100)], [hours('a', 5, (now - day) / 3600_000)], now)
+    assert.equal(under.enough, false)
+    assert.equal(over.enough, true)
+  })
+})
+
+describe('pickOrder', () => {
+  const row = (id, status, behind) => ({ id, status, behind })
+  const listed = [
+    category('process', 10),
+    category('vacation', 20),
+    category('latin', 40),
+    category('belgabot', 15),
+    category('hourly', 15),
+  ]
+
+  it('lists what needs catching up first by hours, then what is on track by share, then what is ahead', () => {
+    const standing = {
+      enough: true,
+      rows: [
+        row('latin', 'behind', 3 * 3600),
+        row('hourly', 'behind', 5 * 3600),
+        row('belgabot', 'on track', 600),
+        row('vacation', 'on track', -600),
+        row('process', 'ahead', -2 * 3600),
+      ],
+    }
+    assert.deepEqual(
+      pickOrder(standing, listed).map(({ id }) => id),
+      ['hourly', 'latin', 'vacation', 'belgabot', 'process'],
+    )
+  })
+
+  it('keeps a stable share order until there is enough to judge', () => {
+    assert.deepEqual(
+      pickOrder({ enough: false, rows: [] }, listed).map(({ id }) => id),
+      ['latin', 'vacation', 'belgabot', 'hourly', 'process'],
+    )
+  })
+
+  it('puts the one least ahead first among the ones ahead', () => {
+    const standing = { enough: true, rows: [row('a', 'ahead', -3600), row('b', 'ahead', -600)] }
+    assert.deepEqual(
+      pickOrder(standing, [category('a', 50), category('b', 50)]).map(({ id }) => id),
+      ['b', 'a'],
+    )
+  })
+})
+
+describe('standingText', () => {
+  it('says hours behind, hours ahead or on track', () => {
+    assert.equal(standingText({ status: 'behind', behind: 3 * 3600 + 600 }), '3h 10m behind')
+    assert.equal(standingText({ status: 'ahead', behind: -45 * 60 }), '45m ahead')
+    assert.equal(standingText({ status: 'on track', behind: 300 }), 'on track')
+  })
+})
+
+describe('periodReviews', () => {
+  const period = (startedAt, shares) => ({
+    startedAt: new Date(startedAt * 3600_000).toISOString(),
+    shares: Object.entries(shares).map(([id, share]) => ({ id, name: id, share })),
+  })
+
+  it('judges each goal period against the shares it was set with, newest first', () => {
+    const periods = [
+      period(0, { latin: 40, process: 60 }),
+      period(10, { latin: 80, process: 20 }),
+      period(30, { latin: 100 }),
+    ]
+    const segments = [hours('process', 6, 0), hours('latin', 4, 6), hours('latin', 4, 10), hours('process', 1, 14)]
+    const reviews = periodReviews(periods, segments, 40 * 3600_000)
+    assert.equal(reviews.length, 2)
+    assert.equal(reviews[0].from, 10 * 3600_000)
+    assert.equal(reviews[0].to, 30 * 3600_000)
+    assert.deepEqual(
+      reviews[0].rows.map(({ id, goal, actual }) => [id, goal, actual]),
+      [
+        ['latin', 0.8, 0.8],
+        ['process', 0.2, 0.2],
+      ],
+    )
+    assert.equal(reviews[1].rows.find(({ id }) => id === 'latin').actual, 0.4)
   })
 })

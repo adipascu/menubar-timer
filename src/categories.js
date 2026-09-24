@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { orderedByShare } from './goals.js'
+import { GOAL_RULES, orderedByShare } from './goals.js'
 import { log } from './log.js'
 import { archived, redistributed, restored, shareTotal } from './shares.js'
 import { swatchList, swatchOf } from './palette.js'
@@ -160,7 +160,7 @@ export const createCategories = (onChange) => {
 
   return {
     all: () => categories,
-    period: () => periods.at(-1),
+    periods: () => periods,
     active: activeCategory,
     activate: (id) => {
       const next = live().find((category) => category.id === id)
@@ -203,7 +203,7 @@ export const createCategories = (onChange) => {
           categories: orderedByShare(categories),
           active: activeCategory().id,
           palette: swatchList(),
-          periodStartedAt: periods.at(-1).startedAt,
+          windowDays: GOAL_RULES.windowDays,
         })
       })
       target.loadFile(join(here, 'categories.html'))

@@ -14,4 +14,4 @@ export const storedLabels = (stored, activeCategoryId) => {
   return withLabel({}, activeCategoryId, stored?.label)
 }
 
-export const pickerLabel = (name, label) => (label ? `${name} · ${label}` : name)
+export const pickerLabel = (...parts) => parts.filter(Boolean).join(' · ')

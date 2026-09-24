@@ -540,8 +540,7 @@
 
       window.categories.onLoad((payload) => {
         palette = payload.palette
-        const since = new Date(payload.periodStartedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })
-        period.textContent = `Measuring against these shares since ${since}. Changing any share starts a new period from today.`
+        period.textContent = `Goals are measured over your last ${payload.windowDays} days of timed work, so changing a share changes the targets, never the history.`
         render(payload.categories)
         const active = rows.querySelector(`[data-id="${payload.active}"] .name`) ?? rows.querySelector('.name')
         active.focus()
