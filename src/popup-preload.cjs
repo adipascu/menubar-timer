@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('coach', {
   onSiteLine: (handler) => ipcRenderer.on('site-line', (_event, text) => handler(text)),
   reportHeight: (height) => ipcRenderer.send('coach:height', height),
   reportBeacon: (label) => ipcRenderer.send('coach:beacon', label),
-  dismiss: () => ipcRenderer.send('coach:dismiss'),
+  dismiss: (how) => ipcRenderer.send('coach:dismiss', how),
   discuss: () => ipcRenderer.send('coach:discuss'),
   markKnown: () => ipcRenderer.send('coach:mark', 'known'),
   markNotInterested: () => ipcRenderer.send('coach:mark', 'not-interested'),
