@@ -59,8 +59,6 @@ export const createLibrary = () => {
     return Array.isArray(finished) ? finished : []
   }
 
-  let reserved = 0
-
   return {
     dir,
     latestCardsFile,
@@ -74,8 +72,8 @@ export const createLibrary = () => {
       return latest === null || !existsSync(latest) ? null : statSync(latest).mtimeMs
     },
     nextEdition: () => {
-      reserved = Math.max(reserved, latestOf('cards') ?? 0, latestOf('book') ?? 0) + 1
-      return { cardsFile: file('cards', reserved), bookFile: file('book', reserved) }
+      const edition = Math.max(latestOf('cards') ?? 0, latestOf('book') ?? 0) + 1
+      return { cardsFile: file('cards', edition), bookFile: file('book', edition) }
     },
     books: () =>
       editionsOf('book')
