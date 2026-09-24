@@ -1,14 +1,14 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { fitToContent, showOnCurrentSpace } from './fitted-window.js'
 import { log } from './log.js'
 import { storedLabels, withLabel } from './task-labels.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
 const WINDOW_WIDTH = 480
-const WINDOW_HEIGHT = 148
 
 export const createTaskField = (onChange, activeCategory) => {
   const file = join(app.getPath('userData'), 'task.json')
@@ -61,6 +61,11 @@ export const createTaskField = (onChange, activeCategory) => {
   ipcMain.on('task:cancel', (event) => {
     if (fromPrompt(event)) discard()
   })
+  ipcMain.on('task:height', (event, height) => {
+    if (!fromPrompt(event)) return
+    fitToContent(window, height)
+    if (!window.isVisible()) showOnCurrentSpace(window)
+  })
   ipcMain.on('task:draft', (event, next) => {
     if (fromPrompt(event)) drafts = { ...drafts, [promptedFor]: next }
   })
@@ -80,7 +85,7 @@ export const createTaskField = (onChange, activeCategory) => {
       onLabelled = onSaved ?? null
       const category = activeCategory()
       if (window && promptedFor === category.id) {
-        window.focus()
+        if (window.isVisible()) showOnCurrentSpace(window)
         return
       }
       const replaced = window
@@ -89,26 +94,22 @@ export const createTaskField = (onChange, activeCategory) => {
       promptedFor = category.id
       promptedName = category.name
 
-      const { workArea } = screen.getPrimaryDisplay()
       const opened = new BrowserWindow({
         width: WINDOW_WIDTH,
-        height: WINDOW_HEIGHT,
-        x: Math.round(workArea.x + (workArea.width - WINDOW_WIDTH) / 2),
-        y: workArea.y + 90,
+        height: 140,
         show: false,
-        frame: false,
-        transparent: true,
         resizable: false,
+        fullscreenable: false,
+        minimizable: false,
+        maximizable: false,
         skipTaskbar: true,
-        alwaysOnTop: true,
-        hasShadow: false,
         webPreferences: { preload: join(here, 'task-preload.cjs') },
       })
       window = opened
       const isCurrent = () => window === opened
 
       opened.on('closed', () => {
-        if (isCurrent()) window = null
+        if (isCurrent()) close()
       })
       opened.on('blur', () => {
         if (isCurrent()) close()
@@ -117,8 +118,6 @@ export const createTaskField = (onChange, activeCategory) => {
       opened.webContents.on('did-finish-load', () => {
         if (!isCurrent()) return
         opened.webContents.send('label', labelOf(category.id), drafts[category.id] ?? null, category.name)
-        app.focus({ steal: true })
-        opened.show()
       })
 
       opened.loadFile(join(here, 'task.html'))

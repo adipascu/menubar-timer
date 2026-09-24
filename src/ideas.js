@@ -1,12 +1,14 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { fitToContent, resizedByHand, showOnCurrentSpace } from './fitted-window.js'
 import { log } from './log.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
 const WINDOW_WIDTH = 520
+const MINIMUM_HEIGHT = 240
 
 const isNote = (note) => typeof note?.text === 'string'
 
@@ -42,6 +44,7 @@ const stored = (file) => {
 export const createIdeas = () => {
   const file = join(app.getPath('userData'), 'ideas.json')
   let window = null
+  let handSized = () => false
 
   const close = () => {
     if (window && !window.isDestroyed()) window.close()
@@ -66,38 +69,33 @@ export const createIdeas = () => {
 
   ipcMain.on('ideas:height', (event, height) => {
     const sender = BrowserWindow.fromWebContents(event.sender)
-    if (!sender || sender.isDestroyed()) return
-    sender.setContentSize(WINDOW_WIDTH, Math.round(height))
-    if (sender.isVisible()) return
-    app.focus({ steal: true })
-    sender.show()
+    if (!sender || sender.isDestroyed() || sender !== window || handSized()) return
+    fitToContent(sender, height)
+    if (!sender.isVisible()) showOnCurrentSpace(sender)
   })
 
   return {
     file,
     edit: () => {
       if (window) {
-        window.focus()
-        app.focus({ steal: true })
+        if (window.isVisible()) showOnCurrentSpace(window)
         return
       }
 
-      const { workArea } = screen.getPrimaryDisplay()
       window = new BrowserWindow({
         width: WINDOW_WIDTH,
-        height: 200,
-        x: Math.round(workArea.x + (workArea.width - WINDOW_WIDTH) / 2),
-        y: workArea.y + 90,
+        height: MINIMUM_HEIGHT,
+        minWidth: WINDOW_WIDTH,
+        minHeight: MINIMUM_HEIGHT,
         show: false,
-        frame: false,
-        transparent: true,
-        resizable: false,
+        fullscreenable: false,
+        minimizable: false,
         skipTaskbar: true,
-        hasShadow: false,
         title: 'Notes and ideas',
         webPreferences: { preload: join(here, 'ideas-preload.cjs') },
       })
 
+      handSized = resizedByHand(window)
       window.on('closed', () => {
         window = null
       })

@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('task', {
   draft: (value) => ipcRenderer.send('task:draft', value),
   save: (label) => ipcRenderer.send('task:save', label),
   cancel: () => ipcRenderer.send('task:cancel'),
+  height: (height) => ipcRenderer.send('task:height', height),
 })
