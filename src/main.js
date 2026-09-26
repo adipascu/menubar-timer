@@ -48,9 +48,11 @@ const DURATIONS = [
 ]
 const FREEBASING = 'Freebasing · no timer, chaos welcome'
 const MODE_OF = { running: 'timer', expired: 'expired', idle: 'freebasing' }
+const onTrackNote = (onTrack) => (onTrack > 0 ? ` · on track ${onTrack}×` : '')
+
 const expiredLine = (seconds, ranOut) => {
   if (ranOut.count > 0)
-    return `Timer ran out ${ranOut.count}× · ${formatWait(seconds)} after it, ${formatWait(ranOut.seconds / ranOut.count)} each`
+    return `Timer ran out ${ranOut.count}× · ${formatWait(seconds)} after it, ${formatWait(ranOut.seconds / ranOut.count)} each${onTrackNote(ranOut.onTrack)}`
   return seconds >= 60 ? `After the timer ran out · ${formatDuration(seconds)}` : null
 }
 
@@ -71,6 +73,7 @@ const NO_TASK = 'No task, on purpose'
 const FLASH_MS = 500
 const MENU_REFRESH_MS = 60 * 1000
 const PRESENCE_SAMPLE_MS = 15 * 1000
+const EXPIRY_CARD = { onTrack: true }
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
@@ -205,10 +208,10 @@ app.on('window-all-closed', () => {})
     hints: DURATIONS.map(({ hint }) => hint),
   })
 
-  const resetTimer = (minutes) => {
+  const resetTimer = (minutes, ended = state === 'idle' ? 'started' : 'restarted') => {
     clearInterval(interval)
     sessionMinutes = minutes
-    focusLog.end(state === 'idle' ? 'started' : 'restarted')
+    focusLog.end(ended)
     openSegment('timer')
 
     endTime = Date.now() + minutes * 60 * 1000
@@ -257,6 +260,14 @@ app.on('window-all-closed', () => {})
     if (state === 'running' && !task.get()) task.prompt()
   }
 
+  const keepGoing = () => {
+    if (state !== 'expired') return
+    log(`on track, restarting the ${sessionMinutes} min timer`)
+    task.cancelPending()
+    resetTimer(sessionMinutes, 'on-track')
+    if (!task.get()) task.prompt()
+  }
+
   const stopTimer = () => {
     task.cancelPending()
     if (state === 'idle') return
@@ -278,7 +289,7 @@ app.on('window-all-closed', () => {})
 
   const standing = (now) => recentStanding(categories.all(), focusLog.segments(now), now.getTime())
 
-  const offerSwitch = () => {
+  const offerSwitch = (extras) => {
     if (!presence.isSettled(Date.now())) return null
     const now = new Date()
     const current = standing(now)
@@ -292,7 +303,7 @@ app.on('window-all-closed', () => {})
     goalCardShownAt = now.getTime()
     log(`goal nudge: ${suggestion.behind.name} is behind while working on ${suggestion.active.name}`)
     const card = goalCard({ ...suggestion, rows: current.rows, total: current.total })
-    coach.alert(card)
+    coach.alert(card, extras)
     return card
   }
 
@@ -305,7 +316,7 @@ app.on('window-all-closed', () => {})
       return
     }
     expiryCardHeld = false
-    const card = offerSwitch() ?? coach.timerExpired()
+    const card = offerSwitch(EXPIRY_CARD) ?? coach.timerExpired(EXPIRY_CARD)
     if (card) focusLog.note({ popup: { kind: card.kind ?? 'tip', title: card.title } })
   }
 
@@ -577,6 +588,7 @@ app.on('window-all-closed', () => {})
     siteLine.text,
     () => renderMenu(),
     () => presence.isSettled(Date.now()),
+    keepGoing,
   )
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {

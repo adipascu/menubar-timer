@@ -177,7 +177,7 @@ describe('expiries', () => {
       segment(admin, at(10), at(10, 25), 'timer'),
       segment(admin, at(10, 25), at(10, 26), 'expired'),
     ]
-    assert.deepEqual(expiries(segments, day, next), { count: 2, seconds: 7 * 60 })
+    assert.deepEqual(expiries(segments, day, next), { count: 2, seconds: 7 * 60, onTrack: 0 })
   })
 
   it('files a run under the window it began in and ignores timers logged before modes existed', () => {
@@ -186,7 +186,7 @@ describe('expiries', () => {
       segment(work, local(2026, 9, 23, 23, 50), at(0, 40), 'expired'),
       segment(work, at(0, 40), at(1), 'freebasing'),
     ]
-    assert.deepEqual(expiries(segments, day, next), { count: 0, seconds: 0 })
+    assert.deepEqual(expiries(segments, day, next), { count: 0, seconds: 0, onTrack: 0 })
   })
 
   it('leaves a run that began after the window out entirely', () => {
@@ -196,7 +196,21 @@ describe('expiries', () => {
       segment(work, local(2026, 9, 25, 0, 5), local(2026, 9, 25, 0, 10), 'expired'),
       segment(admin, local(2026, 9, 25, 0, 10), local(2026, 9, 25, 0, 40), 'expired'),
     ]
-    assert.deepEqual(expiries(segments, day, next), { count: 1, seconds: 10 * 60 })
+    assert.deepEqual(expiries(segments, day, next), { count: 1, seconds: 10 * 60, onTrack: 0 })
+  })
+
+  it('counts the runs you ended with I am on track', () => {
+    const segments = [
+      { ...segment(work, local(2026, 9, 23, 23, 58), at(0, 1), 'expired'), ended: 'on-track' },
+      segment(work, at(0, 1), at(0, 26), 'timer'),
+      { ...segment(work, at(9, 25), at(9, 26), 'expired'), ended: 'on-track' },
+      segment(work, at(9, 26), at(9, 51), 'timer'),
+      { ...segment(work, at(9, 51), at(9, 53), 'expired'), ended: 'switched' },
+      { ...segment(admin, at(9, 53), at(9, 54), 'expired'), ended: 'on-track' },
+      segment(admin, at(9, 54), at(10, 19), 'timer'),
+      { ...segment(admin, at(10, 19), at(10, 30), 'expired'), ended: 'started' },
+    ]
+    assert.deepEqual(expiries(segments, day, next), { count: 3, seconds: 15 * 60, onTrack: 2 })
   })
 
   it('keeps adding to a run that began before the window without counting it', () => {
@@ -204,7 +218,7 @@ describe('expiries', () => {
       segment(work, local(2026, 9, 23, 23, 50), at(0, 10), 'expired'),
       segment(admin, at(0, 10), at(0, 20), 'expired'),
     ]
-    assert.deepEqual(expiries(segments, day, next), { count: 0, seconds: 0 })
+    assert.deepEqual(expiries(segments, day, next), { count: 0, seconds: 0, onTrack: 0 })
   })
 })
 

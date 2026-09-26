@@ -144,7 +144,16 @@ const SHOWN_VIA = {
   again: ' again on demand',
 }
 
-export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine, onCardShown, isSettled) => {
+export const createCoach = (
+  getState,
+  library,
+  ideasFile,
+  getBeacon,
+  getSiteLine,
+  onCardShown,
+  isSettled,
+  onOnTrack,
+) => {
   rememberSourcePath()
   shareSystemAudio()
   const feedback = createFeedback()
@@ -192,7 +201,7 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   const requestedAt = new WeakMap()
   let lastCard = null
 
-  const show = (tip) => {
+  const show = (tip, extras = {}) => {
     requestedAt.set(tip, Date.now())
     const loudMusic = musicIsLoud().catch(() => false)
     const window = new BrowserWindow({
@@ -242,7 +251,7 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     })
     window.webContents.on('did-finish-load', async () => {
       const { prompt, ...shown } = tip
-      const card = { ...shown, beacon: getBeacon(), siteLine: getSiteLine(), loudMusic: await loudMusic }
+      const card = { ...shown, ...extras, beacon: getBeacon(), siteLine: getSiteLine(), loudMusic: await loudMusic }
       if (!window.isDestroyed()) window.webContents.send('tip', card)
     })
     window.loadFile(join(here, 'popup.html'))
@@ -255,8 +264,8 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     return nextCard()
   }
 
-  const present = (tip, via = 'schedule') => {
-    show(tip)
+  const present = (tip, via = 'schedule', extras) => {
+    show(tip, extras)
     if (tip.topic) showingOf.set(tip, feedback.recordShown(tip, via))
     log(`showed ${tip.kind ?? 'tip'}${SHOWN_VIA[via]}: ${tip.title}`)
   }
@@ -332,6 +341,12 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
     recordAndClose({ action: 'note', text }, (title) => `noted on "${title}": ${JSON.stringify(text)}`),
   )
 
+  ipcMain.on('coach:on-track', () => {
+    const restarting = getState() === 'expired'
+    onScreen.close(restarting ? 'on-track' : 'got-it')
+    if (restarting) onOnTrack()
+  })
+
   ipcMain.on('coach:discuss', () => {
     const tip = onScreen.card()
     onScreen.close('discuss')
@@ -350,11 +365,11 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
 
   return {
     start: () => schedule.next(),
-    alert: (card) => show(card),
-    timerExpired: () => {
+    alert: (card, extras) => show(card, extras),
+    timerExpired: (extras) => {
       if (!onScreen.isEmpty()) return null
       const card = nextCard()
-      present(card, 'timer-ran-out')
+      present(card, 'timer-ran-out', extras)
       schedule.next()
       return card
     },
