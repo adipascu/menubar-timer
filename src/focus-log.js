@@ -86,7 +86,7 @@ export const createFocusLog = () => {
         `${mode} segment started: ${category.name}, "${task}"${plannedMinutes ? `, ${plannedMinutes} min timer` : ''}`,
       )
     },
-    end: (ended) => {
+    end: (ended, at = Date.now()) => {
       if (!open) return
       if (!ownsMarker()) {
         letGo('another instance already closed this segment')
@@ -94,7 +94,7 @@ export const createFocusLog = () => {
       }
       clearInterval(heartbeat)
       heartbeat = null
-      const segment = settle(open, new Date().toISOString(), ended)
+      const segment = settle(open, new Date(Math.max(at, Date.parse(open.start))).toISOString(), ended)
       open = null
       append(segment)
       rmSync(openFile, { force: true })

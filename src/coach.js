@@ -144,7 +144,7 @@ const SHOWN_VIA = {
   again: ' again on demand',
 }
 
-export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine, onCardShown = () => {}) => {
+export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine, onCardShown, isSettled) => {
   rememberSourcePath()
   shareSystemAudio()
   const feedback = createFeedback()
@@ -262,7 +262,7 @@ export const createCoach = (getState, library, ideasFile, getBeacon, getSiteLine
   }
 
   const tick = async () => {
-    if (!(tipsAreAllowed() && userIsAtTheComputer() && onScreen.isEmpty())) {
+    if (!(tipsAreAllowed() && isSettled() && userIsAtTheComputer() && onScreen.isEmpty())) {
       schedule.retry()
       return
     }
