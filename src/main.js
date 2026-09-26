@@ -22,6 +22,7 @@ import { createIdeas } from './ideas.js'
 import { createLibrary } from './library.js'
 import { swatchOf } from './palette.js'
 import { createPowerWatch } from './power.js'
+import { createPresence } from './presence.js'
 import { createReader } from './reader.js'
 import { createReadout } from './readout.js'
 import { createSettings } from './settings.js'
@@ -69,6 +70,7 @@ const offTheClock = (modes, ranOut) =>
 const NO_TASK = 'No task, on purpose'
 const FLASH_MS = 500
 const MENU_REFRESH_MS = 60 * 1000
+const PRESENCE_SAMPLE_MS = 15 * 1000
 
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60)
@@ -95,7 +97,7 @@ app.on('window-all-closed', () => {})
   let menuTuneUp = null
   let goalCardShownAt = null
   let batteryItem = null
-  let away = false
+  let expiryCardHeld = false
 
   const renderTitle = () => {
     const label = state === 'idle' ? '' : task.get()
@@ -111,7 +113,7 @@ app.on('window-all-closed', () => {})
   })
 
   const openSegment = (mode) => {
-    if (!away) focusLog.begin(segmentDetails(mode))
+    if (!presence.isAway()) focusLog.begin(segmentDetails(mode))
   }
 
   const segmentChange = (current) => {
@@ -277,6 +279,7 @@ app.on('window-all-closed', () => {})
   const standing = (now) => recentStanding(categories.all(), focusLog.segments(now), now.getTime())
 
   const offerSwitch = () => {
+    if (!presence.isSettled(Date.now())) return null
     const now = new Date()
     const current = standing(now)
     const suggestion = nudge({
@@ -294,7 +297,14 @@ app.on('window-all-closed', () => {})
   }
 
   const popUpOnExpiry = () => {
-    if (away) return
+    const now = Date.now()
+    if (!presence.isSettled(now)) {
+      if (!expiryCardHeld) log('holding the expiry card until you are back')
+      expiryCardHeld = true
+      if (!presence.isAway()) setTimeout(deliverHeldExpiryCard, presence.settlesIn(now))
+      return
+    }
+    expiryCardHeld = false
     const card = offerSwitch() ?? coach.timerExpired()
     if (card) focusLog.note({ popup: { kind: card.kind ?? 'tip', title: card.title } })
   }
@@ -516,19 +526,31 @@ app.on('window-all-closed', () => {})
   }
   const categories = createCategories(refresh)
   const task = createTaskField(refresh, categories.active)
+  const deliverHeldExpiryCard = () => {
+    if (!expiryCardHeld || presence.isAway()) return
+    if (state !== 'expired') {
+      expiryCardHeld = false
+      return
+    }
+    popUpOnExpiry()
+  }
+  const presence = createPresence({
+    onAway: (reason, at) => {
+      log(`away (${reason}) since ${new Date(at).toISOString()}`)
+      focusLog.end(reason, at)
+    },
+    onBack: (awayMs) => {
+      log(`back after ${Math.round(awayMs / 1000)} s away`)
+      openSegment()
+      deliverHeldExpiryCard()
+    },
+  })
   openSegment()
-  const stepAway = (reason) => {
-    away = true
-    focusLog.end(reason)
-  }
-  const comeBack = () => {
-    away = false
-    openSegment()
-  }
-  powerMonitor.on('suspend', () => stepAway('asleep'))
-  powerMonitor.on('lock-screen', () => stepAway('locked'))
-  powerMonitor.on('resume', comeBack)
-  powerMonitor.on('unlock-screen', comeBack)
+  setInterval(() => presence.sample(powerMonitor.getSystemIdleTime(), Date.now()), PRESENCE_SAMPLE_MS)
+  powerMonitor.on('suspend', () => presence.asleep(Date.now()))
+  powerMonitor.on('lock-screen', () => presence.locked(Date.now()))
+  powerMonitor.on('resume', () => presence.awake(Date.now()))
+  powerMonitor.on('unlock-screen', () => presence.unlocked(Date.now()))
   const beacon = createBeaconPreset((id) => {
     coach.setBeacon(id)
     renderMenu()
@@ -554,6 +576,7 @@ app.on('window-all-closed', () => {})
     beacon.get,
     siteLine.text,
     () => renderMenu(),
+    () => presence.isSettled(Date.now()),
   )
   const reader = createReader(library, () => coach.edition())
   const chargerPlaces = createChargerPlaces(() => {
