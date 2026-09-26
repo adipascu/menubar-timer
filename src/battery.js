@@ -1,3 +1,4 @@
+import { batteryLabel } from './battery-label.js'
 import { outline, rectangle, templateImage } from './menu-icon.js'
 
 const ICON = { width: 17, height: 11 }
@@ -26,16 +27,11 @@ const batteryIcon = (percent, charging) => {
   ])
 }
 
-const stateLabel = ({ onBattery, charging }) => {
-  if (charging) return ' · charging'
-  return onBattery ? '' : ' · plugged in'
-}
-
 export const batteryMenuItem = (reading) =>
   reading.percent === null
     ? null
     : {
-        label: `Battery ${reading.percent}%${stateLabel(reading)}`,
+        label: batteryLabel(reading),
         icon: batteryIcon(reading.percent, reading.charging),
         enabled: false,
       }
