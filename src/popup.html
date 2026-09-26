@@ -296,6 +296,9 @@
               Add a note
             </button>
             <button id="discuss" class="card-action">Talk it through</button>
+            <button id="on-track" class="card-action" title="Start the same timer again, you are still on it" hidden>
+              I'm on track
+            </button>
             <button id="dismiss" class="card-action primary">Got it</button>
             <button id="cancel-note" class="note-action">Cancel</button>
             <button
@@ -325,6 +328,7 @@
       const useful = document.getElementById('useful')
       const addNote = document.getElementById('add-note')
       const discuss = document.getElementById('discuss')
+      const onTrack = document.getElementById('on-track')
       const noteBox = document.getElementById('note')
       const cancelNote = document.getElementById('cancel-note')
       const saveNote = document.getElementById('save-note')
@@ -478,6 +482,7 @@
         useful.hidden = !tip.topic
         addNote.hidden = !tip.topic
         discuss.hidden = tip.kind === 'nudge'
+        onTrack.hidden = !tip.onTrack
         reportHeight()
         loudMusic = Boolean(tip.loudMusic)
         startBeacon(tip.beacon)
@@ -503,6 +508,7 @@
       cancelNote.addEventListener('click', () => setNoting(false))
       saveNote.addEventListener('click', submitNote)
       discuss.addEventListener('click', () => window.coach.discuss())
+      onTrack.addEventListener('click', () => window.coach.onTrack())
       document.getElementById('dismiss').addEventListener('click', () => window.coach.dismiss('got-it'))
     </script>
   </body>

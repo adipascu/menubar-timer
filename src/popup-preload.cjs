@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('coach', {
   reportBeacon: (label) => ipcRenderer.send('coach:beacon', label),
   dismiss: (how) => ipcRenderer.send('coach:dismiss', how),
   discuss: () => ipcRenderer.send('coach:discuss'),
+  onTrack: () => ipcRenderer.send('coach:on-track'),
   markKnown: () => ipcRenderer.send('coach:mark', 'known'),
   markNotInterested: () => ipcRenderer.send('coach:mark', 'not-interested'),
   markInterested: () => ipcRenderer.send('coach:interested'),

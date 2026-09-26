@@ -36,6 +36,7 @@ export const splitByMode = (segments, from, to) => {
 export const expiries = (segments, from, to) => {
   let count = 0
   let seconds = 0
+  let onTrack = 0
   let counting = false
   segments.forEach((segment, index) => {
     if (modeOf(segment) !== 'expired') return
@@ -45,9 +46,11 @@ export const expiries = (segments, from, to) => {
       counting = at >= from && at < to
       if (counting) count += 1
     }
-    if (counting) seconds += (Date.parse(segment.end) - Date.parse(segment.start)) / 1000
+    if (!counting) return
+    seconds += (Date.parse(segment.end) - Date.parse(segment.start)) / 1000
+    if (segment.ended === 'on-track') onTrack += 1
   })
-  return { count, seconds }
+  return { count, seconds, onTrack }
 }
 
 export const splitByCategory = (segments, from, to, known = []) => {
